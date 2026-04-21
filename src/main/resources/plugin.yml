@@ -1,5 +1,5 @@
 name: Nascraft
-version: '${project.version}'
+version: '${version}'
 main: me.bounser.nascraft.Nascraft
 api-version: 1.13
 softdepend: [ Vault, PlaceholderAPI, AdvancedGUI, DiscordSRV ]
