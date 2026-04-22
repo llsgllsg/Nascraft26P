@@ -54,6 +54,13 @@ dependencies {
     implementation("io.javalin:javalin:6.6.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
     implementation("org.mindrot:jbcrypt:0.4")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
+    testRuntimeOnly   ("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+    testImplementation("org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT")
 }
 
 tasks {
@@ -74,6 +81,10 @@ tasks {
         relocate("de.tr7zw.changeme.nbtapi", "me.bounser.nbtapi")
         relocate("io.javalin", "me.bounser.web.libs.javalin")
         relocate("kotlin", "me.bounser.web.libs.kotlin")
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     build {
