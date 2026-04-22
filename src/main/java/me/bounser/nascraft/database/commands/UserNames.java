@@ -9,15 +9,28 @@ import java.util.UUID;
 public class UserNames {
 
     public static String getNameByUUID(Connection connection, UUID uuid) {
-        try {
-            String sql = "SELECT name FROM user_names WHERE uuid=?;";
-            PreparedStatement prep = connection.prepareStatement(sql);
+        String sql = "SELECT name FROM user_names WHERE uuid=?;";
+        try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
-            ResultSet resultSet = prep.executeQuery();
+            try (ResultSet resultSet = prep.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("name");
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            if (resultSet.next()) {
-                return resultSet.getString("name");
-            } else {
+    public static String getUUIDbyName(Connection connection, String name) {
+        String sql = "SELECT uuid FROM user_names WHERE name=?;";
+        try (PreparedStatement prep = connection.prepareStatement(sql)) {
+            prep.setString(1, name);
+            try (ResultSet resultSet = prep.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("uuid");
+                }
                 return null;
             }
         } catch (SQLException e) {
@@ -26,25 +39,29 @@ public class UserNames {
     }
 
     public static void saveOrUpdateNick(Connection connection, UUID uuid, String name) {
-        try {
-            String sql1 = "SELECT id FROM user_names WHERE uuid=?;";
-            PreparedStatement prep1 = connection.prepareStatement(sql1);
-            prep1.setString(1, uuid.toString());
-            ResultSet resultSet = prep1.executeQuery();
-
-            if (resultSet.next()) {
-                String sql2 = "UPDATE user_names SET name=? WHERE uuid=?;";
-                PreparedStatement prep2 = connection.prepareStatement(sql2);
-                prep2.setString(1, name);
-                prep2.setString(2, uuid.toString());
-                prep2.executeUpdate();
-            } else {
-                String sql2 = "INSERT INTO user_names (uuid, name) VALUES (?,?);";
-                PreparedStatement prep2 = connection.prepareStatement(sql2);
-                prep2.setString(1, uuid.toString());
-                prep2.setString(2, name);
-                prep2.executeUpdate();
+        String selectSql = "SELECT id FROM user_names WHERE uuid=?;";
+        boolean exists;
+        try (PreparedStatement prep = connection.prepareStatement(selectSql)) {
+            prep.setString(1, uuid.toString());
+            try (ResultSet resultSet = prep.executeQuery()) {
+                exists = resultSet.next();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        String sql = exists
+                ? "UPDATE user_names SET name=? WHERE uuid=?;"
+                : "INSERT INTO user_names (uuid, name) VALUES (?,?);";
+        try (PreparedStatement prep = connection.prepareStatement(sql)) {
+            if (exists) {
+                prep.setString(1, name);
+                prep.setString(2, uuid.toString());
+            } else {
+                prep.setString(1, uuid.toString());
+                prep.setString(2, name);
+            }
+            prep.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

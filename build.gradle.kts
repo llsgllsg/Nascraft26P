@@ -39,7 +39,8 @@ dependencies {
 
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
     compileOnly("me.clip:placeholderapi:2.11.5")
-    compileOnly("org.xerial:sqlite-jdbc:3.43.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.43.0.0")
+    implementation("com.zaxxer:HikariCP:5.1.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.discordsrv:discordsrv:1.28.0")
     compileOnly("commons-io:commons-io:2.14.0")
@@ -81,6 +82,7 @@ tasks {
         relocate("de.tr7zw.changeme.nbtapi", "me.bounser.nbtapi")
         relocate("io.javalin", "me.bounser.web.libs.javalin")
         relocate("kotlin", "me.bounser.web.libs.kotlin")
+        relocate("com.zaxxer.hikari", "me.bounser.libs.hikari")
     }
 
     test {

@@ -196,6 +196,17 @@ public final class Nascraft extends JavaPlugin {
                 webServerManager.startServer();
             });
         }
+
+        long purgeTicks = 20L * 60L * 60L * 6L;
+        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+            me.bounser.nascraft.database.Database db = DatabaseManager.get().getDatabase();
+            if (db instanceof me.bounser.nascraft.database.sqlite.SqliteDatabase) {
+                ((me.bounser.nascraft.database.sqlite.SqliteDatabase) db).purgeOldData();
+            } else {
+                db.purgeHistory();
+                db.purgeAlerts();
+            }
+        }, purgeTicks, purgeTicks);
     }
 
     @Override

@@ -1,8 +1,9 @@
 package me.bounser.nascraft.database;
 
+import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.database.mysql.MySQL;
-import me.bounser.nascraft.database.sqlite.SQLite;
+import me.bounser.nascraft.database.sqlite.SqliteDatabase;
 
 public class DatabaseManager {
 
@@ -25,7 +26,7 @@ public class DatabaseManager {
         switch (databaseType) {
 
             case SQLITE:
-                database = SQLite.getInstance(); break;
+                database = new SqliteDatabase(Nascraft.getInstance().getDataFolder()); break;
 
             case MYSQL:
                 database = new MySQL(

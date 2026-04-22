@@ -34,28 +34,34 @@ public final class InMemoryDatabase {
             "taxes DOUBLE)",
 
         "CREATE TABLE prices_day (" +
-            "id INTEGER PRIMARY KEY, " +
-            "day INT, " +
-            "date TEXT, " +
-            "identifier TEXT, " +
-            "price DOUBLE, " +
-            "volume INT)",
+            "identifier TEXT NOT NULL, " +
+            "bucket_start TEXT NOT NULL, " +
+            "open REAL NOT NULL, " +
+            "high REAL NOT NULL, " +
+            "low REAL NOT NULL, " +
+            "close REAL NOT NULL, " +
+            "volume REAL NOT NULL DEFAULT 0, " +
+            "PRIMARY KEY (identifier, bucket_start))",
 
         "CREATE TABLE prices_month (" +
-            "id INTEGER PRIMARY KEY, " +
-            "day INT NOT NULL, " +
-            "date TEXT NOT NULL, " +
             "identifier TEXT NOT NULL, " +
-            "price DOUBLE NOT NULL, " +
-            "volume INT NOT NULL)",
+            "bucket_start TEXT NOT NULL, " +
+            "open REAL NOT NULL, " +
+            "high REAL NOT NULL, " +
+            "low REAL NOT NULL, " +
+            "close REAL NOT NULL, " +
+            "volume REAL NOT NULL DEFAULT 0, " +
+            "PRIMARY KEY (identifier, bucket_start))",
 
         "CREATE TABLE prices_history (" +
-            "id INTEGER PRIMARY KEY, " +
-            "day INT, " +
-            "date TEXT NOT NULL, " +
-            "identifier INT, " +
-            "price DOUBLE, " +
-            "volume INT)",
+            "identifier TEXT NOT NULL, " +
+            "bucket_start TEXT NOT NULL, " +
+            "open REAL NOT NULL, " +
+            "high REAL NOT NULL, " +
+            "low REAL NOT NULL, " +
+            "close REAL NOT NULL, " +
+            "volume REAL NOT NULL DEFAULT 0, " +
+            "PRIMARY KEY (identifier, bucket_start))",
 
         "CREATE TABLE portfolios (" +
             "uuid VARCHAR(36) NOT NULL, " +

@@ -218,9 +218,9 @@ public class Price {
         double stockToReach = getStockFromValue(priceToReach);
 
         if (priceToReach > value) {
-            return Math.floor(Math.abs(stock - stockToReach));
-        } else {
             return -Math.floor(Math.abs(stock - stockToReach));
+        } else {
+            return Math.floor(Math.abs(stock - stockToReach));
         }
     }
 
@@ -438,10 +438,10 @@ public class Price {
     public Price setSupport(double support) { this.support = support; return this; }
     public Price setResistance(double resistance) { this.resistance = resistance; return this; }
 
-    public static float roundToDecimals(double value, int decimals) {
+    public static double roundToDecimals(double value, int decimals) {
         BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(decimals, RoundingMode.HALF_UP); // Rounds up if the digit is >= 5
-        return (float) bd.doubleValue();
+        bd = bd.setScale(decimals, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     public double getStockFromValue(double value) {

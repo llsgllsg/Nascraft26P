@@ -6,13 +6,10 @@ import me.bounser.nascraft.database.commands.resources.Trade;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.portfolio.Portfolio;
+import me.bounser.nascraft.web.dto.PlayerStatsDTO;
 
-import java.sql.Connection;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public interface Database {
 
@@ -113,6 +110,23 @@ public interface Database {
     void retrieveLimitOrders();
 
     String getNameByUUID(UUID uuid);
+    String getUUIDbyName(String name);
     void saveOrUpdateName(UUID uuid, String name);
+
+    void updateBalance(UUID uuid);
+    Map<Integer, Double> getMoneySupplyHistory();
+
+    void storeCredentials(String userName, String hash);
+    String retrieveHash(String userName);
+    void clearUserCredentials(String userName);
+
+    void saveOrUpdatePlayerStats(UUID uuid);
+    List<PlayerStatsDTO> getAllPlayerStats(UUID uuid);
+
+    void saveDiscordLink(UUID uuid, String userid, String nickname);
+    void removeDiscordLink(UUID uuid);
+    String getDiscordUserId(UUID uuid);
+    UUID getUUIDFromUserid(String userid);
+    String getNicknameFromUserId(String userid);
 
 }
