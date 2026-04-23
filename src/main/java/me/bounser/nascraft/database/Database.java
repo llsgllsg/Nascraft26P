@@ -6,7 +6,6 @@ import me.bounser.nascraft.database.commands.resources.Trade;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.portfolio.Portfolio;
-import me.bounser.nascraft.web.dto.PlayerStatsDTO;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -115,13 +114,6 @@ public interface Database {
 
     void updateBalance(UUID uuid);
     Map<Integer, Double> getMoneySupplyHistory();
-
-    void storeCredentials(String userName, String hash);
-    String retrieveHash(String userName);
-    void clearUserCredentials(String userName);
-
-    void saveOrUpdatePlayerStats(UUID uuid);
-    List<PlayerStatsDTO> getAllPlayerStats(UUID uuid);
 
     void saveDiscordLink(UUID uuid, String userid, String nickname);
     void removeDiscordLink(UUID uuid);

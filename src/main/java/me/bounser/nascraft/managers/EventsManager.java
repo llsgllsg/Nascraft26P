@@ -24,6 +24,5 @@ public class EventsManager implements Listener {
         PortfoliosManager.getInstance().savePortfolioOfPlayer(event.getPlayer());
 
         DatabaseManager.get().getDatabase().updateBalance(event.getPlayer().getUniqueId());
-        DatabaseManager.get().getDatabase().saveOrUpdatePlayerStats(event.getPlayer().getUniqueId());
     }
 }

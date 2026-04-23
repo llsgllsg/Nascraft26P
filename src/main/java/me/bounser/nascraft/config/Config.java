@@ -89,54 +89,6 @@ public class Config {
 
     // Config:
 
-    public Boolean getWebEnabled() {
-        if (config.contains("web.enabled")) {
-            return config.getBoolean("web.enabled");
-        } else {
-            return false;
-        }
-    }
-
-    public int getWebPort() {
-        if (config.contains("web.port")) {
-            return config.getInt("web.port");
-        } else {
-            return 8080;
-        }
-    }
-
-    public String getDiscordId() {
-        if (config.contains("web.discord-client-id")) {
-            return config.getString("web.discord-client-id");
-        } else {
-            return "";
-        }
-    }
-
-    public String getDiscordSecret() {
-        if (config.contains("web.discord-client-secret")) {
-            return config.getString("web.discord-client-secret");
-        } else {
-            return "";
-        }
-    }
-
-    public int getWebTimeout() {
-        if (config.contains("web.timeout")) {
-            return config.getInt("web.timeout");
-        } else {
-            return 0;
-        }
-    }
-
-    public int getWebCodeExpiration() {
-        if (config.contains("web.code-expiration")) {
-            return config.getInt("web.code-expiration");
-        } else {
-            return 0;
-        }
-    }
-
     public Boolean getCheckResources() {
         return config.getBoolean("auto-resources-injection");
     }

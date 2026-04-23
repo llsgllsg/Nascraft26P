@@ -10,7 +10,6 @@ import me.bounser.nascraft.commands.admin.marketeditor.edit.category.CategoryEdi
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorInvListener;
 import me.bounser.nascraft.commands.alert.AlertsCommand;
 import me.bounser.nascraft.commands.alert.SetAlertCommand;
-import me.bounser.nascraft.commands.credentials.WebCommand;
 import me.bounser.nascraft.commands.discord.DiscordCommand;
 import me.bounser.nascraft.commands.portfolio.PortfolioCommand;
 import me.bounser.nascraft.inventorygui.Portfolio.PortfolioInventory;
@@ -34,7 +33,6 @@ import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.sellwand.WandListener;
 import me.bounser.nascraft.sellwand.WandsManager;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
-import me.bounser.nascraft.web.WebServerManager;
 import me.leoko.advancedgui.AdvancedGUI;
 import me.leoko.advancedgui.manager.GuiItemManager;
 import me.leoko.advancedgui.manager.GuiWallManager;
@@ -60,7 +58,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 
 
 public final class Nascraft extends JavaPlugin {
@@ -73,8 +70,6 @@ public final class Nascraft extends JavaPlugin {
     private static final String AGUI_VERSION = "2.2.8";
 
     private BukkitAudiences adventure;
-
-    private WebServerManager webServerManager;
 
     public static Nascraft getInstance() { return main; }
 
@@ -179,24 +174,6 @@ public final class Nascraft extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EventsManager(), this);
         ItemChartReduced.load();
 
-        if (config.getWebEnabled()) {
-
-            if (config.isCommandEnabled("web")) {
-                new WebCommand();
-            }
-
-            extractDefaultWebFiles();
-            extractImage("images/logo.png");
-            extractImage("images/logo-color.png");
-            extractImage("images/fire.png");
-
-            webServerManager = new WebServerManager(this, config.getWebPort());
-
-            getServer().getScheduler().runTaskAsynchronously(this, () -> {
-                webServerManager.startServer();
-            });
-        }
-
         long purgeTicks = 20L * 60L * 60L * 6L;
         getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
             me.bounser.nascraft.database.Database db = DatabaseManager.get().getDatabase();
@@ -224,11 +201,6 @@ public final class Nascraft extends JavaPlugin {
         if (this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
-        }
-
-        if (webServerManager != null && webServerManager.isRunning()) {
-            getLogger().info("Stopping web server...");
-            webServerManager.stopServer();
         }
     }
 
@@ -342,51 +314,5 @@ public final class Nascraft extends JavaPlugin {
             getLogger().info("Layout (Nascraft.json) present!");
         }
     }
-
-    private void extractDefaultWebFiles() {
-        getLogger().info("Checking external web directory: " + new File(getDataFolder(), "web").getPath());
-
-        String[] essentialFiles = {
-                "web/index.html",
-                "web/style.css",
-                "web/script.js"
-        };
-
-        boolean copiedAny = false;
-        for (String resourcePath : essentialFiles) {
-            File targetFile = new File(getDataFolder(), resourcePath);
-            try {
-                if (!targetFile.exists()) {
-                    saveResource(resourcePath, false);
-                    getLogger().info("Copied default file: " + resourcePath);
-                    copiedAny = true;
-                }
-            } catch (IllegalArgumentException e) {
-                getLogger().log(Level.SEVERE, "Error extracting: " + resourcePath, e);
-            }
-        }
-
-        if (!copiedAny) {
-            getLogger().info("External web files are present.");
-        } else {
-            getLogger().info("Default web files copied to " + new File(getDataFolder(), "web").getPath());
-        }
-
-    }
-
-    private void extractImage(String resourcePath) {
-        File targetFile = new File(getDataFolder(), resourcePath);
-
-        if (!targetFile.exists()) {
-            try {
-                saveResource(resourcePath, false);
-            } catch (IllegalArgumentException e) {
-                getLogger().log(Level.SEVERE, "Failed to extract image: Resource path '" + resourcePath + "' not found within the plugin JAR!", e);
-            } catch (Exception e) {
-                getLogger().log(Level.SEVERE, "An unexpected error occurred while extracting image '" + resourcePath + "'", e);
-            }
-        }
-    }
-
 
 }

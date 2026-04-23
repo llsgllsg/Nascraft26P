@@ -8,7 +8,6 @@ import me.bounser.nascraft.database.commands.*;
 import me.bounser.nascraft.database.commands.resources.DayInfo;
 import me.bounser.nascraft.database.commands.resources.NormalisedDate;
 import me.bounser.nascraft.database.commands.resources.Trade;
-import me.bounser.nascraft.web.dto.PlayerStatsDTO;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
@@ -199,17 +198,6 @@ public class SqliteDatabase extends BaseDatabase {
         safeExec(connection, "CREATE TABLE IF NOT EXISTS money_supply (" +
                 "day INT PRIMARY KEY, " +
                 "supply DOUBLE NOT NULL)");
-
-        safeExec(connection, "CREATE TABLE IF NOT EXISTS web_credentials (" +
-                "name TEXT NOT NULL, " +
-                "pass TEXT NOT NULL)");
-
-        safeExec(connection, "CREATE TABLE IF NOT EXISTS player_stats (" +
-                "day INT NOT NULL, " +
-                "uuid VARCHAR(36) NOT NULL, " +
-                "balance DOUBLE NOT NULL, " +
-                "portfolio DOUBLE NOT NULL, " +
-                "debt DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS discord (" +
                 "userid VARCHAR(18) NOT NULL, " +
@@ -580,31 +568,6 @@ public class SqliteDatabase extends BaseDatabase {
     @Override
     public Map<Integer, Double> getMoneySupplyHistory() {
         return withConnection(Balances::getMoneySupplyHistory, Collections.emptyMap());
-    }
-
-    @Override
-    public void storeCredentials(String userName, String hash) {
-        withConnection(c -> Credentials.saveCredentials(c, userName, hash));
-    }
-
-    @Override
-    public String retrieveHash(String userName) {
-        return withConnection(c -> Credentials.getHashFromUserName(c, userName), null);
-    }
-
-    @Override
-    public void clearUserCredentials(String userName) {
-        withConnection(c -> Credentials.clearUserCredentials(c, userName));
-    }
-
-    @Override
-    public void saveOrUpdatePlayerStats(UUID uuid) {
-        withConnection(c -> PlayerStats.saveOrUpdatePlayerStats(c, uuid));
-    }
-
-    @Override
-    public List<PlayerStatsDTO> getAllPlayerStats(UUID uuid) {
-        return withConnection(c -> PlayerStats.getAllPlayerStats(c, uuid), Collections.emptyList());
     }
 
     @Override
