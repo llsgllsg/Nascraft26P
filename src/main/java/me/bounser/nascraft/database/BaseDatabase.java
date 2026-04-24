@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.logging.Level;
 
 public abstract class BaseDatabase implements Database {
 
@@ -38,8 +39,11 @@ public abstract class BaseDatabase implements Database {
 
     @Override
     public void disconnect() {
-        saveEverything();
-        close();
+        try {
+            saveEverything();
+        } finally {
+            close();
+        }
     }
 
     @Override
@@ -71,37 +75,17 @@ public abstract class BaseDatabase implements Database {
         try (Connection connection = dataSource.getConnection()) {
             action.accept(connection);
         } catch (SQLException e) {
-            Nascraft.getInstance().getLogger().warning(e.getMessage());
+            throw fail("withConnection failed", e);
         }
     }
 
-    public <T> T withConnection(SqlFunction<T> action, T fallback) {
-        try (Connection connection = dataSource.getConnection()) {
-            return action.apply(connection);
-        } catch (SQLException e) {
-            Nascraft.getInstance().getLogger().warning(e.getMessage());
-            return fallback;
-        }
+    public void withTransaction(SqlConsumer action) {
+        withTransaction(conn -> { action.accept(conn); return null; }, null);
     }
 
-    public <T> T withTransaction(SqlFunction<T> action, T fallback) {
-        try (Connection connection = dataSource.getConnection()) {
-            boolean prev = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            try {
-                T result = action.apply(connection);
-                connection.commit();
-                return result;
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            } finally {
-                connection.setAutoCommit(prev);
-            }
-        } catch (SQLException e) {
-            Nascraft.getInstance().getLogger().warning(e.getMessage());
-            return fallback;
-        }
+    private static DatabaseException fail(String context, SQLException e) {
+        Nascraft.getInstance().getLogger().log(Level.SEVERE, context + ": " + e.getMessage(), e);
+        return new DatabaseException(context, e);
     }
 
     public static String toIso(Instant instant) {
