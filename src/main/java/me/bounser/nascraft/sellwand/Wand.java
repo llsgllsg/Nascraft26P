@@ -5,7 +5,7 @@ import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.managers.currencies.CurrenciesManager;
 import me.bounser.nascraft.managers.currencies.Currency;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -47,7 +47,7 @@ public class Wand {
         this.material = material;
 
         Component displayNameComponent = MiniMessage.miniMessage().deserialize(displayName);
-        this.displayName = BukkitComponentSerializer.legacy().serialize(displayNameComponent);
+        this.displayName = LegacyComponentSerializer.legacySection().serialize(displayNameComponent);
         this.lore = lore;
 
         this.defaultUses = uses;
@@ -75,7 +75,7 @@ public class Wand {
                     line
                     .replace("[USES]", String.valueOf(uses))
                     .replace("[PROFIT-LEFT]", Formatter.format(CurrenciesManager.getInstance().getDefaultCurrency(), profitLeft, Style.ROUND_BASIC)));
-            newLore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            newLore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         return newLore;

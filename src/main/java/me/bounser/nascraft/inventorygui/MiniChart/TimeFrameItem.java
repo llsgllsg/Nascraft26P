@@ -4,7 +4,7 @@ import me.bounser.nascraft.chart.price.ChartType;
 import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -44,7 +44,7 @@ public class TimeFrameItem extends AbstractItem {
 
         for (String line : Lang.get().message(Message.GUI_INFO_TIMEFRAME_LORE_BEFORE).split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         String segments = "";
@@ -63,16 +63,16 @@ public class TimeFrameItem extends AbstractItem {
 
         for (String line : segments.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         for (String line : Lang.get().message(Message.GUI_INFO_TIMEFRAME_LORE_AFTER).split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         return new ItemBuilder(Material.CLOCK)
-                .setDisplayName(BukkitComponentSerializer.legacy().serialize(title))
+                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
                 .setLegacyLore(lore);
     }
 

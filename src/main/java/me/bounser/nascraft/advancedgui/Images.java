@@ -1,14 +1,12 @@
 package me.bounser.nascraft.advancedgui;
 
 import me.bounser.nascraft.Nascraft;
+import me.bounser.nascraft.images.ItemTextureProvider;
 import me.bounser.nascraft.market.unit.Item;
 import me.leoko.advancedgui.manager.ResourceManager;
 import org.bukkit.Material;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 
 public class Images {
@@ -36,14 +34,9 @@ public class Images {
 
         if(images.containsKey(material)) { return images.get(material); }
 
-        BufferedImage image = null;
-        try {
-            InputStream input = Nascraft.getInstance().getResource("1-21-4-materials/minecraft_" + material.toString().toLowerCase() + ".png");
-            assert input != null;
-            image = ImageIO.read(input);
-        } catch (IOException e) {
-            Nascraft.getInstance().getLogger().info("Unable to read image: " + material.toString().toLowerCase() + ".png");
-            e.printStackTrace();
+        BufferedImage image = ItemTextureProvider.getImage(material);
+        if (image == null) {
+            return null;
         }
         images.put(material, image);
 

@@ -57,14 +57,34 @@ public class InventoryManager {
             player.getWorld().dropItem(player.getLocation(), itemStackToDrop);
     }
 
-    public static boolean containsAtLeast(Player player, ItemStack itemStack, int amount) {
-        return player.getInventory().containsAtLeast(itemStack, amount);
+    public static boolean containsAtLeast(Player player, ItemStack template, int amount) {
+        int count = 0;
+        for (ItemStack is : player.getInventory().getStorageContents()) {
+            if (is != null && MarketManager.getInstance().isSimilarEnough(is, template)) {
+                count += is.getAmount();
+                if (count >= amount) return true;
+            }
+        }
+        return false;
     }
 
-    public static void removeItems(Player player, ItemStack itemStack, int amount) {
-        ItemStack operation = itemStack.clone();
-        operation.setAmount(amount);
-        player.getInventory().removeItem(operation);
+    public static void removeItems(Player player, ItemStack template, int amount) {
+        int remaining = amount;
+        ItemStack[] contents = player.getInventory().getStorageContents();
+        for (int i = 0; i < contents.length && remaining > 0; i++) {
+            ItemStack is = contents[i];
+            if (is != null && MarketManager.getInstance().isSimilarEnough(is, template)) {
+                if (is.getAmount() <= remaining) {
+                    remaining -= is.getAmount();
+                    contents[i] = null;
+                } else {
+                    contents[i] = is.clone();
+                    contents[i].setAmount(is.getAmount() - remaining);
+                    remaining = 0;
+                }
+            }
+        }
+        player.getInventory().setStorageContents(contents);
     }
 
 }

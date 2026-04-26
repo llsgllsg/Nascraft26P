@@ -10,7 +10,7 @@ import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -277,7 +277,7 @@ public class SellInvListener implements Listener {
         ItemMeta meta = clonedItem.getItemMeta();
 
         Component remove = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.SELL_REMOVE_ITEM));
-        String removeLore = BukkitComponentSerializer.legacy().serialize(remove);
+        String removeLore = LegacyComponentSerializer.legacySection().serialize(remove);
 
         if (meta.hasLore()) {
 
@@ -315,7 +315,7 @@ public class SellInvListener implements Listener {
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.SELL_BUTTON_LORE, "[WORTH-LIST]", result).split("\\n")) {
             Component loreLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreLine));
         }
 
         meta.setLore(lore);

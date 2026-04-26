@@ -15,7 +15,7 @@ class DebtDaoTest extends DatabaseTest {
     private static final double DELTA = 0.0001;
 
     @Test
-    void increaseDebt_insertsOnFirstCallAndAccumulatesOnSubsequent() {
+    void increaseDebt_insertsOnFirstCallAndAccumulatesOnSubsequent() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
 
         Debt.increaseDebt(connection, uuid, 100.0);
@@ -25,12 +25,12 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getDebt_returnsZeroForUnknownPlayer() {
+    void getDebt_returnsZeroForUnknownPlayer() throws java.sql.SQLException {
         assertEquals(0.0, Debt.getDebt(connection, UUID.randomUUID()), DELTA);
     }
 
     @Test
-    void decreaseDebt_subtractsPartialRepayment() {
+    void decreaseDebt_subtractsPartialRepayment() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
         Debt.increaseDebt(connection, uuid, 100.0);
 
@@ -40,7 +40,7 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void decreaseDebt_removesRowWhenFullyRepaid() {
+    void decreaseDebt_removesRowWhenFullyRepaid() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
         Debt.increaseDebt(connection, uuid, 100.0);
 
@@ -52,7 +52,7 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getUUIDAndDebt_returnsOnlyDebtorsWithPositiveBalance() {
+    void getUUIDAndDebt_returnsOnlyDebtorsWithPositiveBalance() throws java.sql.SQLException {
         UUID debtor = UUID.randomUUID();
         UUID repaid = UUID.randomUUID();
 
@@ -68,7 +68,7 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void addInterestPaid_accumulatesAcrossCalls() {
+    void addInterestPaid_accumulatesAcrossCalls() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
 
         Debt.addInterestPaid(connection, uuid, 5.0);
@@ -78,7 +78,7 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getAllOutstandingDebt_sumsAcrossAllDebtors() {
+    void getAllOutstandingDebt_sumsAcrossAllDebtors() throws java.sql.SQLException {
         Debt.increaseDebt(connection, UUID.randomUUID(), 10.0);
         Debt.increaseDebt(connection, UUID.randomUUID(), 25.5);
         Debt.increaseDebt(connection, UUID.randomUUID(), 4.5);
@@ -87,7 +87,7 @@ class DebtDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getAllInterestsPaid_sumsAcrossAllPayers() {
+    void getAllInterestsPaid_sumsAcrossAllPayers() throws java.sql.SQLException {
         Debt.addInterestPaid(connection, UUID.randomUUID(), 3.0);
         Debt.addInterestPaid(connection, UUID.randomUUID(), 7.0);
 

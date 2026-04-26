@@ -79,8 +79,36 @@ public abstract class BaseDatabase implements Database {
         }
     }
 
+    public <T> T queryConnection(SqlFunction<T> action) {
+        try (Connection connection = dataSource.getConnection()) {
+            return action.apply(connection);
+        } catch (SQLException e) {
+            throw fail("queryConnection failed", e);
+        }
+    }
+
+    public <T> T queryTransaction(SqlFunction<T> action) {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                T result = action.apply(connection);
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                try { connection.rollback(); } catch (SQLException rb) {
+                    Nascraft.getInstance().getLogger().log(Level.SEVERE, "Rollback failed", rb);
+                }
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw fail("queryTransaction failed", e);
+        }
+    }
+
     public void withTransaction(SqlConsumer action) {
-        withTransaction(conn -> { action.accept(conn); return null; }, null);
+        queryTransaction(conn -> { action.accept(conn); return null; });
     }
 
     private static DatabaseException fail(String context, SQLException e) {

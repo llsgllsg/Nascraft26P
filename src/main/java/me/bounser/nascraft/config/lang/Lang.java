@@ -4,7 +4,6 @@ import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Separator;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,24 +15,16 @@ public class Lang {
     private YamlConfiguration lang;
 
     private final MiniMessage miniMessage;
-    private final BukkitAudiences audience;
 
     private static Lang instance;
 
     public static Lang get() { return instance == null ? instance = new Lang() : instance; }
-
-    public BukkitAudiences getAudience() { return audience; }
 
 
     private Lang() {
 
         saveResourceIfNotExists("langs/en_US.yml");
         saveResourceIfNotExists("langs/es_ES.yml");
-        saveResourceIfNotExists("langs/it_IT.yml");
-        saveResourceIfNotExists("langs/de_DE.yml");
-        saveResourceIfNotExists("langs/pt_BR.yml");
-        saveResourceIfNotExists("langs/ru_RU.yml");
-        saveResourceIfNotExists("langs/zh_CN.yml");
 
         File language = new File(Nascraft.getInstance().getDataFolder().getPath() + "/langs/" + Config.getInstance().getSelectedLanguage() + ".yml");
 
@@ -44,7 +35,6 @@ public class Lang {
 
         lang = YamlConfiguration.loadConfiguration(language);
 
-        this.audience = Nascraft.getInstance().adventure();
         this.miniMessage = MiniMessage.miniMessage();
         Formatter.setSeparator(Separator.valueOf(message(Message.SEPARATOR).toUpperCase()));
     }
@@ -68,11 +58,11 @@ public class Lang {
     }
 
     public void message(Player player, Message lang) {
-        audience.player(player).sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())));
+        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())));
     }
 
     public void message(Player player, String msg) {
-        audience.player(player).sendMessage(miniMessage.deserialize(msg));
+        player.sendMessage(miniMessage.deserialize(msg));
     }
 
     public String message(Message lang) {
@@ -86,7 +76,7 @@ public class Lang {
         if (!this.lang.contains(lang.name().toLowerCase())) {
             Nascraft.getInstance().getLogger().warning("Lang section not found: " + lang.name().toLowerCase());
         }
-        audience.player(player).sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace("[WORTH]", worth)
                 .replace("[AMOUNT]", amount)
                 .replace("[NAME]", name)));
@@ -94,13 +84,13 @@ public class Lang {
 
     public void message(Player player, Message lang, String placeholder, String replacement) {
 
-        audience.player(player).sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace(placeholder, replacement)));
     }
 
     public void message(Player player, Message lang, String placeholder1, String replacement1, String placeholder2, String replacement2, String placeholder3, String replacement3) {
 
-        audience.player(player).sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace(placeholder1, replacement1)
                 .replace(placeholder2, replacement2)
                 .replace(placeholder3, replacement3)));

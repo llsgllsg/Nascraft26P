@@ -20,7 +20,7 @@ import me.bounser.nascraft.market.limitorders.LimitOrdersManager;
 import me.bounser.nascraft.market.limitorders.OrderType;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -509,7 +509,7 @@ public class InventoryListener implements Listener {
 
                     Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_TITLE));
 
-                    Inventory inventory = Bukkit.createInventory(player, 45, BukkitComponentSerializer.legacy().serialize(title));
+                    Inventory inventory = Bukkit.createInventory(player, 45, LegacyComponentSerializer.legacySection().serialize(title));
                     player.openInventory(inventory);
                     player.setMetadata("NascraftPortfolio", new FixedMetadataValue(Nascraft.getInstance(),false));
 
@@ -668,7 +668,7 @@ public class InventoryListener implements Listener {
                 if (config.getDebtBackEnabled() && config.getDebtBackSlot() == slot) {
                     Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_TITLE));
 
-                    Inventory inventory = Bukkit.createInventory(player, 45, BukkitComponentSerializer.legacy().serialize(title));
+                    Inventory inventory = Bukkit.createInventory(player, 45, LegacyComponentSerializer.legacySection().serialize(title));
                     player.openInventory(inventory);
                     player.setMetadata("NascraftPortfolio", new FixedMetadataValue(Nascraft.getInstance(),false));
 
@@ -812,7 +812,7 @@ public class InventoryListener implements Listener {
                 if (config.getTopBackEnabled() && config.getTopBackSlot() == slot) {
                     Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_TITLE));
 
-                    Inventory inventory = Bukkit.createInventory(player, 45, BukkitComponentSerializer.legacy().serialize(title));
+                    Inventory inventory = Bukkit.createInventory(player, 45, LegacyComponentSerializer.legacySection().serialize(title));
                     player.openInventory(inventory);
                     player.setMetadata("NascraftPortfolio", new FixedMetadataValue(Nascraft.getInstance(),false));
 

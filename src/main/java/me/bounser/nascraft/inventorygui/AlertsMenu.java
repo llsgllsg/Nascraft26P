@@ -9,7 +9,7 @@ import me.bounser.nascraft.discord.alerts.DiscordAlerts;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -41,7 +41,7 @@ public class AlertsMenu implements MenuPage {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_ALERTS_TITLE));
 
-        gui = Bukkit.createInventory(null, config.getAlertsMenuSize(), BukkitComponentSerializer.legacy().serialize(title));
+        gui = Bukkit.createInventory(null, config.getAlertsMenuSize(), LegacyComponentSerializer.legacySection().serialize(title));
 
         // Back button
 
@@ -52,7 +52,7 @@ public class AlertsMenu implements MenuPage {
                     config.getAlertsMenuBackSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getAlertsMenuBackMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(backComponent)
+                            LegacyComponentSerializer.legacySection().serialize(backComponent)
                     ));
         }
 
@@ -62,7 +62,7 @@ public class AlertsMenu implements MenuPage {
 
         ItemStack filler = MarketMenuManager.getInstance().generateItemStack(
                 config.getAlertsMenuFillersMaterial(),
-                BukkitComponentSerializer.legacy().serialize(fillerComponent)
+                LegacyComponentSerializer.legacySection().serialize(fillerComponent)
         );
 
         for (int i : config.getAlertsMenuFillersSlots())
@@ -120,7 +120,7 @@ public class AlertsMenu implements MenuPage {
 
             for (String line : buyLore.split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                itemLore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                itemLore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             ItemStack alert = MarketMenuManager.getInstance().generateItemStack(

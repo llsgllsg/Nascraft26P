@@ -8,12 +8,8 @@ import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.portfolio.Portfolio;
 
-import java.sql.Connection;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MySQL implements Database {
 
@@ -390,8 +386,48 @@ public class MySQL implements Database {
     }
 
     @Override
+    public String getUUIDbyName(String name) {
+        return "";
+    }
+
+    @Override
     public void saveOrUpdateName(UUID uuid, String nick) {
 
+    }
+
+    @Override
+    public void updateBalance(UUID uuid) {
+
+    }
+
+    @Override
+    public Map<Integer, Double> getMoneySupplyHistory() {
+        return Map.of();
+    }
+
+    @Override
+    public void saveDiscordLink(UUID uuid, String userid, String nickname) {
+
+    }
+
+    @Override
+    public void removeDiscordLink(UUID uuid) {
+
+    }
+
+    @Override
+    public String getDiscordUserId(UUID uuid) {
+        return "";
+    }
+
+    @Override
+    public UUID getUUIDFromUserid(String userid) {
+        return null;
+    }
+
+    @Override
+    public String getNicknameFromUserId(String userid) {
+        return "";
     }
 
 

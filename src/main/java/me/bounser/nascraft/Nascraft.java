@@ -22,23 +22,18 @@ import me.bounser.nascraft.commands.sellwand.GiveSellWandCommand;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.discord.DiscordBot;
 import me.bounser.nascraft.commands.discord.LinkCommand;
-import me.bounser.nascraft.discord.linking.LinkManager;
 import me.bounser.nascraft.discord.linking.LinkingMethod;
 import me.bounser.nascraft.inventorygui.InventoryListener;
-import me.bounser.nascraft.managers.DebtManager;
 import me.bounser.nascraft.managers.EventsManager;
-import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.placeholderapi.PAPIExpansion;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.sellwand.WandListener;
-import me.bounser.nascraft.sellwand.WandsManager;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
 import me.leoko.advancedgui.AdvancedGUI;
 import me.leoko.advancedgui.manager.GuiItemManager;
 import me.leoko.advancedgui.manager.GuiWallManager;
 import me.leoko.advancedgui.manager.LayoutManager;
 import me.leoko.advancedgui.utils.VersionMediator;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
@@ -52,7 +47,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.milkbowl.vault.economy.Economy;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.*;
 import java.util.HashMap;
@@ -60,7 +54,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 
-public final class Nascraft extends JavaPlugin {
+public class Nascraft extends JavaPlugin {
 
     private static Nascraft main;
     private static NascraftAPI apiInstance;
@@ -68,8 +62,6 @@ public final class Nascraft extends JavaPlugin {
     private static Permission perms = null;
 
     private static final String AGUI_VERSION = "2.2.8";
-
-    private BukkitAudiences adventure;
 
     public static Nascraft getInstance() { return main; }
 
@@ -82,14 +74,14 @@ public final class Nascraft extends JavaPlugin {
 
         Config config = Config.getInstance();
 
+        me.bounser.nascraft.images.ItemTextureProvider.init(this);
+
         setupMetrics();
 
         new UpdateChecker(this, 108216).getVersion(version -> {
             if (!getDescription().getVersion().equals(version))
                 getLogger().info("There is a new version available! Download it here: https://www.spigotmc.org/resources/108216/");
         });
-
-        this.adventure = BukkitAudiences.create(this);
 
         if (!setupEconomy())
             getLogger().warning("Vault is not installed! You'll have to provide another supplier.");
@@ -131,16 +123,16 @@ public final class Nascraft extends JavaPlugin {
         if (config.getSellWandsEnabled()) {
             if (config.isCommandEnabled("givesellwand")) new GiveSellWandCommand();
             Bukkit.getPluginManager().registerEvents(new WandListener(), this);
-            WandsManager.getInstance();
+            Services.get().wands();
         }
 
         if (config.getLoansEnabled()) {
-            DebtManager.getInstance();
+            Services.get().debt();
         }
 
         createImagesFolder();
 
-        MarketManager.getInstance();
+        Services.get().market();
 
         if (config.isCommandEnabled("nascraft")) {
             new NascraftCommand();
@@ -198,10 +190,7 @@ public final class Nascraft extends JavaPlugin {
             DiscordBot.getInstance().getJDA().shutdown();
         }
 
-        if (this.adventure != null) {
-            this.adventure.close();
-            this.adventure = null;
-        }
+        me.bounser.nascraft.images.ItemTextureProvider.close();
     }
 
     private void setupMetrics() {
@@ -213,7 +202,7 @@ public final class Nascraft extends JavaPlugin {
             metrics.addCustomChart(new SimplePie("linking_method", () -> Config.getInstance().getLinkingMethod().toString()));
 
         metrics.addCustomChart(new SimplePie("used_with_advancedgui", () -> String.valueOf(Bukkit.getPluginManager().getPlugin("AdvancedGUI") != null)));
-        metrics.addCustomChart(new SingleLineChart("operations_per_hour", () -> MarketManager.getInstance().getOperationsLastHour()));
+        metrics.addCustomChart(new SingleLineChart("operations_per_hour", () -> Services.get().market().getOperationsLastHour()));
         metrics.addCustomChart(new AdvancedPie("players_linked_with_discord", new Callable<Map<String, Integer>>() {
             @Override
             public Map<String, Integer> call() {
@@ -230,7 +219,7 @@ public final class Nascraft extends JavaPlugin {
             private int getLinkedPlayers() {
                 int counter = 0;
                 for (Player player : Bukkit.getOnlinePlayers())
-                    if (LinkManager.getInstance().getUserDiscordID(player.getUniqueId()) != null) counter++;
+                    if (Services.get().links().getUserDiscordID(player.getUniqueId()) != null) counter++;
 
                 return counter;
             }
@@ -255,13 +244,6 @@ public final class Nascraft extends JavaPlugin {
         RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
         perms = rsp.getProvider();
         return perms != null;
-    }
-
-    public @NonNull BukkitAudiences adventure() {
-        if (this.adventure == null) {
-            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
-        }
-        return this.adventure;
     }
 
     private void createImagesFolder() {

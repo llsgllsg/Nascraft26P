@@ -5,7 +5,7 @@ import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -213,11 +213,11 @@ public class MarketEditor {
                     Component resistance = MiniMessage.miniMessage().deserialize(Formatter.format(item.getCurrency(), item.getPrice().getResistance(), Style.ROUND_BASIC));
 
                     meta.setLore(Arrays.asList(
-                            ChatColor.GRAY + "Initial price: " + BukkitComponentSerializer.legacy().serialize(price),
+                            ChatColor.GRAY + "Initial price: " + LegacyComponentSerializer.legacySection().serialize(price),
                             ChatColor.GRAY + "Elasticity: " + ChatColor.GREEN + item.getPrice().getElasticity(),
                             ChatColor.GRAY + "Noise Intensity: " + ChatColor.GREEN + item.getPrice().getNoiseIntensity(),
-                            ChatColor.GRAY + "Support: " + (item.getPrice().getSupport() == 0 ? ChatColor.RED + "DISABLED" : BukkitComponentSerializer.legacy().serialize(support)),
-                            ChatColor.GRAY + "Resistance: " + (item.getPrice().getResistance() == 0 ? ChatColor.RED + "DISABLED" : BukkitComponentSerializer.legacy().serialize(resistance)),
+                            ChatColor.GRAY + "Support: " + (item.getPrice().getSupport() == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(support)),
+                            ChatColor.GRAY + "Resistance: " + (item.getPrice().getResistance() == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(resistance)),
                             " ",
                             ChatColor.GREEN + "§lCLICK TO EDIT"
                     ));

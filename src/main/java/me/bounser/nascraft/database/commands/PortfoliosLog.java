@@ -3,182 +3,142 @@ package me.bounser.nascraft.database.commands;
 import me.bounser.nascraft.database.commands.resources.NormalisedDate;
 import me.bounser.nascraft.market.unit.Item;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class PortfoliosLog {
 
-    public static void logContribution(Connection connection, UUID uuid, Item item, int amount) {
-
-        try {
-            String sql1 = "SELECT contribution, amount, day FROM portfolios_log WHERE uuid=? AND identifier=? ORDER BY day DESC LIMIT 1;";
-            PreparedStatement prep1 =  connection.prepareStatement(sql1);
-            prep1.setString(1, uuid.toString());
-            prep1.setString(2, item.getIdentifier());
-            ResultSet resultSet = prep1.executeQuery();
-
-            if (resultSet.next()) {
-                if (resultSet.getInt("day") == NormalisedDate.getDays()) {
-                    String sql2 = "UPDATE portfolios_log SET contribution=?, amount=? WHERE uuid=? AND identifier=? AND day=?;";
-                    PreparedStatement prep2 =  connection.prepareStatement(sql2);
-                    prep2.setDouble(1, item.getPrice().getValue()*amount + resultSet.getDouble("contribution"));
-                    prep2.setInt(2, amount + resultSet.getInt("amount"));
-                    prep2.setString(3, uuid.toString());
-                    prep2.setString(4, item.getIdentifier());
-                    prep2.setInt(5, NormalisedDate.getDays());
-                    prep2.executeUpdate();
-                } else {
-                    String sql2 = "INSERT INTO portfolios_log (uuid, identifier, amount, contribution, day) VALUES (?,?,?,?,?);";
-                    PreparedStatement prep2 = connection.prepareStatement(sql2);
-                    prep2.setString(1, uuid.toString());
-                    prep2.setString(2, item.getIdentifier());
-                    prep2.setInt(3, amount + resultSet.getInt("amount"));
-                    prep2.setDouble(4, item.getPrice().getValue()*amount + resultSet.getDouble("contribution"));
-                    prep2.setInt(5, NormalisedDate.getDays());
-                    prep2.executeUpdate();
-                }
-            } else {
-                String sql2 = "INSERT INTO portfolios_log (uuid, identifier, amount, contribution, day) VALUES (?,?,?,?,?);";
-                PreparedStatement prep2 = connection.prepareStatement(sql2);
-                prep2.setString(1, uuid.toString());
-                prep2.setString(2, item.getIdentifier());
-                prep2.setInt(3, amount);
-                prep2.setDouble(4, item.getPrice().getValue()*amount);
-                prep2.setInt(5, NormalisedDate.getDays());
-                prep2.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void logWithdraw(Connection connection, UUID uuid, Item item, int amount) {
-
-        try {
-            String sql1 = "SELECT contribution, amount, day FROM portfolios_log WHERE uuid=? AND identifier=? ORDER BY day DESC LIMIT 1;";
-            PreparedStatement prep1 =  connection.prepareStatement(sql1);
-            prep1.setString(1, uuid.toString());
-            prep1.setString(2, item.getIdentifier());
-            ResultSet resultSet = prep1.executeQuery();
-
-            if (!resultSet.next()) return;
-
-            if (resultSet.getInt("amount") == amount || resultSet.getInt("amount") < amount) {
-                String sql = "DELETE FROM portfolios_log WHERE uuid=? AND identifier=? AND day=?;";
-                PreparedStatement prep = connection.prepareStatement(sql);
-                prep.setString(1, uuid.toString());
-                prep.setString(2, item.getIdentifier());
-                prep.setInt(3, NormalisedDate.getDays());
-                prep.executeUpdate();
-
-            } else if (resultSet.getInt("day") == NormalisedDate.getDays()) {
-
-                String sql2 = "UPDATE portfolios_log SET amount=?, contribution=? WHERE uuid=? AND identifier=?;";
-                PreparedStatement prep2 =  connection.prepareStatement(sql2);
-                prep2.setInt(1, resultSet.getInt("amount") - amount);
-                prep2.setDouble(2, amount * resultSet.getDouble("contribution") / (float) resultSet.getInt("amount"));
-                prep2.setString(3, uuid.toString());
-                prep2.setString(4, item.getIdentifier());
-                prep2.executeUpdate();
-
-            } else {
-                String sql2 = "INSERT INTO portfolios_log (uuid, identifier, amount, contribution) VALUES (?,?,?,?);";
-                PreparedStatement prep2 =  connection.prepareStatement(sql2);
-                prep2.setString(1, uuid.toString());
-                prep2.setString(2, item.getIdentifier());
-                prep2.setInt(3, resultSet.getInt("amount") - amount);
-                prep2.setDouble(4, amount * resultSet.getDouble("contribution") / (float) resultSet.getInt("amount"));
-                prep2.executeUpdate();
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static HashMap<Integer, Double> getContributionChangeEachDay(Connection connection, UUID uuid) {
-
-        try {
-            HashMap<Integer, Double> dayAndContribution = new HashMap<>();
-
-            String sql1 = "SELECT contribution, amount, day FROM portfolios_log WHERE uuid=? ORDER BY day DESC;";
-            PreparedStatement prep1 =  connection.prepareStatement(sql1);
-            prep1.setString(1, uuid.toString());
-            ResultSet resultSet = prep1.executeQuery();
-
-            while (resultSet.next()) {
-                int day = resultSet.getInt("day");
-
-                if (dayAndContribution.containsKey(day)) dayAndContribution.put(day, dayAndContribution.get(day) + resultSet.getDouble("contribution"));
-                else dayAndContribution.put(resultSet.getInt("day"), resultSet.getDouble("contribution"));
-            }
-
-            return dayAndContribution;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static HashMap<Integer, HashMap<String, Integer>> getCompositionEachDay(Connection connection, UUID uuid) {
-
-        try {
-            HashMap<Integer, HashMap<String, Integer>> dayAndComposition = new HashMap<>();
-
-            String sql1 = "SELECT identifier, amount, day FROM portfolios_log WHERE uuid=? ORDER BY day DESC;";
-            PreparedStatement prep1 =  connection.prepareStatement(sql1);
-            prep1.setString(1, uuid.toString());
-            ResultSet resultSet = prep1.executeQuery();
-
-            while (resultSet.next()) {
-                String identifier = resultSet.getString("identifier");
-                int day = resultSet.getInt("day");
-                int amount = resultSet.getInt("amount");
-
-                if (dayAndComposition.containsKey(day)) {
-
-                    HashMap<String, Integer> composition = dayAndComposition.get(day);
-
-                    composition.put(identifier, amount);
-
-                    dayAndComposition.put(day, composition);
-
-                } else {
-                    HashMap<String, Integer> composition = new HashMap<>();
-
-                    composition.put(identifier, amount);
-
-                    dayAndComposition.put(day, composition);
-                }
-            }
-            return dayAndComposition;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static int getFirstDay(Connection connection, UUID uuid) {
-
-        try {
-            String sql = "SELECT MIN(day) AS first_day FROM portfolios_log WHERE uuid=?;";
-            PreparedStatement prep = connection.prepareStatement(sql);
+    public static void logContribution(Connection connection, UUID uuid, Item item, int amount)
+            throws SQLException {
+        int today = NormalisedDate.getDays();
+        String selectSql = "SELECT contribution, amount, day FROM portfolios_log " +
+                           "WHERE uuid = ? AND identifier = ? ORDER BY day DESC LIMIT 1";
+        try (PreparedStatement prep = connection.prepareStatement(selectSql)) {
             prep.setString(1, uuid.toString());
-            ResultSet resultSet = prep.executeQuery();
+            prep.setString(2, item.getIdentifier());
+            try (ResultSet rs = prep.executeQuery()) {
+                boolean hasRow = rs.next();
+                int prevAmount = hasRow ? rs.getInt("amount") : 0;
+                double prevContrib = hasRow ? rs.getDouble("contribution") : 0;
 
-            if (resultSet.next()) {
-                return resultSet.getInt("first_day");
-            } else {
-                return NormalisedDate.getDays();
+                if (hasRow && rs.getInt("day") == today) {
+                    try (PreparedStatement upd = connection.prepareStatement(
+                            "UPDATE portfolios_log SET contribution = ?, amount = ? " +
+                            "WHERE uuid = ? AND identifier = ? AND day = ?")) {
+                        upd.setDouble(1, item.getPrice().getValue() * amount + prevContrib);
+                        upd.setInt(2, amount + prevAmount);
+                        upd.setString(3, uuid.toString());
+                        upd.setString(4, item.getIdentifier());
+                        upd.setInt(5, today);
+                        upd.executeUpdate();
+                    }
+                } else {
+                    insertLogRow(connection, uuid, item, today,
+                            prevAmount + amount,
+                            item.getPrice().getValue() * amount + prevContrib);
+                }
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
+    public static void logWithdraw(Connection connection, UUID uuid, Item item, int amount)
+            throws SQLException {
+        int today = NormalisedDate.getDays();
+        String selectSql = "SELECT contribution, amount, day FROM portfolios_log " +
+                           "WHERE uuid = ? AND identifier = ? ORDER BY day DESC LIMIT 1";
+        try (PreparedStatement prep = connection.prepareStatement(selectSql)) {
+            prep.setString(1, uuid.toString());
+            prep.setString(2, item.getIdentifier());
+            try (ResultSet rs = prep.executeQuery()) {
+                if (!rs.next()) return;
+
+                int storedAmount = rs.getInt("amount");
+                double storedContrib = rs.getDouble("contribution");
+                int storedDay = rs.getInt("day");
+
+                if (storedAmount <= amount) {
+                    try (PreparedStatement del = connection.prepareStatement(
+                            "DELETE FROM portfolios_log WHERE uuid = ? AND identifier = ? AND day = ?")) {
+                        del.setString(1, uuid.toString());
+                        del.setString(2, item.getIdentifier());
+                        del.setInt(3, storedDay);
+                        del.executeUpdate();
+                    }
+                } else if (storedDay == today) {
+                    double newContrib = storedContrib * (storedAmount - amount) / (double) storedAmount;
+                    try (PreparedStatement upd = connection.prepareStatement(
+                            "UPDATE portfolios_log SET amount = ?, contribution = ? " +
+                            "WHERE uuid = ? AND identifier = ? AND day = ?")) {
+                        upd.setInt(1, storedAmount - amount);
+                        upd.setDouble(2, newContrib);
+                        upd.setString(3, uuid.toString());
+                        upd.setString(4, item.getIdentifier());
+                        upd.setInt(5, today);
+                        upd.executeUpdate();
+                    }
+                } else {
+                    double newContrib = storedContrib * (storedAmount - amount) / (double) storedAmount;
+                    insertLogRow(connection, uuid, item, today, storedAmount - amount, newContrib);
+                }
+            }
+        }
+    }
+
+    private static void insertLogRow(Connection connection, UUID uuid, Item item,
+                                     int day, int amount, double contribution) throws SQLException {
+        try (PreparedStatement ins = connection.prepareStatement(
+                "INSERT INTO portfolios_log (uuid, identifier, amount, contribution, day) VALUES (?, ?, ?, ?, ?)")) {
+            ins.setString(1, uuid.toString());
+            ins.setString(2, item.getIdentifier());
+            ins.setInt(3, amount);
+            ins.setDouble(4, contribution);
+            ins.setInt(5, day);
+            ins.executeUpdate();
+        }
+    }
+
+    public static HashMap<Integer, Double> getContributionChangeEachDay(Connection connection, UUID uuid)
+            throws SQLException {
+        HashMap<Integer, Double> dayAndContribution = new HashMap<>();
+        try (PreparedStatement prep = connection.prepareStatement(
+                "SELECT contribution, day FROM portfolios_log WHERE uuid = ? ORDER BY day DESC")) {
+            prep.setString(1, uuid.toString());
+            try (ResultSet rs = prep.executeQuery()) {
+                while (rs.next()) {
+                    int day = rs.getInt("day");
+                    double contrib = rs.getDouble("contribution");
+                    dayAndContribution.merge(day, contrib, Double::sum);
+                }
+            }
+        }
+        return dayAndContribution;
+    }
+
+    public static HashMap<Integer, HashMap<String, Integer>> getCompositionEachDay(Connection connection, UUID uuid)
+            throws SQLException {
+        HashMap<Integer, HashMap<String, Integer>> dayAndComposition = new HashMap<>();
+        try (PreparedStatement prep = connection.prepareStatement(
+                "SELECT identifier, amount, day FROM portfolios_log WHERE uuid = ? ORDER BY day DESC")) {
+            prep.setString(1, uuid.toString());
+            try (ResultSet rs = prep.executeQuery()) {
+                while (rs.next()) {
+                    int day = rs.getInt("day");
+                    dayAndComposition.computeIfAbsent(day, k -> new HashMap<>())
+                                     .put(rs.getString("identifier"), rs.getInt("amount"));
+                }
+            }
+        }
+        return dayAndComposition;
+    }
+
+    public static int getFirstDay(Connection connection, UUID uuid) throws SQLException {
+        try (PreparedStatement prep = connection.prepareStatement(
+                "SELECT MIN(day) AS first_day FROM portfolios_log WHERE uuid = ?")) {
+            prep.setString(1, uuid.toString());
+            try (ResultSet rs = prep.executeQuery()) {
+                return rs.next() ? rs.getInt("first_day") : NormalisedDate.getDays();
+            }
+        }
+    }
 }

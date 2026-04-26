@@ -623,6 +623,9 @@ public class Config {
         for (String childIdentifier : section) {
 
             ItemStack itemStack = getItemStackOfChild(identifier, childIdentifier);
+
+            if (itemStack == null) continue;
+
             float multiplier = (float) items.getDouble("items." + identifier + ".child." + childIdentifier + ".multiplier");
 
             String alias = childIdentifier;
@@ -643,8 +646,15 @@ public class Config {
 
         ItemStack itemStack = null;
 
-        if (items.contains("items." + identifier + ".item-stack"))
-            itemStack = items.getSerializable("items." + identifier + ".item-stack", ItemStack.class);
+        if (items.contains("items." + identifier + ".item-stack")) {
+            if (!items.isString("items." + identifier + ".item-stack")) {
+                Nascraft.getInstance().getLogger().warning("Item '" + identifier + "' has an outdated item-stack format (pre-2.0 Bukkit serialization).");
+                Nascraft.getInstance().getLogger().warning("It will not be loaded into the market. Re-register it via the market editor to fix this.");
+                return null;
+            }
+            String snbt = items.getString("items." + identifier + ".item-stack");
+            if (snbt != null) itemStack = NBT.itemStackFromNBT(NBT.parseNBT(snbt));
+        }
 
         if (itemStack == null)
             try {
@@ -669,8 +679,16 @@ public class Config {
 
         ItemStack itemStack = null;
 
-        if (items.contains("items." + identifier + ".childs." + childIdentifier + "item-stack"))
-            itemStack = items.getSerializable("items." + identifier + ".childs." + childIdentifier + "item-stack", ItemStack.class);
+        String childStackPath = "items." + identifier + ".childs." + childIdentifier + "item-stack";
+        if (items.contains(childStackPath)) {
+            if (!items.isString(childStackPath)) {
+                Nascraft.getInstance().getLogger().warning("Child item '" + childIdentifier + "' of '" + identifier + "' has an outdated item-stack format (pre-2.0 Bukkit serialization).");
+                Nascraft.getInstance().getLogger().warning("It will not be loaded. Re-register it via the market editor to fix this.");
+                return null;
+            }
+            String snbt = items.getString(childStackPath);
+            if (snbt != null) itemStack = NBT.itemStackFromNBT(NBT.parseNBT(snbt));
+        }
 
         if (itemStack == null)
             try {

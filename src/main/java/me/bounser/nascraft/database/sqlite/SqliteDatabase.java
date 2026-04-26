@@ -15,10 +15,10 @@ import me.bounser.nascraft.portfolio.Portfolio;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,6 +61,7 @@ public class SqliteDatabase extends BaseDatabase {
     @Override
     protected void runMigrations(Connection connection) throws SQLException {
         createAllTables(connection);
+        addMissingIndexes(connection);
     }
 
     @Override
@@ -109,29 +110,31 @@ public class SqliteDatabase extends BaseDatabase {
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS portfolios (" +
                 "uuid VARCHAR(36) NOT NULL, " +
-                "identifier TEXT, " +
-                "amount INT)");
+                "identifier TEXT NOT NULL, " +
+                "amount INT NOT NULL DEFAULT 0, " +
+                "PRIMARY KEY (uuid, identifier))");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS portfolios_log (" +
                 "id INTEGER PRIMARY KEY, " +
                 "uuid VARCHAR(36) NOT NULL, " +
-                "day INT, " +
-                "identifier TEXT, " +
-                "amount INT, " +
-                "contribution DOUBLE)");
+                "day INT NOT NULL, " +
+                "identifier TEXT NOT NULL, " +
+                "amount INT NOT NULL, " +
+                "contribution DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS portfolios_worth (" +
                 "id INTEGER PRIMARY KEY, " +
                 "uuid VARCHAR(36) NOT NULL, " +
-                "day INT, " +
-                "worth DOUBLE)");
+                "day INT NOT NULL, " +
+                "worth DOUBLE NOT NULL, " +
+                "UNIQUE (uuid, day))");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS capacities (" +
                 "uuid VARCHAR(36) PRIMARY KEY, " +
-                "capacity INT)");
+                "capacity INT NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS discord_links (" +
-                "userid VARCHAR(18) NOT NULL, " +
+                "userid VARCHAR(18) PRIMARY KEY, " +
                 "uuid VARCHAR(36) NOT NULL, " +
                 "nickname TEXT NOT NULL)");
 
@@ -142,12 +145,12 @@ public class SqliteDatabase extends BaseDatabase {
                 "date TEXT NOT NULL, " +
                 "identifier TEXT NOT NULL, " +
                 "amount INT NOT NULL, " +
-                "value TEXT NOT NULL, " +
+                "value REAL NOT NULL, " +
                 "buy INT NOT NULL, " +
                 "discord INT NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS cpi (" +
-                "day INT NOT NULL, " +
+                "day INT PRIMARY KEY, " +
                 "date TEXT NOT NULL, " +
                 "value DOUBLE NOT NULL)");
 
@@ -161,8 +164,7 @@ public class SqliteDatabase extends BaseDatabase {
                 "day INT PRIMARY KEY, " +
                 "flow DOUBLE NOT NULL, " +
                 "taxes DOUBLE NOT NULL, " +
-                "operations INT NOT NULL, " +
-                "UNIQUE(day))");
+                "operations INT NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS limit_orders (" +
                 "id INTEGER PRIMARY KEY, " +
@@ -173,26 +175,26 @@ public class SqliteDatabase extends BaseDatabase {
                 "price DOUBLE NOT NULL, " +
                 "to_complete INT NOT NULL, " +
                 "completed INT NOT NULL, " +
-                "cost INT NOT NULL)");
+                "cost DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS loans (" +
                 "id INTEGER PRIMARY KEY, " +
-                "uuid VARCHAR(36) NOT NULL, " +
+                "uuid VARCHAR(36) NOT NULL UNIQUE, " +
                 "debt DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS interests (" +
                 "id INTEGER PRIMARY KEY, " +
-                "uuid VARCHAR(36) NOT NULL, " +
+                "uuid VARCHAR(36) NOT NULL UNIQUE, " +
                 "paid DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS user_names (" +
                 "id INTEGER PRIMARY KEY, " +
-                "uuid VARCHAR(36) NOT NULL, " +
+                "uuid VARCHAR(36) NOT NULL UNIQUE, " +
                 "name TEXT NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS balances (" +
                 "id INTEGER PRIMARY KEY, " +
-                "uuid VARCHAR(36) NOT NULL, " +
+                "uuid VARCHAR(36) NOT NULL UNIQUE, " +
                 "balance DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS money_supply (" +
@@ -200,9 +202,28 @@ public class SqliteDatabase extends BaseDatabase {
                 "supply DOUBLE NOT NULL)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS discord (" +
-                "userid VARCHAR(18) NOT NULL, " +
+                "userid VARCHAR(18) PRIMARY KEY, " +
                 "uuid VARCHAR(36) NOT NULL, " +
                 "nickname TEXT NOT NULL)");
+    }
+
+    private void addMissingIndexes(Connection connection) {
+        // Unique indexes on existing installs that predate the schema improvements above.
+        // CREATE UNIQUE INDEX IF NOT EXISTS is idempotent and safe to run every startup.
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_loans_uuid ON loans(uuid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_interests_uuid ON interests(uuid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_portfolios_pk ON portfolios(uuid, identifier)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_portfolios_worth_uk ON portfolios_worth(uuid, day)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_discord_links_userid ON discord_links(userid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_discord_userid ON discord(userid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_user_names_uuid ON user_names(uuid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_balances_uuid ON balances(uuid)");
+        safeExec(connection, "CREATE UNIQUE INDEX IF NOT EXISTS idx_cpi_day ON cpi(day)");
+        // Performance indexes
+        safeExec(connection, "CREATE INDEX IF NOT EXISTS idx_trade_log_uuid ON trade_log(uuid)");
+        safeExec(connection, "CREATE INDEX IF NOT EXISTS idx_trade_log_identifier ON trade_log(identifier)");
+        safeExec(connection, "CREATE INDEX IF NOT EXISTS idx_portfolios_log_uuid ON portfolios_log(uuid)");
+        safeExec(connection, "CREATE INDEX IF NOT EXISTS idx_portfolios_worth_uuid ON portfolios_worth(uuid)");
     }
 
     private void safeExec(Connection connection, String sql) {
@@ -215,12 +236,17 @@ public class SqliteDatabase extends BaseDatabase {
 
     public void purgeOldData() {
         withConnection(conn -> {
-            try (Statement s = conn.createStatement()) {
-                s.executeUpdate("DELETE FROM trade_log WHERE day < " + (NormalisedDate.getDays() - 90));
-                s.executeUpdate("DELETE FROM prices_day WHERE bucket_start < '"
-                        + java.time.Instant.now().minusSeconds(2L * 86400).toString() + "'");
-                s.executeUpdate("DELETE FROM prices_month WHERE bucket_start < '"
-                        + java.time.Instant.now().minusSeconds(31L * 86400).toString() + "'");
+            try (PreparedStatement p1 = conn.prepareStatement("DELETE FROM trade_log WHERE day < ?")) {
+                p1.setInt(1, NormalisedDate.getDays() - 90);
+                p1.executeUpdate();
+            }
+            try (PreparedStatement p2 = conn.prepareStatement("DELETE FROM prices_day WHERE bucket_start < ?")) {
+                p2.setString(1, java.time.Instant.now().minusSeconds(2L * 86400).toString());
+                p2.executeUpdate();
+            }
+            try (PreparedStatement p3 = conn.prepareStatement("DELETE FROM prices_month WHERE bucket_start < ?")) {
+                p3.setString(1, java.time.Instant.now().minusSeconds(31L * 86400).toString());
+                p3.executeUpdate();
             }
         });
         purgeHistory();
@@ -247,17 +273,17 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public UUID getUUID(String userId) {
-        return withConnection(c -> DiscordLink.getUUID(c, userId), null);
+        return queryConnection(c -> DiscordLink.getUUID(c, userId));
     }
 
     @Override
     public String getNickname(String userId) {
-        return withConnection(c -> DiscordLink.getNickname(c, userId), null);
+        return queryConnection(c -> DiscordLink.getNickname(c, userId));
     }
 
     @Override
     public String getUserId(UUID uuid) {
-        return withConnection(c -> DiscordLink.getUserId(c, uuid), null);
+        return queryConnection(c -> DiscordLink.getUserId(c, uuid));
     }
 
     @Override
@@ -277,27 +303,27 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public List<Instant> getDayPrices(Item item) {
-        return withConnection(c -> HistorialData.getDayPrices(c, item), Collections.emptyList());
+        return queryConnection(c -> HistorialData.getDayPrices(c, item));
     }
 
     @Override
     public List<Instant> getMonthPrices(Item item) {
-        return withConnection(c -> HistorialData.getMonthPrices(c, item), Collections.emptyList());
+        return queryConnection(c -> HistorialData.getMonthPrices(c, item));
     }
 
     @Override
     public List<Instant> getYearPrices(Item item) {
-        return withConnection(c -> HistorialData.getYearPrices(c, item), Collections.emptyList());
+        return queryConnection(c -> HistorialData.getYearPrices(c, item));
     }
 
     @Override
     public List<Instant> getAllPrices(Item item) {
-        return withConnection(c -> HistorialData.getAllPrices(c, item), Collections.emptyList());
+        return queryConnection(c -> HistorialData.getAllPrices(c, item));
     }
 
     @Override
     public Double getPriceOfDay(String identifier, int day) {
-        return withConnection(c -> HistorialData.getPriceOfDay(c, identifier, day), 0.0);
+        return queryConnection(c -> HistorialData.getPriceOfDay(c, identifier, day));
     }
 
     @Override
@@ -317,7 +343,7 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public float retrieveLastPrice(Item item) {
-        return withConnection(c -> ItemProperties.retrieveLastPrice(c, item), 0f);
+        return queryConnection(c -> ItemProperties.retrieveLastPrice(c, item));
     }
 
     @Override
@@ -327,22 +353,22 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public List<Trade> retrieveTrades(UUID uuid, int offset, int limit) {
-        return withConnection(c -> TradesLog.retrieveTrades(c, uuid, offset, limit), Collections.emptyList());
+        return queryConnection(c -> TradesLog.retrieveTrades(c, uuid, offset, limit));
     }
 
     @Override
     public List<Trade> retrieveTrades(UUID uuid, Item item, int offset, int limit) {
-        return withConnection(c -> TradesLog.retrieveTrades(c, uuid, item, offset, limit), Collections.emptyList());
+        return queryConnection(c -> TradesLog.retrieveTrades(c, uuid, item, offset, limit));
     }
 
     @Override
     public List<Trade> retrieveTrades(Item item, int offset, int limit) {
-        return withConnection(c -> TradesLog.retrieveTrades(c, item, offset, limit), Collections.emptyList());
+        return queryConnection(c -> TradesLog.retrieveTrades(c, item, offset, limit));
     }
 
     @Override
     public List<Trade> retrieveTrades(int offset, int limit) {
-        return withConnection(c -> TradesLog.retrieveLastTrades(c, offset, limit), Collections.emptyList());
+        return queryConnection(c -> TradesLog.retrieveLastTrades(c, offset, limit));
     }
 
     @Override
@@ -372,12 +398,12 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public LinkedHashMap<Item, Integer> retrievePortfolio(UUID uuid) {
-        return withConnection(c -> Portfolios.retrievePortfolio(c, uuid), new LinkedHashMap<>());
+        return queryConnection(c -> Portfolios.retrievePortfolio(c, uuid));
     }
 
     @Override
     public int retrieveCapacity(UUID uuid) {
-        return withConnection(c -> Portfolios.retrieveCapacity(c, uuid), 0);
+        return queryConnection(c -> Portfolios.retrieveCapacity(c, uuid));
     }
 
     @Override
@@ -387,17 +413,17 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public void decreaseDebt(UUID uuid, Double debt) {
-        withConnection(c -> Debt.decreaseDebt(c, uuid, debt));
+        withTransaction(c -> Debt.decreaseDebt(c, uuid, debt));
     }
 
     @Override
     public double getDebt(UUID uuid) {
-        return withConnection(c -> Debt.getDebt(c, uuid), 0d);
+        return queryConnection(c -> Debt.getDebt(c, uuid));
     }
 
     @Override
     public HashMap<UUID, Double> getUUIDAndDebt() {
-        return withConnection(Debt::getUUIDAndDebt, null);
+        return queryConnection(Debt::getUUIDAndDebt);
     }
 
     @Override
@@ -407,22 +433,22 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public HashMap<UUID, Double> getUUIDAndInterestsPaid() {
-        return withConnection(Debt::getUUIDAndInterestsPaid, null);
+        return queryConnection(Debt::getUUIDAndInterestsPaid);
     }
 
     @Override
     public double getInterestsPaid(UUID uuid) {
-        return withConnection(c -> Debt.getInterestsPaid(c, uuid), 0d);
+        return queryConnection(c -> Debt.getInterestsPaid(c, uuid));
     }
 
     @Override
     public double getAllOutstandingDebt() {
-        return withConnection(Debt::getAllOutstandingDebt, 0d);
+        return queryConnection(Debt::getAllOutstandingDebt);
     }
 
     @Override
     public double getAllInterestsPaid() {
-        return withConnection(Debt::getAllInterestsPaid, 0d);
+        return queryConnection(Debt::getAllInterestsPaid);
     }
 
     @Override
@@ -437,37 +463,37 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public HashMap<UUID, Portfolio> getTopWorth(int n) {
-        return withConnection(c -> PortfoliosWorth.getTopWorth(c, n), null);
+        return queryConnection(c -> PortfoliosWorth.getTopWorth(c, n));
     }
 
     @Override
     public double getLatestWorth(UUID uuid) {
-        return withConnection(c -> PortfoliosWorth.getLatestWorth(c, uuid), 0d);
+        return queryConnection(c -> PortfoliosWorth.getLatestWorth(c, uuid));
     }
 
     @Override
     public void logContribution(UUID uuid, Item item, int amount) {
-        withConnection(c -> PortfoliosLog.logContribution(c, uuid, item, amount));
+        withTransaction(c -> PortfoliosLog.logContribution(c, uuid, item, amount));
     }
 
     @Override
     public void logWithdraw(UUID uuid, Item item, int amount) {
-        withConnection(c -> PortfoliosLog.logWithdraw(c, uuid, item, amount));
+        withTransaction(c -> PortfoliosLog.logWithdraw(c, uuid, item, amount));
     }
 
     @Override
     public HashMap<Integer, Double> getContributionChangeEachDay(UUID uuid) {
-        return withConnection(c -> PortfoliosLog.getContributionChangeEachDay(c, uuid), null);
+        return queryConnection(c -> PortfoliosLog.getContributionChangeEachDay(c, uuid));
     }
 
     @Override
     public HashMap<Integer, HashMap<String, Integer>> getCompositionEachDay(UUID uuid) {
-        return withConnection(c -> PortfoliosLog.getCompositionEachDay(c, uuid), null);
+        return queryConnection(c -> PortfoliosLog.getCompositionEachDay(c, uuid));
     }
 
     @Override
     public int getFirstDay(UUID uuid) {
-        return withConnection(c -> PortfoliosLog.getFirstDay(c, uuid), NormalisedDate.getDays());
+        return queryConnection(c -> PortfoliosLog.getFirstDay(c, uuid));
     }
 
     @Override
@@ -477,12 +503,12 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public List<CPIInstant> getCPIHistory() {
-        return withConnection(Statistics::getAllCPI, Collections.emptyList());
+        return queryConnection(Statistics::getAllCPI);
     }
 
     @Override
     public List<Instant> getPriceAgainstCPI(Item item) {
-        return withConnection(c -> Statistics.getPriceAgainstCPI(c, item), Collections.emptyList());
+        return queryConnection(c -> Statistics.getPriceAgainstCPI(c, item));
     }
 
     @Override
@@ -492,12 +518,12 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public List<DayInfo> getDayInfos() {
-        return withConnection(Statistics::getDayInfos, Collections.emptyList());
+        return queryConnection(Statistics::getDayInfos);
     }
 
     @Override
     public double getAllTaxesCollected() {
-        return withConnection(Statistics::getAllTaxesCollected, 0d);
+        return queryConnection(Statistics::getAllTaxesCollected);
     }
 
     @Override
@@ -547,7 +573,7 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public String getNameByUUID(UUID uuid) {
-        return withConnection(c -> UserNames.getNameByUUID(c, uuid), " ");
+        return queryConnection(c -> UserNames.getNameByUUID(c, uuid));
     }
 
     @Override
@@ -557,7 +583,7 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public String getUUIDbyName(String name) {
-        return withConnection(c -> UserNames.getUUIDbyName(c, name), null);
+        return queryConnection(c -> UserNames.getUUIDbyName(c, name));
     }
 
     @Override
@@ -567,7 +593,7 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public Map<Integer, Double> getMoneySupplyHistory() {
-        return withConnection(Balances::getMoneySupplyHistory, Collections.emptyMap());
+        return queryConnection(Balances::getMoneySupplyHistory);
     }
 
     @Override
@@ -582,16 +608,16 @@ public class SqliteDatabase extends BaseDatabase {
 
     @Override
     public String getDiscordUserId(UUID uuid) {
-        return withConnection(c -> Discord.getDiscordUserId(c, uuid), null);
+        return queryConnection(c -> Discord.getDiscordUserId(c, uuid));
     }
 
     @Override
     public UUID getUUIDFromUserid(String userid) {
-        return withConnection(c -> Discord.getUUIDFromUserid(c, userid), null);
+        return queryConnection(c -> Discord.getUUIDFromUserid(c, userid));
     }
 
     @Override
     public String getNicknameFromUserId(String userid) {
-        return withConnection(c -> Discord.getNicknameFromUserId(c, userid), null);
+        return queryConnection(c -> Discord.getNicknameFromUserId(c, userid));
     }
 }

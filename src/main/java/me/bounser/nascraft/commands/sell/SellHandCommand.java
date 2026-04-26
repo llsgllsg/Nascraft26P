@@ -76,7 +76,7 @@ public class SellHandCommand extends Command {
             component = component.hoverEvent(HoverEvent.showText(hoverText))
                     .clickEvent(ClickEvent.runCommand("/" + Config.getInstance().getCommandAlias("sellhand") + " confirm"));
 
-            Lang.get().getAudience().player(player).sendMessage(component);
+            player.sendMessage(component);
 
             players.put(player, handItem);
 

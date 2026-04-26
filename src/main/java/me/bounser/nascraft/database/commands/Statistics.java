@@ -6,10 +6,7 @@ import me.bounser.nascraft.database.commands.resources.NormalisedDate;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,178 +14,76 @@ import java.util.List;
 
 public class Statistics {
 
-    public static void saveCPI(Connection connection, float value) {
-
-        try {
-
-            String sql = "SELECT day FROM cpi;";
-
-            PreparedStatement prep = connection.prepareStatement(sql);
-            ResultSet rs = prep.executeQuery();
-
-            int today = NormalisedDate.getDays();
-
-            while (rs.next()) {
-                if (rs.getInt("day") == today) return;
-            }
-
-            String sqlinsert = "INSERT INTO cpi (day, date, value) VALUES (?,?,?);";
-
-            PreparedStatement insertPrep = connection.prepareStatement(sqlinsert);
-            insertPrep.setInt(1, today);
-            insertPrep.setString(2, LocalDateTime.now().toString());
-            insertPrep.setFloat(3,value);
-
-            insertPrep.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public static void saveCPI(Connection connection, float value) throws SQLException {
+        int today = NormalisedDate.getDays();
+        // INSERT OR IGNORE keeps the first value recorded per day
+        try (PreparedStatement prep = connection.prepareStatement(
+                "INSERT OR IGNORE INTO cpi (day, date, value) VALUES (?, ?, ?)")) {
+            prep.setInt(1, today);
+            prep.setString(2, LocalDateTime.now().toString());
+            prep.setFloat(3, value);
+            prep.executeUpdate();
         }
-
     }
 
-    public static List<CPIInstant> getAllCPI(Connection connection) {
-
-        try {
-
-            List<CPIInstant> cpiInstants = new ArrayList<>();
-
-            String sql = "SELECT * FROM cpi;";
-
-            PreparedStatement prep = connection.prepareStatement(sql);
-            ResultSet rs = prep.executeQuery();
-
+    public static List<CPIInstant> getAllCPI(Connection connection) throws SQLException {
+        List<CPIInstant> cpiInstants = new ArrayList<>();
+        try (PreparedStatement prep = connection.prepareStatement("SELECT value, date FROM cpi");
+             ResultSet rs = prep.executeQuery()) {
             while (rs.next()) {
                 cpiInstants.add(new CPIInstant(rs.getFloat("value"), LocalDateTime.parse(rs.getString("date"))));
             }
-
-            return cpiInstants;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+        return cpiInstants;
     }
 
-    public static List<Instant> getPriceAgainstCPI(Connection connection, Item item) {
-
-        try {
-
-            String query = "SELECT MIN(day) AS min_value FROM cpi;";
-
-            PreparedStatement prep = connection.prepareStatement(query);
-            ResultSet rs = prep.executeQuery();
-
-            int minValue = -1;
-
-            if (rs.next()) {
-                minValue = rs.getInt("min_value");
-            }
-
-            if (minValue == -1) {
+    public static List<Instant> getPriceAgainstCPI(Connection connection, Item item) throws SQLException {
+        int minDay;
+        try (PreparedStatement prep = connection.prepareStatement("SELECT MIN(day) AS min_day FROM cpi");
+             ResultSet rs = prep.executeQuery()) {
+            if (!rs.next() || rs.getObject("min_day") == null) {
                 return Collections.singletonList(new Instant(LocalDateTime.now(), item.getPrice().getValue(), 0));
             }
-
-            if (NormalisedDate.getDays() - 30 < minValue) {
-                return HistorialData.getMonthPrices(connection, item);
-            }
-
-            return HistorialData.getAllPrices(connection, item);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            minDay = rs.getInt("min_day");
         }
+
+        if (NormalisedDate.getDays() - 30 < minDay) {
+            return HistorialData.getMonthPrices(connection, item);
+        }
+        return HistorialData.getAllPrices(connection, item);
     }
 
-    public static void addTransaction(Connection connection, double newFlow, double effectiveTaxes) {
-
-        try {
-
-            String query = "SELECT flow, operations, taxes FROM flows WHERE day=?;";
-
-            PreparedStatement prep = connection.prepareStatement(query);
+    public static void addTransaction(Connection connection, double newFlow, double effectiveTaxes)
+            throws SQLException {
+        String sql = "INSERT INTO flows (day, flow, taxes, operations) VALUES (?, ?, ?, 1) " +
+                     "ON CONFLICT(day) DO UPDATE SET " +
+                     "flow = flow + excluded.flow, " +
+                     "taxes = taxes + excluded.taxes, " +
+                     "operations = operations + 1";
+        try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setInt(1, NormalisedDate.getDays());
-            ResultSet rs = prep.executeQuery();
-
-            if (rs.next()) {
-                double flow = rs.getFloat("flow");
-                double taxes = rs.getFloat("taxes");
-                int operations = rs.getInt("operations");
-
-                flow += newFlow;
-                taxes += Math.abs(effectiveTaxes);
-                operations++;
-
-                String sqlreplace = "REPLACE INTO flows(day, flow, taxes, operations) VALUES (?,?,?,?);";
-
-                PreparedStatement replacePrep = connection.prepareStatement(sqlreplace);
-                replacePrep.setInt(1, NormalisedDate.getDays());
-                replacePrep.setDouble(2, flow);
-                replacePrep.setDouble(3, taxes);
-                replacePrep.setInt(4, operations);
-
-                replacePrep.executeUpdate();
-
-            } else {
-
-                String sqlinsert = "INSERT INTO flows (day, flow, taxes, operations) VALUES (?,?,?,?);";
-
-                PreparedStatement insertPrep = connection.prepareStatement(sqlinsert);
-                insertPrep.setInt(1, NormalisedDate.getDays());
-                insertPrep.setDouble(2, newFlow);
-                insertPrep.setDouble(3, effectiveTaxes);
-                insertPrep.setInt(4, 1);
-
-                insertPrep.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            prep.setDouble(2, newFlow);
+            prep.setDouble(3, Math.abs(effectiveTaxes));
+            prep.executeUpdate();
         }
     }
 
-    public static List<DayInfo> getDayInfos(Connection connection) {
-
-        try {
-
-            List<DayInfo> dayInfos = new ArrayList<>();
-
-            String query = "SELECT * FROM flows;";
-
-            PreparedStatement prep = connection.prepareStatement(query);
-            ResultSet rs = prep.executeQuery();
-
+    public static List<DayInfo> getDayInfos(Connection connection) throws SQLException {
+        List<DayInfo> dayInfos = new ArrayList<>();
+        try (PreparedStatement prep = connection.prepareStatement("SELECT day, flow, taxes FROM flows");
+             ResultSet rs = prep.executeQuery()) {
             while (rs.next()) {
-                dayInfos.add(
-                        new DayInfo(
-                                rs.getInt("day"),
-                                rs.getDouble("flow"),
-                                rs.getDouble("taxes")
-                        )
-                );
+                dayInfos.add(new DayInfo(rs.getInt("day"), rs.getDouble("flow"), rs.getDouble("taxes")));
             }
-
-            return dayInfos;
-
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+        return dayInfos;
     }
 
-    public static double getAllTaxesCollected(Connection connection) {
-        try {
-            String sql = "SELECT taxes FROM flows ORDER BY day DESC LIMIT 1;";
-
-            PreparedStatement prep = connection.prepareStatement(sql);
-            ResultSet rs = prep.executeQuery();
-
-            if (rs.next())
-                return rs.getDouble("taxes");
-
-            return 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    public static double getAllTaxesCollected(Connection connection) throws SQLException {
+        try (PreparedStatement prep = connection.prepareStatement(
+                "SELECT taxes FROM flows ORDER BY day DESC LIMIT 1");
+             ResultSet rs = prep.executeQuery()) {
+            return rs.next() ? rs.getDouble("taxes") : 0;
         }
     }
-
 }

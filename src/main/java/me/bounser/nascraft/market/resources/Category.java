@@ -6,7 +6,7 @@ import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.market.unit.stats.Instant;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
@@ -34,7 +34,7 @@ public class Category {
 
         try {
             Component miniMessageDisplayName = MiniMessage.miniMessage().deserialize(Config.getInstance().getDisplayName(this));
-            this.formattedDisplayName = BukkitComponentSerializer.legacy().serialize(miniMessageDisplayName);
+            this.formattedDisplayName = LegacyComponentSerializer.legacySection().serialize(miniMessageDisplayName);
         } catch (NullPointerException exception) {
             formattedDisplayName = identifier;
         }
@@ -43,7 +43,7 @@ public class Category {
 
         if (displayName.equals(formattedDisplayName)) {
             Component defaultMiniMessageName = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.DEFAULT_CATEGORY_FORMAT).replace("[NAME]", displayName));
-            formattedDisplayName = BukkitComponentSerializer.legacy().serialize(defaultMiniMessageName);
+            formattedDisplayName = LegacyComponentSerializer.legacySection().serialize(defaultMiniMessageName);
         }
 
         this.material = Config.getInstance().getMaterialOfCategory(this);

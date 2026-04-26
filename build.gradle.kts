@@ -18,7 +18,7 @@ kotlin {
 
 repositories {
     mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://maven.respark.dev/releases")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
@@ -46,11 +46,11 @@ dependencies {
     compileOnly("commons-io:commons-io:2.14.0")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.18")
-    implementation("net.kyori:adventure-text-minimessage:4.17.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.3")
+    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
     implementation("redis.clients:jedis:5.1.2")
+    implementation("org.mindrot:jbcrypt:0.4")
     implementation("de.tr7zw:item-nbt-api:2.13.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
@@ -58,7 +58,7 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testImplementation("org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT")
+    testImplementation("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
 }
 
 tasks {

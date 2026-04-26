@@ -11,7 +11,7 @@ import me.bounser.nascraft.market.limitorders.LimitOrder;
 import me.bounser.nascraft.market.limitorders.LimitOrdersManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -46,7 +46,7 @@ public class MainMenu implements MenuPage {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_MAIN_MENU_TITLE));
 
-        gui = Bukkit.createInventory(null, config.getMainMenuSize(), BukkitComponentSerializer.legacy().serialize(title));
+        gui = Bukkit.createInventory(null, config.getMainMenuSize(), LegacyComponentSerializer.legacySection().serialize(title));
 
         List<String> lore = new ArrayList<>();
 
@@ -73,14 +73,14 @@ public class MainMenu implements MenuPage {
 
             for (String line : alertLore.split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             gui.setItem(
                     config.getAlertsSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getAlertsMaterial(linked),
-                            BukkitComponentSerializer.legacy().serialize(alert),
+                            LegacyComponentSerializer.legacySection().serialize(alert),
                             lore
                     ));
         }
@@ -121,14 +121,14 @@ public class MainMenu implements MenuPage {
 
             for (String line : limitLore.split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             gui.setItem(
                     config.getLimitOrdersSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getLimitOrdersMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(limit),
+                            LegacyComponentSerializer.legacySection().serialize(limit),
                             lore
                     ));
         }
@@ -141,14 +141,14 @@ public class MainMenu implements MenuPage {
             lore.clear();
             for (String line : Lang.get().message(Message.GUI_INFORMATION_LORE).split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             gui.setItem(
                     config.getInformationSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getInformationMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(information),
+                            LegacyComponentSerializer.legacySection().serialize(information),
                             lore
                     ));
         }
@@ -163,14 +163,14 @@ public class MainMenu implements MenuPage {
             lore.clear();
             for (String line : Lang.get().message(linked ? Message.GUI_PORTFOLIO_LORE_LINKED : Message.GUI_PORTFOLIO_LORE_NOT_LINKED).split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             gui.setItem(
                     config.getPortfolioSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getPortfolioMaterial(linked),
-                            BukkitComponentSerializer.legacy().serialize(portfolio),
+                            LegacyComponentSerializer.legacySection().serialize(portfolio),
                             lore
                     ));
         }
@@ -200,14 +200,14 @@ public class MainMenu implements MenuPage {
             lore.clear();
             for (String line : trendsLore.split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             gui.setItem(
                     config.getTrendsSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getTrendsMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(trends),
+                            LegacyComponentSerializer.legacySection().serialize(trends),
                             lore
                     ));
         }
@@ -222,7 +222,7 @@ public class MainMenu implements MenuPage {
 
             ItemStack filler = MarketMenuManager.getInstance().generateItemStack(
                     material,
-                    BukkitComponentSerializer.legacy().serialize(fillerComponent)
+                    LegacyComponentSerializer.legacySection().serialize(fillerComponent)
             );
 
             for (int i : fillers.get(material))
@@ -252,7 +252,7 @@ public class MainMenu implements MenuPage {
                                 Lang.get().message(Message.GUI_CATEGORIES_LORE_SEGMENT)
                         );
 
-                        categoryList.add(BukkitComponentSerializer.legacy().serialize(loreSegment).replace("[ALIAS]", item.getFormattedName()));
+                        categoryList.add(LegacyComponentSerializer.legacySection().serialize(loreSegment).replace("[ALIAS]", item.getFormattedName()));
                     }
                 }
 

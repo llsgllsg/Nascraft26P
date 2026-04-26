@@ -9,7 +9,7 @@ import me.bounser.nascraft.inventorygui.BuySellMenu;
 import me.bounser.nascraft.inventorygui.MarketMenuManager;
 import me.bounser.nascraft.inventorygui.MenuPage;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -53,7 +53,7 @@ public class InfoMenu implements MenuPage {
 
         CartographyWindow window = CartographyWindow.single()
                 .setViewer(player)
-                .setTitle(BukkitComponentSerializer.legacy().serialize(title))
+                .setTitle(LegacyComponentSerializer.legacySection().serialize(title))
                 .setGui(gui)
                 .build();
 

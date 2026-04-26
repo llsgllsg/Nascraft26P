@@ -23,7 +23,7 @@ import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.market.unit.stats.ItemStats;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -125,14 +125,14 @@ public class Item {
 
         Component miniMessageAlias = MiniMessage.miniMessage().deserialize(alias);
 
-        this.formattedAlias = BukkitComponentSerializer.legacy().serialize(miniMessageAlias);
+        this.formattedAlias = LegacyComponentSerializer.legacySection().serialize(miniMessageAlias);
 
         this.alias = extractPlainText(miniMessageAlias);
 
         if (alias.equals(formattedAlias)) {
             taggedAlias = Lang.get().message(Message.DEFAULT_ITEM_FORMAT).replace("[ALIAS]", alias);
             Component defaultMiniMessageAlias = MiniMessage.miniMessage().deserialize(taggedAlias);
-            formattedAlias = BukkitComponentSerializer.legacy().serialize(defaultMiniMessageAlias);
+            formattedAlias = LegacyComponentSerializer.legacySection().serialize(defaultMiniMessageAlias);
         }
     }
 
@@ -317,7 +317,7 @@ public class Item {
 
         operationItemStack.setAmount(1);
 
-        if (player != null && feedback && !player.getInventory().containsAtLeast(operationItemStack, amount)) {
+        if (player != null && feedback && !InventoryManager.containsAtLeast(player, operationItemStack, amount)) {
             Lang.get().message(player, Message.NOT_ENOUGH_ITEMS);
             return -1;
         }
@@ -325,8 +325,7 @@ public class Item {
         double worth = price.getProjectedCost(amount*multiplier, price.getSellTaxMultiplier());
 
         if (player != null && feedback) {
-            operationItemStack.setAmount(amount);
-            player.getInventory().removeItem(operationItemStack);
+            InventoryManager.removeItems(player, operationItemStack, amount);
         }
 
         if (!limitReached) {

@@ -115,7 +115,7 @@ public class SellAllCommand extends Command {
                 component = component.hoverEvent(HoverEvent.showText(hoverText))
                         .clickEvent(ClickEvent.runCommand("/" + Config.getInstance().getCommandAlias("sellall") + " " + item.getIdentifier() + " confirm"));
 
-                Lang.get().getAudience().player(player).sendMessage(component);
+                player.sendMessage(component);
 
             } else {
                 Lang.get().message(player, Message.SELLALL_ERROR_WITHOUT_ITEM, "0", "0", item.getName());
@@ -255,7 +255,7 @@ public class SellAllCommand extends Command {
             component = component.hoverEvent(HoverEvent.showText(hoverText))
                     .clickEvent(ClickEvent.runCommand("/" + Config.getInstance().getCommandAlias("sellall") + " confirm"));
 
-            Lang.get().getAudience().player(player).sendMessage(component);
+            player.sendMessage(component);
         }
     }
 

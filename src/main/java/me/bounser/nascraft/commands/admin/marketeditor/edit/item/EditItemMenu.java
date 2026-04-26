@@ -11,12 +11,13 @@ import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import de.tr7zw.changeme.nbtapi.NBT;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -186,7 +187,7 @@ public class EditItemMenu {
         inventory.setItem(4,
                 getItemStackOfOption(Material.GOLD_INGOT,
                         "Initial Price " + ChatColor.UNDERLINE + "(REQUIRED)",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + BukkitComponentSerializer.legacy().serialize(priceComponent),
+                        Arrays.asList(ChatColor.GRAY + "Value: " + LegacyComponentSerializer.legacySection().serialize(priceComponent),
                                 "",
                                 ChatColor.GRAY + "The initial price of the item gives a point",
                                 ChatColor.GRAY + "of initial stability at neutral internal stock (0)",
@@ -253,7 +254,7 @@ public class EditItemMenu {
         inventory.setItem(22,
                 getItemStackOfOption(Material.BEDROCK,
                 "Support",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + (support == 0 ? ChatColor.RED + "DISABLED" : BukkitComponentSerializer.legacy().serialize(supportComponent)),
+                        Arrays.asList(ChatColor.GRAY + "Value: " + (support == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(supportComponent)),
                                 "",
                                 ChatColor.GRAY + "If the noise is enabled, then the price of the",
                                 ChatColor.GRAY + "item will slowly tend to stay " + ChatColor.UNDERLINE + "ABOVE this value.",
@@ -266,7 +267,7 @@ public class EditItemMenu {
         inventory.setItem(23,
                 getItemStackOfOption(Material.WHITE_WOOL,
                         "Resistance",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + (resistance == 0 ? ChatColor.RED + "DISABLED" : BukkitComponentSerializer.legacy().serialize(resistanceComponent)),
+                        Arrays.asList(ChatColor.GRAY + "Value: " + (resistance == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(resistanceComponent)),
                                 "",
                                 ChatColor.GRAY + "If the noise is enabled, then the price of the",
                                 ChatColor.GRAY + "item will slowly tend to stay " + ChatColor.UNDERLINE + "BELOW this value.",
@@ -332,7 +333,7 @@ public class EditItemMenu {
 
         if (itemStack != null && itemStack.getType() != Material.AIR) {
             if (item != null) item.setItemStack(itemStack);
-            items.set("items." + identifier + ".item-stack", itemStack);
+            items.set("items." + identifier + ".item-stack", NBT.itemStackToNBT(itemStack).toString());
         }
 
         if (!currency.equals(CurrenciesManager.getInstance().getDefaultCurrency())) {

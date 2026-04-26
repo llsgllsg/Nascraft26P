@@ -16,7 +16,7 @@ import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.portfolio.Portfolio;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -206,7 +206,7 @@ public class PortfolioInventory implements Listener {
         meta.setOwningPlayer(Bukkit.getPlayer(uuid));
         
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_INFO_TITLE));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(title));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(title));
 
         String worth = "";
 
@@ -218,7 +218,7 @@ public class PortfolioInventory implements Listener {
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.PORTFOLIO_INFO_LORE, "[WORTH]", worth).split("\\n")) {
             Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         meta.setLore(lore);
@@ -234,12 +234,12 @@ public class PortfolioInventory implements Listener {
         ItemMeta meta = filler.getItemMeta();
 
         Component lockName = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_LOCKED_TITLE));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(lockName));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(lockName));
 
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.PORTFOLIO_LOCKED_LORE, "0", Formatter.format(CurrenciesManager.getInstance().getVaultCurrency(), PortfoliosManager.getInstance().getPortfolio(uuid).getNextSlotPrice(), Style.ROUND_BASIC), "0").split("\\n")) {
             Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         meta.setLore(lore);
@@ -275,7 +275,7 @@ public class PortfolioInventory implements Listener {
 
             for (String line : extraLore.split("\\n")) {
                 Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-                lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+                lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
             }
 
             meta.setLore(lore);
@@ -291,7 +291,7 @@ public class PortfolioInventory implements Listener {
         ItemStack back = new ItemStack(Config.getInstance().getPortfolioMenuBackMaterial());
         ItemMeta meta = back.getItemMeta();
         Component backName = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_BACK_NAME));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(backName));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(backName));
         back.setItemMeta(meta);
 
         inventory.setItem(Config.getInstance().getPortfolioMenuBackSlot(), back);
@@ -305,11 +305,11 @@ public class PortfolioInventory implements Listener {
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.PORTFOLIO_DEBT_LORE).split("\\n")) {
             Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         meta.setLore(lore);
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(backName));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(backName));
         debt.setItemMeta(meta);
 
         inventory.setItem(Config.getInstance().getPortfolioDebtSlot(), debt);
@@ -323,11 +323,11 @@ public class PortfolioInventory implements Listener {
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.PORTFOLIO_TOP_BUTTON_LORE).split("\\n")) {
             Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         meta.setLore(lore);
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(backName));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(backName));
         debt.setItemMeta(meta);
 
         inventory.setItem(Config.getInstance().getPortfolioTopSlot(), debt);

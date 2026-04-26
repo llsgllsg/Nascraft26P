@@ -167,7 +167,7 @@ public class LinkManager {
                 });
 
                 if (player.getOpenInventory().getTitle().equals(Lang.get().message(Message.PORTFOLIO_TITLE)))
-                    Bukkit.getScheduler().runTask(Nascraft.getInstance(), player::closeInventory);
+                    Bukkit.getScheduler().runTask(Nascraft.getInstance(), (Runnable) player::closeInventory);
         }
 
         return true;

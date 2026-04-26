@@ -133,22 +133,22 @@ public final class InMemoryDatabase {
 
         "CREATE TABLE loans (" +
             "id INTEGER PRIMARY KEY, " +
-            "uuid VARCHAR(36) NOT NULL, " +
+            "uuid VARCHAR(36) NOT NULL UNIQUE, " +
             "debt DOUBLE NOT NULL)",
 
         "CREATE TABLE interests (" +
             "id INTEGER PRIMARY KEY, " +
-            "uuid VARCHAR(36) NOT NULL, " +
+            "uuid VARCHAR(36) NOT NULL UNIQUE, " +
             "paid DOUBLE NOT NULL)",
 
         "CREATE TABLE user_names (" +
             "id INTEGER PRIMARY KEY, " +
-            "uuid VARCHAR(36) NOT NULL, " +
+            "uuid VARCHAR(36) NOT NULL UNIQUE, " +
             "name TEXT NOT NULL)",
 
         "CREATE TABLE balances (" +
             "id INTEGER PRIMARY KEY, " +
-            "uuid VARCHAR(36) NOT NULL, " +
+            "uuid VARCHAR(36) NOT NULL UNIQUE, " +
             "balance DOUBLE NOT NULL)",
 
         "CREATE TABLE money_supply (" +

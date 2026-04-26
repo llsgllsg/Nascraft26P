@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class UserNamesDaoTest extends DatabaseTest {
 
     @Test
-    void saveAndRetrieve_roundTripsPlayerName() {
+    void saveAndRetrieve_roundTripsPlayerName() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
 
         UserNames.saveOrUpdateNick(connection, uuid, "Bounser");
@@ -20,7 +20,7 @@ class UserNamesDaoTest extends DatabaseTest {
     }
 
     @Test
-    void saveOrUpdateNick_overwritesExistingName() {
+    void saveOrUpdateNick_overwritesExistingName() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
 
         UserNames.saveOrUpdateNick(connection, uuid, "OldName");
@@ -30,12 +30,12 @@ class UserNamesDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getNameByUUID_returnsNullForUnknownPlayer() {
+    void getNameByUUID_returnsNullForUnknownPlayer() throws java.sql.SQLException {
         assertNull(UserNames.getNameByUUID(connection, UUID.randomUUID()));
     }
 
     @Test
-    void getUUIDbyName_roundTripsUUID() {
+    void getUUIDbyName_roundTripsUUID() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
         UserNames.saveOrUpdateNick(connection, uuid, "PlayerX");
 
@@ -43,7 +43,7 @@ class UserNamesDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getUUIDbyName_returnsNullForUnknownName() {
+    void getUUIDbyName_returnsNullForUnknownName() throws java.sql.SQLException {
         assertNull(UserNames.getUUIDbyName(connection, "Ghost"));
     }
 }

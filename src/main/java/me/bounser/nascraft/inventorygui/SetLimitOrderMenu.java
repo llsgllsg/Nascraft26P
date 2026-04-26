@@ -11,7 +11,7 @@ import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.limitorders.Duration;
 import me.bounser.nascraft.market.limitorders.LimitOrdersManager;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -61,7 +61,7 @@ public class SetLimitOrderMenu implements MenuPage {
                     config.getBuySellBackSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getSetLimitOrderMenuBackMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(backComponent)
+                            LegacyComponentSerializer.legacySection().serialize(backComponent)
                     ));
         }
 
@@ -71,7 +71,7 @@ public class SetLimitOrderMenu implements MenuPage {
 
         ItemStack filler = MarketMenuManager.getInstance().generateItemStack(
                 config.getSetLimitOrdersMenuFillersMaterial(),
-                BukkitComponentSerializer.legacy().serialize(fillerComponent)
+                LegacyComponentSerializer.legacySection().serialize(fillerComponent)
         );
 
         for (int i : config.getSetLimitOrdersMenuFillersSlots())
@@ -114,14 +114,14 @@ public class SetLimitOrderMenu implements MenuPage {
 
         for (String line : Lang.get().message(Message.GUI_SET_LIMIT_ORDER_TIME_LORE).replace("[DURATIONS]", segments.replace(".0", "")).split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         gui.setItem(
                 config.getSetLimitOrderMenuTimeSlot(),
                 MarketMenuManager.getInstance().generateItemStack(
                         config.getSetLimitOrderMenuTimeMaterial(),
-                        BukkitComponentSerializer.legacy().serialize(timeComponent),
+                        LegacyComponentSerializer.legacySection().serialize(timeComponent),
                         lore
                 ));
 
@@ -136,14 +136,14 @@ public class SetLimitOrderMenu implements MenuPage {
 
         for (String line : priceLore.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         gui.setItem(
                 config.getSetLimitOrderMenuPriceSlot(),
                 MarketMenuManager.getInstance().generateItemStack(
                         config.getSetLimitOrderMenuPriceMaterial(),
-                        BukkitComponentSerializer.legacy().serialize(priceComponent),
+                        LegacyComponentSerializer.legacySection().serialize(priceComponent),
                         lore
                 ));
 
@@ -158,14 +158,14 @@ public class SetLimitOrderMenu implements MenuPage {
 
         for (String line : quantityLore.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         gui.setItem(
                 config.getSetLimitOrderMenuQuantitySlot(),
                 MarketMenuManager.getInstance().generateItemStack(
                         config.getSetLimitOrderMenuQuantityMaterial(),
-                        BukkitComponentSerializer.legacy().serialize(quantityComponent),
+                        LegacyComponentSerializer.legacySection().serialize(quantityComponent),
                         lore
                 ));
 
@@ -226,14 +226,14 @@ public class SetLimitOrderMenu implements MenuPage {
 
         for (String line : buyLore.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         gui.setItem(
                 config.getSetLimitOrderMenuConfirmBuySlot(),
                 MarketMenuManager.getInstance().generateItemStack(
                         config.getSetLimitOrderMenuConfirmBuyMaterial(),
-                        BukkitComponentSerializer.legacy().serialize(buyComponent),
+                        LegacyComponentSerializer.legacySection().serialize(buyComponent),
                         lore
                 ));
 
@@ -266,14 +266,14 @@ public class SetLimitOrderMenu implements MenuPage {
 
         for (String line : sellLore.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         gui.setItem(
                 config.getSetLimitOrderMenuConfirmSellSlot(),
                 MarketMenuManager.getInstance().generateItemStack(
                         config.getSetLimitOrderMenuConfirmSellMaterial(),
-                        BukkitComponentSerializer.legacy().serialize(sellComponent),
+                        LegacyComponentSerializer.legacySection().serialize(sellComponent),
                         lore
                 ));
 

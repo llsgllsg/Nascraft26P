@@ -8,7 +8,7 @@ import me.bounser.nascraft.formatter.RoundUtils;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.portfolio.Portfolio;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -56,11 +56,11 @@ public class PortfolioStatsItem extends AbstractItem {
 
         for (String line : loreString.split("\\n")) {
             Component componentLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(componentLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
         return new ItemBuilder(item)
-                .setDisplayName(BukkitComponentSerializer.legacy().serialize(title))
+                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
                 .setLegacyLore(lore);
     }
 

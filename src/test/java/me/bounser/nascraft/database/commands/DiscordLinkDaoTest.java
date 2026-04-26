@@ -14,7 +14,7 @@ class DiscordLinkDaoTest extends DatabaseTest {
     private static final String NICKNAME = "Bounser#0001";
 
     @Test
-    void saveLink_roundTripsAllFields() {
+    void saveLink_roundTripsAllFields() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
 
         DiscordLink.saveLink(connection, USER_ID, uuid, NICKNAME);
@@ -25,7 +25,7 @@ class DiscordLinkDaoTest extends DatabaseTest {
     }
 
     @Test
-    void removeLink_clearsExistingEntry() {
+    void removeLink_clearsExistingEntry() throws java.sql.SQLException {
         UUID uuid = UUID.randomUUID();
         DiscordLink.saveLink(connection, USER_ID, uuid, NICKNAME);
 
@@ -37,17 +37,17 @@ class DiscordLinkDaoTest extends DatabaseTest {
     }
 
     @Test
-    void getUUID_returnsNullForUnknownUser() {
+    void getUUID_returnsNullForUnknownUser() throws java.sql.SQLException {
         assertNull(DiscordLink.getUUID(connection, "000000000000000000"));
     }
 
     @Test
-    void getNickname_returnsNullForUnknownUser() {
+    void getNickname_returnsNullForUnknownUser() throws java.sql.SQLException {
         assertNull(DiscordLink.getNickname(connection, "000000000000000000"));
     }
 
     @Test
-    void getUserId_returnsNullForUnlinkedPlayer() {
+    void getUserId_returnsNullForUnlinkedPlayer() throws java.sql.SQLException {
         assertNull(DiscordLink.getUserId(connection, UUID.randomUUID()));
     }
 }

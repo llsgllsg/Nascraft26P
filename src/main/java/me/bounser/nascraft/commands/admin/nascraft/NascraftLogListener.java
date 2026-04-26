@@ -1,14 +1,13 @@
 package me.bounser.nascraft.commands.admin.nascraft;
 
 import me.bounser.nascraft.Nascraft;
-import me.bounser.nascraft.database.Database;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.database.commands.resources.Trade;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -202,8 +201,8 @@ public class NascraftLogListener implements Listener {
 
                 String price = ChatColor.BLUE + (trade.isBuy() ? "Price paid: " : "Price received: ");
 
-                if (trade.getAmount() == 1) price += BukkitComponentSerializer.legacy().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue(), Style.ROUND_BASIC)));
-                else price += ChatColor.GREEN + BukkitComponentSerializer.legacy().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue(), Style.ROUND_BASIC))) + ChatColor.BLUE + " → " + BukkitComponentSerializer.legacy().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue()/trade.getAmount(), Style.ROUND_BASIC))) + ChatColor.BLUE + " each";
+                if (trade.getAmount() == 1) price += LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue(), Style.ROUND_BASIC)));
+                else price += ChatColor.GREEN + LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue(), Style.ROUND_BASIC))) + ChatColor.BLUE + " → " + LegacyComponentSerializer.legacySection().serialize(MiniMessage.miniMessage().deserialize(Formatter.format(trade.getItem().getCurrency(), trade.getValue()/trade.getAmount(), Style.ROUND_BASIC))) + ChatColor.BLUE + " each";
 
                 lore.add(price);
 

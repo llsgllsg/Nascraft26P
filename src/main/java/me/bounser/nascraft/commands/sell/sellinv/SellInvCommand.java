@@ -5,13 +5,8 @@ import me.bounser.nascraft.commands.Command;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
-import me.bounser.nascraft.formatter.Formatter;
-import me.bounser.nascraft.formatter.Style;
-import me.bounser.nascraft.inventorygui.MarketMenuManager;
-import me.bounser.nascraft.managers.currencies.CurrenciesManager;
-import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.MarketManager;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -77,7 +72,7 @@ public class SellInvCommand extends Command {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.SELL_TITLE));
 
-        Inventory inventory = Bukkit.createInventory(null, Config.getInstance().getGetSellMenuSize(), BukkitComponentSerializer.legacy().serialize(title));
+        Inventory inventory = Bukkit.createInventory(null, Config.getInstance().getGetSellMenuSize(), LegacyComponentSerializer.legacySection().serialize(title));
 
         insertFillingPanes(inventory);
         insertSellButton(inventory);
@@ -112,13 +107,13 @@ public class SellInvCommand extends Command {
         ItemMeta meta = sellButton.getItemMeta();
 
         Component name = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.SELL_BUTTON_NAME));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(name));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(name));
 
         List<String> lore = new ArrayList<>();
 
         for (String line : Lang.get().message(Message.SELL_BUTTON_LORE, "[WORTH-LIST]", "").split("\\n")) {
             Component loreLine = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreLine));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreLine));
         }
 
         meta.setLore(lore);
@@ -135,7 +130,7 @@ public class SellInvCommand extends Command {
         ItemMeta meta = closeButton.getItemMeta();
 
         Component displayNameComponent = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.SELL_CLOSE));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(displayNameComponent));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(displayNameComponent));
 
         closeButton.setItemMeta(meta);
 
@@ -153,12 +148,12 @@ public class SellInvCommand extends Command {
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         Component displayNameComponent = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.SELL_HELP_TITLE));
-        meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(displayNameComponent));
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(displayNameComponent));
 
         List<String> lore = new ArrayList<>();
         for (String line : Lang.get().message(Message.SELL_HELP_LORE).split("\\n")) {
             Component loreComponent = MiniMessage.miniMessage().deserialize(line);
-            lore.add(BukkitComponentSerializer.legacy().serialize(loreComponent));
+            lore.add(LegacyComponentSerializer.legacySection().serialize(loreComponent));
         }
 
         meta.setLore(lore);

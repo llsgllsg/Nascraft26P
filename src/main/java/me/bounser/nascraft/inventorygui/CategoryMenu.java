@@ -6,7 +6,7 @@ import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -54,7 +54,7 @@ public class CategoryMenu implements MenuPage {
 
         ItemStack filler = MarketMenuManager.getInstance().generateItemStack(
                 config.getCategoryFillersMaterial(),
-                BukkitComponentSerializer.legacy().serialize(fillerComponent)
+                LegacyComponentSerializer.legacySection().serialize(fillerComponent)
         );
 
         for (int i : config.getCategoryFillersSlots())
@@ -128,7 +128,7 @@ public class CategoryMenu implements MenuPage {
                         config.getCategoryBackSlot(),
                         MarketMenuManager.getInstance().generateItemStack(
                                 config.getCategoryBackMaterial(),
-                                BukkitComponentSerializer.legacy().serialize(backComponent)
+                                LegacyComponentSerializer.legacySection().serialize(backComponent)
                         ));
             }
         } else {
@@ -138,7 +138,7 @@ public class CategoryMenu implements MenuPage {
                     config.getCategoryBackSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getCategoryBackMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(backComponent)
+                            LegacyComponentSerializer.legacySection().serialize(backComponent)
                     ));
         }
 
@@ -151,14 +151,14 @@ public class CategoryMenu implements MenuPage {
                     config.getCategoryNextSlot(),
                     MarketMenuManager.getInstance().generateItemStack(
                             config.getCategoryNextMaterial(),
-                            BukkitComponentSerializer.legacy().serialize(backComponent)
+                            LegacyComponentSerializer.legacySection().serialize(backComponent)
                     ));
         } else {
             Component fillerComponent = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_FILLERS_NAME));
 
             ItemStack filler = MarketMenuManager.getInstance().generateItemStack(
                     config.getCategoryFillersMaterial(),
-                    BukkitComponentSerializer.legacy().serialize(fillerComponent)
+                    LegacyComponentSerializer.legacySection().serialize(fillerComponent)
             );
 
             gui.setItem(

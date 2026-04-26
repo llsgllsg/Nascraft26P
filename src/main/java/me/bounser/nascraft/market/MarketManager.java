@@ -19,8 +19,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class MarketManager {
+
+    private static final Logger LOGGER = Logger.getLogger("Nascraft");
 
     private final List<Item> items = new ArrayList<>();
     private final HashMap<String, Item> identifiers = new HashMap<>();
@@ -65,22 +68,22 @@ public class MarketManager {
             ItemStack itemStack = config.getItemStackOfItem(identifier);
 
             if (itemStack == null) {
-                Nascraft.getInstance().getLogger().warning("Error with the itemStack item: " + identifier);
-                Nascraft.getInstance().getLogger().warning("Make sure the material is correct and exists in your version.");
+                LOGGER.warning("Error with the itemStack item: " + identifier);
+                LOGGER.warning("Make sure the material is correct and exists in your version.");
                 continue;
             }
 
             Category category = config.getCategoryFromMaterial(identifier);
 
             if (category == null) {
-                Nascraft.getInstance().getLogger().warning("No category found for item: " + identifier);
+                LOGGER.warning("No category found for item: " + identifier);
                 continue;
             }
 
             BufferedImage image = ImagesManager.getInstance().getImage(identifier);
 
             if (image == null) {
-                Nascraft.getInstance().getLogger().warning("No image found for item: " + identifier);
+                LOGGER.warning("No image found for item: " + identifier);
                 continue;
             }
 
@@ -104,22 +107,30 @@ public class MarketManager {
             }
         }
 
-        Nascraft.getInstance().getLogger().info("Loaded " + categories.size() + " categories.");
+        LOGGER.info("Loaded " + categories.size() + " categories.");
 
-        Plugin AGUI = Bukkit.getPluginManager().getPlugin("AdvancedGUI");
+        Plugin AGUI = null;
+        try {
+            if (Bukkit.getServer() != null) AGUI = Bukkit.getPluginManager().getPlugin("AdvancedGUI");
+        } catch (Throwable ignored) { /* no server in test context */ }
         if (categories.size() < 4 && (AGUI != null)) {
-            Nascraft.getInstance().getLogger().severe("You need to have at least 4 categories! Disabling plugin...");
-            Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+            LOGGER.severe("You need to have at least 4 categories! Disabling plugin...");
+            Nascraft instance = Nascraft.getInstance();
+            if (instance != null) instance.getPluginLoader().disablePlugin(instance);
         }
 
         for (Item item : items)
-            if (item.getCategory() == null && item.isParent()) Nascraft.getInstance().getLogger().warning("Item: " + item.getIdentifier() + " is not assigned to any category.");
+            if (item.getCategory() == null && item.isParent()) LOGGER.warning("Item: " + item.getIdentifier() + " is not assigned to any category.");
 
         marketChanges1h = new ArrayList<>(Collections.nCopies(60, 0f));
         marketChanges24h = new ArrayList<>(Collections.nCopies(24, 0f));
 
-        TasksManager.getInstance();
-        GraphManager.getInstance();
+        try {
+            if (Bukkit.getServer() != null) {
+                TasksManager.getInstance();
+                GraphManager.getInstance();
+            }
+        } catch (Throwable ignored) { /* no server in test context */ }
     }
 
     public void reload() {
@@ -130,7 +141,7 @@ public class MarketManager {
     }
 
     public Item getItem(ItemStack itemStack) {
-        for (Item item : items) if (itemStack.isSimilar(item.getItemStack())) return item;
+        for (Item item : items) if (isSimilarEnough(itemStack, item.getItemStack())) return item;
         return null;
     }
 
@@ -195,6 +206,21 @@ public class MarketManager {
         return false;
     }
 
+    /**
+     * Strategy seam: how to strip a single NBT key from an ItemStack.
+     * Production uses NBT.modify (relocated NBT-API). Tests inject a mock so the
+     * inline mock-maker doesn't need to instrument the (uninstrumentable) NBT class.
+     */
+    @FunctionalInterface
+    public interface KeyStripper {
+        void strip(ItemStack stack, String key);
+    }
+
+    private KeyStripper keyStripper = (stack, key) -> NBT.modify(stack, (java.util.function.Consumer<de.tr7zw.changeme.nbtapi.iface.ReadWriteItemNBT>) nbt -> nbt.removeKey(key));
+
+    /** Test seam — package-private. */
+    void setKeyStripper(KeyStripper stripper) { this.keyStripper = stripper; }
+
     public boolean isSimilarEnough(ItemStack itemStack1, ItemStack itemStack2) {
 
         if (itemStack1 == null || itemStack2 == null) return false;
@@ -205,12 +231,8 @@ public class MarketManager {
         ItemStack itemStackWithoutFlags2 = itemStack2.clone();
 
         for (String ignoredKey : ignoredKeys) {
-            NBT.modify(itemStackWithoutFlags1, nbt -> {
-                nbt.removeKey(ignoredKey);
-            });
-            NBT.modify(itemStackWithoutFlags1, nbt -> {
-                nbt.removeKey(ignoredKey);
-            });
+            keyStripper.strip(itemStackWithoutFlags1, ignoredKey);
+            keyStripper.strip(itemStackWithoutFlags2, ignoredKey);
         }
 
         return itemStackWithoutFlags1.isSimilar(itemStackWithoutFlags2);
