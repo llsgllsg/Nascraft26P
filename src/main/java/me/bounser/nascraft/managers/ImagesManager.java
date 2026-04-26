@@ -2,6 +2,8 @@ package me.bounser.nascraft.managers;
 
 import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.images.ItemTextureProvider;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.imageio.ImageIO;
@@ -21,60 +23,49 @@ public class ImagesManager {
 
     public BufferedImage getImage(String identifier) {
 
-        FileConfiguration items = Config.getInstance().getItemsFileConfiguration();
+        BufferedImage override = loadOverride(identifier);
+        if (override != null) return override;
 
-        BufferedImage image = null;
-        String imageName;
-        String imagePath = Nascraft.getInstance().getDataFolder().getPath() + "/images/" + identifier + ".png";
+        Material material = resolveMaterial(identifier);
+        if (material == null) {
+            Nascraft.getInstance().getLogger().info("Unable to resolve material for image: " + identifier);
+            return null;
+        }
 
-        try (InputStream input = Files.newInputStream(new File(imagePath).toPath())) {
+        BufferedImage image = ItemTextureProvider.getImage(material);
+        if (image == null) {
+            Nascraft.getInstance().getLogger().info("Unable to render texture for material: " + material.name().toLowerCase());
+        }
+        return image;
+    }
 
-            image = ImageIO.read(input);
+    private BufferedImage loadOverride(String identifier) {
+        File file = new File(Nascraft.getInstance().getDataFolder(), "images/" + identifier + ".png");
+        if (!file.isFile()) return null;
 
+        try (InputStream input = Files.newInputStream(file.toPath())) {
+            return ImageIO.read(input);
         } catch (IOException ignored) {
-            // No image specified.
+            return null;
         } catch (IllegalArgumentException e) {
             Nascraft.getInstance().getLogger().info("Invalid argument for image: " + identifier);
+            return null;
+        }
+    }
+
+    private Material resolveMaterial(String identifier) {
+        FileConfiguration items = Config.getInstance().getItemsFileConfiguration();
+
+        String typeName = items.getString("items." + identifier + ".item-stack.type");
+        if (typeName == null) {
+            typeName = identifier.replaceAll("\\d", "");
         }
 
-        if (image != null) return image;
-
-        if (items.contains("items." + identifier + ".item-stack.type")) {
-
-            imageName = items.getString("items." + identifier + ".item-stack.type").toLowerCase() + ".png";
-            imagePath = "1-21-4-materials/minecraft_" + imageName;
-
-            try (InputStream input = Nascraft.getInstance().getResource(imagePath)) {
-                if (input != null) {
-                    image = ImageIO.read(input);
-                } else {
-                    Nascraft.getInstance().getLogger().info("Unable to find image: " + imageName);
-                }
-            } catch (IOException e) {
-                Nascraft.getInstance().getLogger().info("Unable to read image: " + imageName);
-            } catch (IllegalArgumentException e) {
-                Nascraft.getInstance().getLogger().info("Invalid argument for image: " + imageName);
-            }
-
-            return image;
-        }
-
-        imageName = identifier.replaceAll("\\d", "").toLowerCase() + ".png";
-        imagePath = "1-21-4-materials/minecraft_" + imageName;
-
-        try (InputStream input = Nascraft.getInstance().getResource(imagePath)) {
-            if (input != null) {
-                image = ImageIO.read(input);
-            } else {
-                Nascraft.getInstance().getLogger().info("Unable to find image: " + imageName);
-            }
-        } catch (IOException e) {
-            Nascraft.getInstance().getLogger().info("Unable to read image: " + imageName);
+        try {
+            return Material.matchMaterial(typeName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            Nascraft.getInstance().getLogger().info("Invalid argument for image: " + imageName);
+            return null;
         }
-
-        return image;
     }
 
     public static byte[] getBytesOfImage(BufferedImage image) {
