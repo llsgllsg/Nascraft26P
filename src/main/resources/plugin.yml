@@ -6,3 +6,11 @@ folia-supported: false
 softdepend: [ Vault, PlaceholderAPI, AdvancedGUI, DiscordSRV ]
 authors: [ bounser ]
 description: Market valuations in minecraft
+
+libraries:
+  - org.xerial:sqlite-jdbc:3.43.0.0
+  - net.dv8tion:JDA:5.0.0-beta.18
+  - jfree:jfreechart:1.0.13
+  - com.zaxxer:HikariCP:5.1.0
+  - redis.clients:jedis:5.1.2
+  - org.jetbrains.kotlin:kotlin-stdlib:2.1.21

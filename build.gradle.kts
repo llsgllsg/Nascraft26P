@@ -35,21 +35,21 @@ dependencies {
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
-    implementation("jfree:jfreechart:1.0.13")
+    compileOnly("jfree:jfreechart:1.0.13")
 
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
     compileOnly("me.clip:placeholderapi:2.11.5")
-    implementation("org.xerial:sqlite-jdbc:3.43.0.0")
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    compileOnly("org.xerial:sqlite-jdbc:3.43.0.0")
+    compileOnly("com.zaxxer:HikariCP:5.1.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.discordsrv:discordsrv:1.28.0")
     compileOnly("commons-io:commons-io:2.14.0")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.18")
+    compileOnly("net.dv8tion:JDA:5.0.0-beta.18")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
-    implementation("redis.clients:jedis:5.1.2")
+    compileOnly("redis.clients:jedis:5.1.2")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("de.tr7zw:item-nbt-api:2.13.1")
 
@@ -74,10 +74,18 @@ tasks {
         archiveClassifier.set("")
         archiveBaseName.set("Nascraft")
 
+        dependencies {
+            exclude(dependency("org.xerial:sqlite-jdbc:.*"))
+            exclude(dependency("net.dv8tion:JDA:.*"))
+            exclude(dependency("jfree:jfreechart:.*"))
+            exclude(dependency("com.zaxxer:HikariCP:.*"))
+            exclude(dependency("redis.clients:jedis:.*"))
+            exclude(dependency("org.jetbrains.kotlin:.*:.*"))
+        }
+
         relocate("org.bstats", "me.bounser.bstats")
         relocate("net.wesjd.anvilgui", "me.bounser.anvilgui")
         relocate("de.tr7zw.changeme.nbtapi", "me.bounser.nbtapi")
-        relocate("com.zaxxer.hikari", "me.bounser.libs.hikari")
     }
 
     test {
