@@ -17,8 +17,8 @@ import me.leoko.advancedgui.utils.events.GuiInteractionBeginEvent;
 import me.leoko.advancedgui.utils.events.GuiInteractionExitEvent;
 import me.leoko.advancedgui.utils.events.LayoutLoadEvent;
 
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.leoko.advancedgui.utils.interactions.Interaction;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
@@ -292,7 +292,7 @@ public class LayoutModifier implements LayoutExtension {
                     updateButtonPrice(player, interaction);
                     updateChilds(player, interaction.getComponentTree());
 
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), new Runnable() {
+                    FoliaScheduler.runAsyncLater(Nascraft.getInstance(), new Runnable() {
                         @Override
                         public void run() {
                             interaction.getComponentTree().locate("1tprP7QZ").setHidden(true);
@@ -345,7 +345,7 @@ public class LayoutModifier implements LayoutExtension {
                 updateButtonPrice(player, interaction);
                 updateChilds(player, interaction.getComponentTree());
 
-                Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), new Runnable() {
+                FoliaScheduler.runAsyncLater(Nascraft.getInstance(), new Runnable() {
                     @Override
                     public void run() {
                         interaction.getComponentTree().locate("1tprP7QZ").setHidden(true);
@@ -391,7 +391,7 @@ public class LayoutModifier implements LayoutExtension {
                 updateButtonPrice(player, interaction);
                 updateChilds(player, interaction.getComponentTree());
 
-                Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), new Runnable() {
+                FoliaScheduler.runAsyncLater(Nascraft.getInstance(), new Runnable() {
                     @Override
                     public void run() {
                         interaction.getComponentTree().locate("1tprP7QZ").setHidden(true);

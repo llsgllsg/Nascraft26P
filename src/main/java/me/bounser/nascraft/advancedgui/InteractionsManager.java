@@ -5,7 +5,7 @@ import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import org.bukkit.Bukkit;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -77,7 +77,7 @@ public class InteractionsManager {
         if (!playersOnCooldown.contains(player)) {
             playersOnCooldown.add(player);
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), () -> {
+            FoliaScheduler.runAsyncLater(Nascraft.getInstance(), () -> {
 
                 if (playersOnCooldown.contains(player))
                     playersOnCooldown.remove(player);

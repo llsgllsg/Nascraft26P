@@ -2,7 +2,7 @@ name: Nascraft
 version: '${version}'
 main: me.bounser.nascraft.Nascraft
 api-version: '1.21'
-folia-supported: false
+folia-supported: true
 softdepend: [ Vault, PlaceholderAPI, AdvancedGUI, DiscordSRV ]
 authors: [ bounser ]
 description: Market valuations in minecraft

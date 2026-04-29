@@ -13,9 +13,9 @@ import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.formatter.RoundUtils;
 import me.bounser.nascraft.portfolio.Portfolio;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -56,7 +56,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
                 if (cpi == null) {
 
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), () -> cpi = null, 200);
+                    FoliaScheduler.runAsyncLater(Nascraft.getInstance(), () -> cpi = null, 200);
                     return cpi = String.valueOf(Math.round((MarketManager.getInstance().getConsumerPriceIndex()-100)*100.0)/100.0);
 
                 } else return cpi;
@@ -65,7 +65,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
                 if (cpiMonth == null) {
 
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), () -> cpiMonth = null, 200);
+                    FoliaScheduler.runAsyncLater(Nascraft.getInstance(), () -> cpiMonth = null, 200);
 
                     List<CPIInstant> cpiHistory = DatabaseManager.get().getDatabase().getCPIHistory();
 
@@ -83,7 +83,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
                 if (cpiWeek == null) {
 
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Nascraft.getInstance(), () -> cpiWeek = null, 200);
+                    FoliaScheduler.runAsyncLater(Nascraft.getInstance(), () -> cpiWeek = null, 200);
 
                     List<CPIInstant> cpiHistory = DatabaseManager.get().getDatabase().getCPIHistory();
 

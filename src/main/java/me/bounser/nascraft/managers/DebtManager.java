@@ -12,12 +12,12 @@ import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.portfolio.Portfolio;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class DebtManager {
 
     public void checkMargins() {
 
-        Bukkit.getScheduler().runTaskTimer(Nascraft.getInstance(),
+        FoliaScheduler.runGlobalTimer(Nascraft.getInstance(),
                 () -> {
 
                     HashMap<UUID, Double> debtors = DatabaseManager.get().getDatabase().getUUIDAndDebt();
@@ -64,7 +64,7 @@ public class DebtManager {
 
     public void interestCollector() {
 
-        Bukkit.getScheduler().runTaskTimer(Nascraft.getInstance(),
+        FoliaScheduler.runGlobalTimer(Nascraft.getInstance(),
                 () -> {
 
                     HashMap<UUID, Double> debtors = DatabaseManager.get().getDatabase().getUUIDAndDebt();

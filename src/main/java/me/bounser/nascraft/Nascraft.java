@@ -12,6 +12,9 @@ import me.bounser.nascraft.commands.alert.AlertsCommand;
 import me.bounser.nascraft.commands.alert.SetAlertCommand;
 import me.bounser.nascraft.commands.discord.DiscordCommand;
 import me.bounser.nascraft.commands.portfolio.PortfolioCommand;
+import me.bounser.nascraft.database.Database;
+import me.bounser.nascraft.database.sqlite.SqliteDatabase;
+import me.bounser.nascraft.images.ItemTextureProvider;
 import me.bounser.nascraft.inventorygui.Portfolio.PortfolioInventory;
 import me.bounser.nascraft.commands.market.MarketCommand;
 import me.bounser.nascraft.commands.sell.SellHandCommand;
@@ -26,6 +29,7 @@ import me.bounser.nascraft.discord.linking.LinkingMethod;
 import me.bounser.nascraft.inventorygui.InventoryListener;
 import me.bounser.nascraft.managers.EventsManager;
 import me.bounser.nascraft.placeholderapi.PAPIExpansion;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.sellwand.WandListener;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
@@ -74,7 +78,7 @@ public class Nascraft extends JavaPlugin {
 
         Config config = Config.getInstance();
 
-        me.bounser.nascraft.images.ItemTextureProvider.init(this);
+        ItemTextureProvider.init(this);
 
         setupMetrics();
 
@@ -167,10 +171,10 @@ public class Nascraft extends JavaPlugin {
         ItemChartReduced.load();
 
         long purgeTicks = 20L * 60L * 60L * 6L;
-        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
-            me.bounser.nascraft.database.Database db = DatabaseManager.get().getDatabase();
-            if (db instanceof me.bounser.nascraft.database.sqlite.SqliteDatabase) {
-                ((me.bounser.nascraft.database.sqlite.SqliteDatabase) db).purgeOldData();
+        FoliaScheduler.runAsyncTimer(this, () -> {
+            Database db = DatabaseManager.get().getDatabase();
+            if (db instanceof SqliteDatabase) {
+                ((SqliteDatabase) db).purgeOldData();
             } else {
                 db.purgeHistory();
                 db.purgeAlerts();
@@ -190,7 +194,7 @@ public class Nascraft extends JavaPlugin {
             DiscordBot.getInstance().getJDA().shutdown();
         }
 
-        me.bounser.nascraft.images.ItemTextureProvider.close();
+        ItemTextureProvider.close();
     }
 
     private void setupMetrics() {
@@ -283,11 +287,11 @@ public class Nascraft extends JavaPlugin {
             GuiWallManager.getInstance().shutdown();
             GuiItemManager.getInstance().shutdown();
 
-            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            FoliaScheduler.runAsync(this, () -> {
                 AdvancedGUI.getInstance().readConfig();
                 VersionMediator.reload();
                 LayoutManager.getInstance().reload(layout -> getLogger().severe("§cFailed to load layout: " + layout + " §7(see console for details)"));
-                Bukkit.getScheduler().runTask(AdvancedGUI.getInstance(), () -> {
+                FoliaScheduler.runGlobal(AdvancedGUI.getInstance(), () -> {
                     GuiWallManager.getInstance().setup();
                     GuiItemManager.getInstance().setup();
                 });

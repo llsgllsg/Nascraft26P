@@ -7,6 +7,7 @@ import me.bounser.nascraft.inventorygui.Portfolio.PortfolioInventory;
 import me.bounser.nascraft.managers.currencies.CurrenciesManager;
 import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.unit.Item;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -138,7 +139,7 @@ public class Portfolio {
 
     public void sellAll(Consumer<Double> callback) {
 
-        Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
             
             double value = 0;
 
@@ -165,7 +166,7 @@ public class Portfolio {
 
     public void liquidatePerCurrency(Currency currency, Consumer<Double> callback) {
 
-        Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
 
             double value = 0;
 

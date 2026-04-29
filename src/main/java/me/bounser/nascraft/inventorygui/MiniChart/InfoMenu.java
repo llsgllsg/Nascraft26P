@@ -9,10 +9,10 @@ import me.bounser.nascraft.inventorygui.BuySellMenu;
 import me.bounser.nascraft.inventorygui.MarketMenuManager;
 import me.bounser.nascraft.inventorygui.MenuPage;
 import me.bounser.nascraft.market.unit.Item;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapPalette;
 import xyz.xenondevs.inventoryaccess.map.MapPatch;
@@ -61,12 +61,12 @@ public class InfoMenu implements MenuPage {
             @Override
             public void run() {
                 MarketMenuManager.getInstance().setMenuOfPlayer(player, new BuySellMenu(player, item));
-                Bukkit.getScheduler().runTaskLater(Nascraft.getInstance(), new Runnable() {
+                FoliaScheduler.runAtEntityLater(Nascraft.getInstance(), player, new Runnable() {
                     @Override
                     public void run() {
                         MarketMenuManager.getInstance().setMenuOfPlayer(player, new BuySellMenu(player, item));
                     }
-                }, 1);
+                }, 1L);
             }
         }));
 

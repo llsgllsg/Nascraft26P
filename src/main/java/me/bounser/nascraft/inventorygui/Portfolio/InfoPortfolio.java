@@ -7,6 +7,7 @@ import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.inventorygui.MenuPage;
 import me.bounser.nascraft.portfolio.Portfolio;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -69,7 +70,7 @@ public class InfoPortfolio implements MenuPage {
 
                 PortfolioInventory.getInstance().updatePortfolioInventory(player);
 
-                Bukkit.getScheduler().runTaskLater(Nascraft.getInstance(), new Runnable() {
+                FoliaScheduler.runAtEntityLater(Nascraft.getInstance(), player, new Runnable() {
                     @Override
                     public void run() {
                         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_TITLE));
@@ -81,7 +82,7 @@ public class InfoPortfolio implements MenuPage {
                         PortfolioInventory.getInstance().updatePortfolioInventory(player);
 
                     }
-                }, 1);
+                }, 1L);
             }
         }));
 

@@ -3,6 +3,7 @@ package me.bounser.nascraft.managers;
 import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.managers.currencies.Currency;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -46,7 +47,7 @@ public class MoneyManager {
                 }
 
                 String finalCommand = command;
-                Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+                FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
                 });
         }
@@ -71,7 +72,7 @@ public class MoneyManager {
                 }
 
                 String finalCommand = command;
-                Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+                FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
                 });
         }
@@ -101,7 +102,7 @@ public class MoneyManager {
                 }
 
                 String finalCommand = command;
-                Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+                FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
                 });
         }
@@ -126,7 +127,7 @@ public class MoneyManager {
                 }
 
                 String finalCommand = command;
-                Bukkit.getScheduler().runTask(Nascraft.getInstance(), () -> {
+                FoliaScheduler.runGlobal(Nascraft.getInstance(), () -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
                 });
         }

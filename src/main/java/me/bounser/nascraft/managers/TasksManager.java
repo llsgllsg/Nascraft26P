@@ -11,6 +11,7 @@ import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.leoko.advancedgui.manager.GuiWallManager;
 import me.leoko.advancedgui.utils.GuiWallInstance;
 import org.bukkit.Bukkit;
@@ -51,7 +52,7 @@ public class TasksManager {
 
     private void shortTermPricesTask(int delay) {
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
             float allChanges = 0;
             for (Item item : MarketManager.getInstance().getAllParentItems()) {
@@ -85,7 +86,7 @@ public class TasksManager {
 
         if (Config.getInstance().getDiscordEnabled()) {
 
-            Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+            FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
                 if (Config.getInstance().getDiscordMenuEnabled()) {
                     DiscordBot.getInstance().update();
@@ -101,7 +102,7 @@ public class TasksManager {
 
     private void noiseTask(int delay) {
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
             for (Item item : MarketManager.getInstance().getAllParentItems()) {
                 if (Config.getInstance().getPriceNoise())
@@ -113,7 +114,7 @@ public class TasksManager {
 
     private void saveDataTask() {
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
             DatabaseManager.get().getDatabase().saveEverything();
 
@@ -129,7 +130,7 @@ public class TasksManager {
 
     private void saveInstants() {
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
             for (Item item : MarketManager.getInstance().getAllParentItems()) {
 
@@ -151,7 +152,7 @@ public class TasksManager {
         LocalTime nextHour = timeNow.plusHours(1).withMinute(0).withSecond(0);
         Duration timeRemaining = Duration.between(timeNow, nextHour);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Nascraft.getInstance(), () -> {
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
             for (Item item : MarketManager.getInstance().getAllItems()) {
                 item.getPrice().restartHourLimits();

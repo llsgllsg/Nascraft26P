@@ -7,6 +7,7 @@ import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.discord.DiscordBot;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -167,7 +168,7 @@ public class LinkManager {
                 });
 
                 if (player.getOpenInventory().getTitle().equals(Lang.get().message(Message.PORTFOLIO_TITLE)))
-                    Bukkit.getScheduler().runTask(Nascraft.getInstance(), (Runnable) player::closeInventory);
+                    FoliaScheduler.runAtEntity(Nascraft.getInstance(), player, player::closeInventory);
         }
 
         return true;
