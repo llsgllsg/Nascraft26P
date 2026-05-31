@@ -409,7 +409,7 @@ public class MarketManager {
 
     public void removeCategory(Category category) { categories.remove(category); }
 
-    public void addCategory(Category category) { categories.remove(category); }
+    public void addCategory(Category category) { categories.add(category); }
 
     public void setCategories(List<Category> categories) { this.categories = categories; }
 

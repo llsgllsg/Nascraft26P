@@ -86,9 +86,9 @@ public class MoneyManager {
                 economy.depositPlayer(player, amount);
 
                 if (taxRate == 0)
-                    DatabaseManager.get().getDatabase().addTransaction(-amount, Math.abs(amount - amount / taxRate));
-                else
                     DatabaseManager.get().getDatabase().addTransaction(-amount, 0);
+                else
+                    DatabaseManager.get().getDatabase().addTransaction(-amount, Math.abs(amount - amount * taxRate));
 
                 break;
 

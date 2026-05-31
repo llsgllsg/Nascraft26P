@@ -1,7 +1,10 @@
+import java.net.URI
+
 plugins {
     java
     kotlin("jvm") version "2.1.21"
     id("com.gradleup.shadow") version "8.3.5"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 group = "me.bounser"
@@ -61,6 +64,16 @@ dependencies {
     testImplementation("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
 }
 
+fun latestPaperMinecraftVersion(): String =
+    URI("https://api.papermc.io/v2/projects/paper")
+        .toURL()
+        .readText()
+        .substringAfter("\"versions\":[")
+        .substringBefore("]")
+        .split(",")
+        .last()
+        .trim('"')
+
 tasks {
     processResources {
         val props = mapOf("version" to project.version)
@@ -94,5 +107,15 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+
+    runServer {
+        minecraftVersion(latestPaperMinecraftVersion())
+        jvmArgs("-Dcom.mojang.eula.agree=true")
+        downloadPlugins {
+            github("milkbowl", "Vault", "1.7.3", "Vault.jar")
+            hangar("PlaceholderAPI", "2.11.6")
+            github("EssentialsX", "Essentials", "2.21.2", "EssentialsX-2.21.2.jar")
+        }
     }
 }

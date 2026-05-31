@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 
 public class TransactionCompletedEvent extends Event {
 
-    private final HandlerList HANDLERS_LIST = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
     private Player player;
     private Item item;
@@ -25,7 +25,11 @@ public class TransactionCompletedEvent extends Event {
 
     @Override
     public HandlerList getHandlers() {
-        return HANDLERS_LIST;
+        return HANDLERS;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
     }
 
     public Player getPlayer() {

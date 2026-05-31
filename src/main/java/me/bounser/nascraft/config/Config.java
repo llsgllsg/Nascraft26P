@@ -226,11 +226,11 @@ public class Config {
     }
 
     public void setMarketOpen() {
-        config.set("market-control.closed", true);
+        config.set("market-control.closed", false);
     }
 
     public void setMarketClosed() {
-        config.set("market-control.closed", false);
+        config.set("market-control.closed", true);
     }
 
     public float getTaxBuy(String identifier) {

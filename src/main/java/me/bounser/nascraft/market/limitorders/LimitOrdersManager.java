@@ -60,7 +60,7 @@ public class LimitOrdersManager {
 
     public void checkOrders() {
 
-        for (LimitOrder limitOrder : limitOrders.keySet()) {
+        for (LimitOrder limitOrder : new ArrayList<>(limitOrders.keySet())) {
 
             if (!limitOrders.get(limitOrder)) continue;
 

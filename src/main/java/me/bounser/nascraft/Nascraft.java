@@ -246,6 +246,7 @@ public class Nascraft extends JavaPlugin {
 
     private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) return false;
         perms = rsp.getProvider();
         return perms != null;
     }

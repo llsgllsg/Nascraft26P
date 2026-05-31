@@ -445,6 +445,7 @@ public class Price {
     }
 
     public double getStockFromValue(double value) {
+        if (elasticity == 0) return 0;
         return (Math.log(value / initialValue) / (-0.0005 * elasticity));
     }
 

@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 public class BuyItemEvent extends Event implements Cancellable {
 
-    private final HandlerList HANDLERS_LIST = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
     private boolean cancelled;
 
@@ -26,7 +26,11 @@ public class BuyItemEvent extends Event implements Cancellable {
 
     @Override
     public HandlerList getHandlers() {
-        return HANDLERS_LIST;
+        return HANDLERS;
+    }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
     }
 
     @Override
