@@ -1,5 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
+
 import java.sql.*;
 import java.util.UUID;
 
@@ -26,9 +29,10 @@ public class UserNames {
     }
 
     public static void saveOrUpdateNick(Connection connection, UUID uuid, String name) throws SQLException {
+        SqlDialect d = SqlDialects.current();
         try (PreparedStatement prep = connection.prepareStatement(
-                "INSERT INTO user_names (uuid, name) VALUES (?, ?) " +
-                "ON CONFLICT(uuid) DO UPDATE SET name = excluded.name")) {
+                "INSERT INTO user_names (uuid, name) VALUES (?, ?)" +
+                d.onConflictUpdate("uuid") + "name = " + d.inserted("name"))) {
             prep.setString(1, uuid.toString());
             prep.setString(2, name);
             prep.executeUpdate();

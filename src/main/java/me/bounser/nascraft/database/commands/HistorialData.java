@@ -1,6 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
 import me.bounser.nascraft.database.BaseDatabase;
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.stats.Instant;
 
@@ -23,13 +25,14 @@ public class HistorialData {
 
     private static void upsert(Connection connection, String table, String identifier,
                                String bucketStart, double price, double volume) throws SQLException {
+        SqlDialect d = SqlDialects.current();
         String sql = "INSERT INTO " + table
-                + " (identifier, bucket_start, open, high, low, close, volume) VALUES (?,?,?,?,?,?,?) "
-                + "ON CONFLICT(identifier, bucket_start) DO UPDATE SET "
-                + "high=max(high, excluded.high), "
-                + "low=min(low, excluded.low), "
-                + "close=excluded.close, "
-                + "volume=volume+excluded.volume";
+                + " (identifier, bucket_start, open, high, low, close, volume) VALUES (?,?,?,?,?,?,?)"
+                + d.onConflictUpdate("identifier, bucket_start")
+                + "high=" + d.greatest("high", d.inserted("high")) + ", "
+                + "low=" + d.least("low", d.inserted("low")) + ", "
+                + "close=" + d.inserted("close") + ", "
+                + "volume=volume+" + d.inserted("volume");
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, identifier);
             ps.setString(2, bucketStart);

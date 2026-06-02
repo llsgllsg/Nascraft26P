@@ -1,5 +1,7 @@
 package me.bounser.nascraft.database.commands;
 
+import me.bounser.nascraft.database.SqlDialects;
+
 import java.sql.*;
 import java.util.UUID;
 
@@ -8,7 +10,7 @@ public class DiscordLink {
     public static void saveLink(Connection connection, String userId, UUID uuid, String nickname)
             throws SQLException {
         try (PreparedStatement prep = connection.prepareStatement(
-                "INSERT OR REPLACE INTO discord_links (userid, uuid, nickname) VALUES (?, ?, ?)")) {
+                SqlDialects.current().replaceInto() + " discord_links (userid, uuid, nickname) VALUES (?, ?, ?)")) {
             prep.setString(1, userId);
             prep.setString(2, uuid.toString());
             prep.setString(3, nickname);

@@ -1,6 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 
@@ -12,8 +14,9 @@ public class Portfolios {
 
     public static void updateItemPortfolio(Connection connection, UUID uuid, Item item, int quantity)
             throws SQLException {
-        String sql = "INSERT INTO portfolios (uuid, identifier, amount) VALUES (?, ?, ?) " +
-                     "ON CONFLICT(uuid, identifier) DO UPDATE SET amount = excluded.amount";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO portfolios (uuid, identifier, amount) VALUES (?, ?, ?)" +
+                     d.onConflictUpdate("uuid, identifier") + "amount = " + d.inserted("amount");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
             prep.setString(2, item.getIdentifier());
@@ -40,8 +43,9 @@ public class Portfolios {
     }
 
     public static void updateCapacity(Connection connection, UUID uuid, int capacity) throws SQLException {
-        String sql = "INSERT INTO capacities (uuid, capacity) VALUES (?, ?) " +
-                     "ON CONFLICT(uuid) DO UPDATE SET capacity = excluded.capacity";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO capacities (uuid, capacity) VALUES (?, ?)" +
+                     d.onConflictUpdate("uuid") + "capacity = " + d.inserted("capacity");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
             prep.setInt(2, capacity);
@@ -79,7 +83,7 @@ public class Portfolios {
         }
         int defaultSlots = Config.getInstance().getDefaultSlots();
         try (PreparedStatement prep = connection.prepareStatement(
-                "INSERT OR IGNORE INTO capacities (uuid, capacity) VALUES (?, ?)")) {
+                SqlDialects.current().insertIgnoreInto() + " capacities (uuid, capacity) VALUES (?, ?)")) {
             prep.setString(1, uuid.toString());
             prep.setInt(2, defaultSlots);
             prep.executeUpdate();

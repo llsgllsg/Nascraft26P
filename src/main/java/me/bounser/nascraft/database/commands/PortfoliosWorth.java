@@ -1,5 +1,7 @@
 package me.bounser.nascraft.database.commands;
 
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.database.commands.resources.NormalisedDate;
 import me.bounser.nascraft.portfolio.Portfolio;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
@@ -13,8 +15,9 @@ public class PortfoliosWorth {
 
     public static void saveOrUpdateWorth(Connection connection, UUID uuid, int day, double worth)
             throws SQLException {
-        String sql = "INSERT INTO portfolios_worth (uuid, day, worth) VALUES (?, ?, ?) " +
-                     "ON CONFLICT(uuid, day) DO UPDATE SET worth = excluded.worth";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO portfolios_worth (uuid, day, worth) VALUES (?, ?, ?)" +
+                     d.onConflictUpdate("uuid, day") + "worth = " + d.inserted("worth");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
             prep.setInt(2, day);

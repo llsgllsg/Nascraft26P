@@ -1,6 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
 import me.bounser.nascraft.chart.cpi.CPIInstant;
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.database.commands.resources.DayInfo;
 import me.bounser.nascraft.database.commands.resources.NormalisedDate;
 import me.bounser.nascraft.market.unit.Item;
@@ -16,9 +18,9 @@ public class Statistics {
 
     public static void saveCPI(Connection connection, float value) throws SQLException {
         int today = NormalisedDate.getDays();
-        // INSERT OR IGNORE keeps the first value recorded per day
+        // Insert-or-ignore keeps the first value recorded per day
         try (PreparedStatement prep = connection.prepareStatement(
-                "INSERT OR IGNORE INTO cpi (day, date, value) VALUES (?, ?, ?)")) {
+                SqlDialects.current().insertIgnoreInto() + " cpi (day, date, value) VALUES (?, ?, ?)")) {
             prep.setInt(1, today);
             prep.setString(2, LocalDateTime.now().toString());
             prep.setFloat(3, value);
@@ -55,10 +57,11 @@ public class Statistics {
 
     public static void addTransaction(Connection connection, double newFlow, double effectiveTaxes)
             throws SQLException {
-        String sql = "INSERT INTO flows (day, flow, taxes, operations) VALUES (?, ?, ?, 1) " +
-                     "ON CONFLICT(day) DO UPDATE SET " +
-                     "flow = flow + excluded.flow, " +
-                     "taxes = taxes + excluded.taxes, " +
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO flows (day, flow, taxes, operations) VALUES (?, ?, ?, 1)" +
+                     d.onConflictUpdate("day") +
+                     "flow = flow + " + d.inserted("flow") + ", " +
+                     "taxes = taxes + " + d.inserted("taxes") + ", " +
                      "operations = operations + 1";
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setInt(1, NormalisedDate.getDays());

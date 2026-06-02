@@ -1,6 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 
@@ -9,13 +11,14 @@ import java.sql.*;
 public class ItemProperties {
 
     public static void saveItem(Connection connection, Item item) throws SQLException {
-        String sql = "INSERT INTO items (identifier, lastprice, lowest, highest, stock, taxes) VALUES (?, ?, ?, ?, ?, ?) " +
-                     "ON CONFLICT(identifier) DO UPDATE SET " +
-                     "lastprice = excluded.lastprice, " +
-                     "lowest    = excluded.lowest, " +
-                     "highest   = excluded.highest, " +
-                     "stock     = excluded.stock, " +
-                     "taxes     = excluded.taxes";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO items (identifier, lastprice, lowest, highest, stock, taxes) VALUES (?, ?, ?, ?, ?, ?)" +
+                     d.onConflictUpdate("identifier") +
+                     "lastprice = " + d.inserted("lastprice") + ", " +
+                     "lowest    = " + d.inserted("lowest") + ", " +
+                     "highest   = " + d.inserted("highest") + ", " +
+                     "stock     = " + d.inserted("stock") + ", " +
+                     "taxes     = " + d.inserted("taxes");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, item.getIdentifier());
             prep.setDouble(2, item.getPrice().getValue());

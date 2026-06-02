@@ -1,5 +1,8 @@
 package me.bounser.nascraft.database.commands;
 
+import me.bounser.nascraft.database.SqlDialect;
+import me.bounser.nascraft.database.SqlDialects;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
@@ -7,8 +10,9 @@ import java.util.UUID;
 public class Debt {
 
     public static void increaseDebt(Connection connection, UUID uuid, double amount) throws SQLException {
-        String sql = "INSERT INTO loans (uuid, debt) VALUES (?, ?) " +
-                     "ON CONFLICT(uuid) DO UPDATE SET debt = debt + excluded.debt";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO loans (uuid, debt) VALUES (?, ?)" +
+                     d.onConflictUpdate("uuid") + "debt = debt + " + d.inserted("debt");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
             prep.setDouble(2, amount);
@@ -67,8 +71,9 @@ public class Debt {
     }
 
     public static void addInterestPaid(Connection connection, UUID uuid, double interest) throws SQLException {
-        String sql = "INSERT INTO interests (uuid, paid) VALUES (?, ?) " +
-                     "ON CONFLICT(uuid) DO UPDATE SET paid = paid + excluded.paid";
+        SqlDialect d = SqlDialects.current();
+        String sql = "INSERT INTO interests (uuid, paid) VALUES (?, ?)" +
+                     d.onConflictUpdate("uuid") + "paid = paid + " + d.inserted("paid");
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, uuid.toString());
             prep.setDouble(2, interest);
