@@ -89,6 +89,24 @@ public abstract class BaseDatabase implements Database {
         }
     }
 
+    // Adds a column to an existing table only if it is absent. Idempotent and
+    // quiet on the common already-present path, so it is safe to run every
+    // startup to evolve schemas created before the column existed.
+    protected void addColumnIfMissing(Connection connection, String table, String column, String columnDdl) {
+        try {
+            java.sql.DatabaseMetaData meta = connection.getMetaData();
+            try (java.sql.ResultSet rs = meta.getColumns(connection.getCatalog(), null, table, null)) {
+                while (rs.next()) {
+                    if (column.equalsIgnoreCase(rs.getString("COLUMN_NAME"))) return;
+                }
+            }
+            safeExec(connection, "ALTER TABLE " + table + " ADD COLUMN " + column + " " + columnDdl);
+        } catch (SQLException e) {
+            Nascraft.getInstance().getLogger().warning(
+                    "addColumnIfMissing(" + table + "." + column + ") failed: " + e.getMessage());
+        }
+    }
+
     @FunctionalInterface
     public interface SqlConsumer {
         void accept(Connection connection) throws SQLException;

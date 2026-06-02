@@ -44,6 +44,7 @@ public class SqliteDatabase extends BaseDatabase {
     @Override
     protected void runMigrations(Connection connection) throws SQLException {
         createAllTables(connection);
+        addColumnIfMissing(connection, "items", "version", "BIGINT NOT NULL DEFAULT 0");
         addMissingIndexes(connection);
     }
 
@@ -59,7 +60,8 @@ public class SqliteDatabase extends BaseDatabase {
                 "lowest DOUBLE, " +
                 "highest DOUBLE, " +
                 "stock DOUBLE DEFAULT 0, " +
-                "taxes DOUBLE)");
+                "taxes DOUBLE, " +
+                "version BIGINT NOT NULL DEFAULT 0)");
 
         safeExec(connection, "CREATE TABLE IF NOT EXISTS prices_day (" +
                 "identifier TEXT NOT NULL, " +

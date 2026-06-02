@@ -52,6 +52,7 @@ public class MySQL extends BaseDatabase {
     @Override
     protected void runMigrations(Connection connection) throws SQLException {
         createAllTables(connection);
+        addColumnIfMissing(connection, "items", "version", "BIGINT NOT NULL DEFAULT 0");
     }
 
     @Override
@@ -68,7 +69,8 @@ public class MySQL extends BaseDatabase {
                 "lowest DOUBLE, " +
                 "highest DOUBLE, " +
                 "stock DOUBLE DEFAULT 0, " +
-                "taxes DOUBLE" + OPTS);
+                "taxes DOUBLE, " +
+                "version BIGINT NOT NULL DEFAULT 0" + OPTS);
 
         for (String table : new String[]{"prices_day", "prices_month", "prices_history"}) {
             safeExec(connection, "CREATE TABLE IF NOT EXISTS " + table + " (" +
