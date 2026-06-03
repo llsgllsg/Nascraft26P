@@ -2,6 +2,7 @@ package me.bounser.nascraft.managers;
 
 import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.advancedgui.LayoutModifier;
+import me.bounser.nascraft.crossserver.RedisManager;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.discord.alerts.DiscordAlerts;
 import me.bounser.nascraft.discord.DiscordBot;
@@ -104,10 +105,22 @@ public class TasksManager {
 
         FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
+            RedisManager redis = Nascraft.getInstance().getRedisManager();
+
             for (Item item : MarketManager.getInstance().getAllParentItems()) {
-                if (Config.getInstance().getPriceNoise())
+                if (Config.getInstance().getPriceNoise()) {
                     item.getPrice().applyNoise();
 
+                    // Cross-server: stamp + broadcast the new stock. Already on an
+                    // async thread here, so the Redis I/O is fine inline.
+                    if (redis != null && redis.isConnected()) {
+                        long gv = redis.nextGlobalVersion(item.getIdentifier());
+                        if (gv > 0) {
+                            item.getPrice().setVersion(gv);
+                            redis.publishAssetUpdate(item.getIdentifier(), item.getPrice().getStock(), gv);
+                        }
+                    }
+                }
             }
         }, (long) delay * ticksPerSecond, (long) Config.getInstance().getNoiseTime() *  ticksPerSecond);
     }

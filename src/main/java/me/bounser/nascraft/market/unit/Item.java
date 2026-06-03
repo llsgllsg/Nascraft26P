@@ -6,7 +6,9 @@ import me.bounser.nascraft.api.events.Action;
 import me.bounser.nascraft.api.events.TransactionCompletedEvent;
 import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
+import me.bounser.nascraft.crossserver.RedisManager;
 import me.bounser.nascraft.database.DatabaseManager;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.bounser.nascraft.api.events.BuyItemEvent;
 import me.bounser.nascraft.api.events.SellItemEvent;
 import me.bounser.nascraft.database.commands.resources.Trade;
@@ -432,6 +434,20 @@ public class Item {
         this.volume += volume;
         this.price.changeStock(stockChange);
         this.collectedTaxes += taxes;
+        publishStateIfNetworked();
+    }
+
+    private void publishStateIfNetworked() {
+        Nascraft plugin = Nascraft.getInstance();
+        if (plugin == null) return;
+        RedisManager redis = plugin.getRedisManager();
+        if (redis == null || !redis.isConnected()) return;
+
+        long gv = redis.nextGlobalVersion(identifier);
+        if (gv <= 0) return;
+        price.setVersion(gv);
+        double stock = price.getStock();
+        FoliaScheduler.runAsync(plugin, () -> redis.publishAssetUpdate(identifier, stock, gv));
     }
 
     public String getIdentifier() { return identifier; }

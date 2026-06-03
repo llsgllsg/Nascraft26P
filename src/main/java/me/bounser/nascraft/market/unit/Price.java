@@ -29,12 +29,7 @@ public class Price {
 
     private float stock;
 
-    /**
-     * Monotonic version of the stock state, bumped on every local mutation
-     * (trades, noise). Cross-server sync uses it to order updates and reject
-     * stale ones. Unused / harmless in single-server mode.
-     */
-    private long version = 0L;
+    private volatile long version = 0L;
 
     private double support;
     private double resistance;
@@ -118,11 +113,6 @@ public class Price {
 
     public void setVersion(long version) { this.version = version; }
 
-    /**
-     * Applies a stock state received from another server. Takes effect only if
-     * {@code remoteVersion} is strictly newer than the local version, so stale
-     * and self-originated updates are ignored. Returns true if applied.
-     */
     public boolean applyRemoteState(double remoteStock, long remoteVersion) {
         if (remoteVersion <= version) return false;
         setStock((float) remoteStock);
@@ -130,10 +120,6 @@ public class Price {
         return true;
     }
 
-    /**
-     * Restores persisted stock and version at startup, bypassing the version
-     * guard. Call once while loading, before the item starts trading.
-     */
     public void restoreFromSaved(double savedStock, long savedVersion) {
         setStock((float) savedStock);
         this.version = savedVersion;
