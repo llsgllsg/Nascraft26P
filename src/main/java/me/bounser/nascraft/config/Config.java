@@ -146,6 +146,34 @@ public class Config {
         return config.getString("database.mysql.password");
     }
 
+    public boolean isCrossServerEnabled() {
+        return config.getBoolean("cross-server.enabled", false);
+    }
+
+    public String getNodeRole() {
+        return config.getString("cross-server.role", "primary").toLowerCase();
+    }
+
+    public boolean isPrimaryNode() {
+        return !isCrossServerEnabled() || getNodeRole().equals("primary");
+    }
+
+    public String getNodeId() {
+        return config.getString("cross-server.node-id", "server-1");
+    }
+
+    public String getRedisHost() {
+        return config.getString("cross-server.redis.host", "localhost");
+    }
+
+    public int getRedisPort() {
+        return config.getInt("cross-server.redis.port", 6379);
+    }
+
+    public String getRedisPassword() {
+        return config.getString("cross-server.redis.password", "");
+    }
+
     public int getDatabasePurgeDays() {
         return config.getInt("database.days-until-history-removed");
     }

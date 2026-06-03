@@ -12,8 +12,10 @@ import me.bounser.nascraft.commands.alert.AlertsCommand;
 import me.bounser.nascraft.commands.alert.SetAlertCommand;
 import me.bounser.nascraft.commands.discord.DiscordCommand;
 import me.bounser.nascraft.commands.portfolio.PortfolioCommand;
+import me.bounser.nascraft.crossserver.RedisManager;
 import me.bounser.nascraft.database.Database;
-import me.bounser.nascraft.database.sqlite.SqliteDatabase;
+import me.bounser.nascraft.database.BaseDatabase;
+import me.bounser.nascraft.database.mysql.MySQL;
 import me.bounser.nascraft.images.ItemTextureProvider;
 import me.bounser.nascraft.inventorygui.Portfolio.PortfolioInventory;
 import me.bounser.nascraft.commands.market.MarketCommand;
@@ -31,6 +33,7 @@ import me.bounser.nascraft.managers.EventsManager;
 import me.bounser.nascraft.placeholderapi.PAPIExpansion;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.premium.PremiumLoader;
 import me.bounser.nascraft.sellwand.WandListener;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
 import me.leoko.advancedgui.AdvancedGUI;
@@ -65,11 +68,15 @@ public class Nascraft extends JavaPlugin {
     private static Economy economy = null;
     private static Permission perms = null;
 
+    private RedisManager redisManager;
+
     private static final String AGUI_VERSION = "2.2.8";
 
     public static Nascraft getInstance() { return main; }
 
     public static NascraftAPI getAPI() { return apiInstance == null ? apiInstance = new NascraftAPI() : apiInstance; }
+
+    public RedisManager getRedisManager() { return redisManager; }
 
     @Override
     public void onEnable() {
@@ -138,6 +145,22 @@ public class Nascraft extends JavaPlugin {
 
         Services.get().market();
 
+        if (config.isCrossServerEnabled()) {
+            if (!(DatabaseManager.get().getDatabase() instanceof MySQL))
+                getLogger().warning("cross-server.enabled is true but database.type is not MySQL — "
+                        + "servers cannot share one market over SQLite. Set database.type: MySQL.");
+
+            redisManager = new RedisManager(this, config.getNodeId());
+            try {
+                redisManager.connect();
+                for (var item : Services.get().market().getAllParentItems())
+                    redisManager.seedVersionIfNeeded(item.getIdentifier(), item.getPrice().getVersion());
+            } catch (Exception e) {
+                getLogger().warning("Redis unavailable — cross-server sync disabled: " + e.getMessage());
+                redisManager = null;
+            }
+        }
+
         if (config.isCommandEnabled("nascraft")) {
             new NascraftCommand();
 
@@ -170,11 +193,13 @@ public class Nascraft extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EventsManager(), this);
         ItemChartReduced.load();
 
+        PremiumLoader.enable(this);
+
         long purgeTicks = 20L * 60L * 60L * 6L;
         FoliaScheduler.runAsyncTimer(this, () -> {
             Database db = DatabaseManager.get().getDatabase();
-            if (db instanceof SqliteDatabase) {
-                ((SqliteDatabase) db).purgeOldData();
+            if (db instanceof BaseDatabase) {
+                ((BaseDatabase) db).purgeOldData();
             } else {
                 db.purgeHistory();
                 db.purgeAlerts();
@@ -184,6 +209,10 @@ public class Nascraft extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+        PremiumLoader.disable();
+
+        if (redisManager != null) redisManager.disconnect();
 
         getLogger().info("Saving and closing connection with database...");
         DatabaseManager.get().getDatabase().disconnect();
