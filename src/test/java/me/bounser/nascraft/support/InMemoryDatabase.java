@@ -31,7 +31,8 @@ public final class InMemoryDatabase {
             "lowest DOUBLE, " +
             "highest DOUBLE, " +
             "stock DOUBLE DEFAULT 0, " +
-            "taxes DOUBLE)",
+            "taxes DOUBLE, " +
+            "version BIGINT NOT NULL DEFAULT 0)",
 
         "CREATE TABLE prices_day (" +
             "identifier TEXT NOT NULL, " +

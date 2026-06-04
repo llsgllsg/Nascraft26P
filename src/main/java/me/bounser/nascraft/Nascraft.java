@@ -15,6 +15,7 @@ import me.bounser.nascraft.commands.portfolio.PortfolioCommand;
 import me.bounser.nascraft.crossserver.RedisManager;
 import me.bounser.nascraft.database.Database;
 import me.bounser.nascraft.database.BaseDatabase;
+import me.bounser.nascraft.database.ItemState;
 import me.bounser.nascraft.database.mysql.MySQL;
 import me.bounser.nascraft.images.ItemTextureProvider;
 import me.bounser.nascraft.inventorygui.Portfolio.PortfolioInventory;
@@ -159,6 +160,13 @@ public class Nascraft extends JavaPlugin {
                 getLogger().warning("Redis unavailable — cross-server sync disabled: " + e.getMessage());
                 redisManager = null;
             }
+
+            // Re-pull persisted state periodically to recover any
+            // updates missed over pub/sub
+            if (redisManager != null) {
+                long reconcileTicks = 20L * 60L * 5L; // every 5 minutes
+                FoliaScheduler.runAsyncTimer(this, this::reconcileMarketFromDatabase, reconcileTicks, reconcileTicks);
+            }
         }
 
         if (config.isCommandEnabled("nascraft")) {
@@ -197,6 +205,7 @@ public class Nascraft extends JavaPlugin {
 
         long purgeTicks = 20L * 60L * 60L * 6L;
         FoliaScheduler.runAsyncTimer(this, () -> {
+            if (!Config.getInstance().isPrimaryNode()) return;
             Database db = DatabaseManager.get().getDatabase();
             if (db instanceof BaseDatabase) {
                 ((BaseDatabase) db).purgeOldData();
@@ -226,10 +235,30 @@ public class Nascraft extends JavaPlugin {
         ItemTextureProvider.close();
     }
 
+    private void reconcileMarketFromDatabase() {
+        Database db = DatabaseManager.get().getDatabase();
+        if (!(db instanceof BaseDatabase bd)) return;
+
+        Map<String, ItemState> states = bd.loadItemStates();
+        FoliaScheduler.runGlobal(this, () -> {
+            int applied = 0;
+            for (var entry : states.entrySet()) {
+                var item = Services.get().market().getItem(entry.getKey());
+                if (item == null || !item.isParent()) continue;
+                if (item.getPrice().applyRemoteState(entry.getValue().stock(), entry.getValue().version()))
+                    applied++;
+            }
+            if (applied > 0)
+                getLogger().fine("[Sync] Reconciliation applied " + applied + " state(s) from database.");
+        });
+    }
+
     private void setupMetrics() {
         Metrics metrics = new Metrics(this, 18404);
 
         metrics.addCustomChart(new SimplePie("discord_bridge", () -> String.valueOf(Config.getInstance().getDiscordEnabled())));
+
+        metrics.addCustomChart(new SimplePie("cross_server", () -> Config.getInstance().isCrossServerEnabled() ? "Enabled" : "Disabled"));
 
         if (Config.getInstance().getDiscordEnabled())
             metrics.addCustomChart(new SimplePie("linking_method", () -> Config.getInstance().getLinkingMethod().toString()));

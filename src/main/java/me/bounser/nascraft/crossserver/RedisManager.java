@@ -20,12 +20,27 @@ public final class RedisManager {
     private static final String CHANNEL = "nascraft:asset_update";
     private static final String VERSION_KEY_PREFIX = "nascraft:version:";
 
+    private static final String LEASE_KEY = "nascraft:primary";
+    private static final long LEASE_TTL_MS = 30_000L;
+    private static final long HEARTBEAT_MS = 10_000L;
+
+    // Atomic acquire-or-refresh: take the lease if free, refresh it if already
+    // ours, otherwise report that another node holds it. Returns 1 / 0.
+    private static final String LEASE_SCRIPT =
+            "local cur = redis.call('get', KEYS[1]) " +
+            "if cur == false then redis.call('set', KEYS[1], ARGV[1], 'PX', ARGV[2]) return 1 " +
+            "elseif cur == ARGV[1] then redis.call('pexpire', KEYS[1], ARGV[2]) return 1 " +
+            "else return 0 end";
+
     private final Nascraft plugin;
     private final String serverId;
     private final Logger logger;
 
     private volatile JedisPool pool;
     private Thread subscriberThread;
+
+    private volatile boolean electedPrimary = false;
+    private Thread electionThread;
 
     public RedisManager(Nascraft plugin, String serverId) {
         this.plugin = plugin;
@@ -59,10 +74,19 @@ public final class RedisManager {
         }
 
         startSubscriber();
-        logger.info("[Redis] Connected to " + host + ":" + port + " as node '" + serverId + "'.");
+
+        if (Config.getInstance().isAutoElect()) {
+            electedPrimary = tryAcquireOrRefreshLease(); // resolve role before jobs start
+            startElection();
+        }
+
+        logger.info("[Redis] Connected to " + host + ":" + port + " as node '" + serverId + "'"
+                + (Config.getInstance().isAutoElect() ? " (auto-elect, primary=" + electedPrimary + ")" : "") + ".");
     }
 
     public void disconnect() {
+        if (electionThread != null) electionThread.interrupt();
+        releaseLeaseIfHeld(); // hand off instantly on a clean shutdown
         if (subscriberThread != null) subscriberThread.interrupt();
         if (pool != null) {
             pool.close();
@@ -105,6 +129,57 @@ public final class RedisManager {
             jedis.publish(CHANNEL, payload);
         } catch (Exception e) {
             logger.warning("[Redis] publish failed for '" + identifier + "': " + e.getMessage());
+        }
+    }
+
+    public boolean isElectedPrimary() { return electedPrimary; }
+
+    private void startElection() {
+        electionThread = Thread.ofVirtual().name("nascraft-redis-election").start(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    boolean primary = tryAcquireOrRefreshLease();
+                    if (primary != electedPrimary) {
+                        electedPrimary = primary;
+                        logger.info("[Redis] This node is now " + (primary ? "PRIMARY" : "secondary") + ".");
+                    }
+                } catch (Exception e) {
+                    // On a Redis error, relinquish primary so we never act as a
+                    // primary we can no longer prove we hold.
+                    if (electedPrimary) {
+                        electedPrimary = false;
+                        logger.warning("[Redis] Lost primary lease (Redis error): " + e.getMessage());
+                    }
+                }
+                try {
+                    Thread.sleep(HEARTBEAT_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+    }
+
+    private boolean tryAcquireOrRefreshLease() {
+        JedisPool p = pool;
+        if (p == null) return false;
+        try (var jedis = p.getResource()) {
+            Object result = jedis.eval(LEASE_SCRIPT, 1, LEASE_KEY, serverId, String.valueOf(LEASE_TTL_MS));
+            return result instanceof Long && ((Long) result) == 1L;
+        }
+    }
+
+    private void releaseLeaseIfHeld() {
+        JedisPool p = pool;
+        if (p == null || !electedPrimary) return;
+        electedPrimary = false;
+        try (var jedis = p.getResource()) {
+            // Delete only if the lease is still ours, never drop another node's.
+            jedis.eval("if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
+                    1, LEASE_KEY, serverId);
+        } catch (Exception e) {
+            logger.warning("[Redis] Failed to release primary lease: " + e.getMessage());
         }
     }
 

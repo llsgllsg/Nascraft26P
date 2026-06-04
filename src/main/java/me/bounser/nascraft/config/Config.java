@@ -2,6 +2,7 @@ package me.bounser.nascraft.config;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import me.bounser.nascraft.Nascraft;
+import me.bounser.nascraft.crossserver.RedisManager;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.database.DatabaseType;
 import me.bounser.nascraft.managers.currencies.CurrenciesManager;
@@ -154,8 +155,19 @@ public class Config {
         return config.getString("cross-server.role", "primary").toLowerCase();
     }
 
+    public boolean isAutoElect() {
+        return config.getBoolean("cross-server.auto-elect", false);
+    }
+
     public boolean isPrimaryNode() {
-        return !isCrossServerEnabled() || getNodeRole().equals("primary");
+        if (!isCrossServerEnabled()) return true;
+        if (isAutoElect()) {
+            RedisManager redis = Nascraft.getInstance().getRedisManager();
+            // Before the first election resolves (or if Redis is unavailable),
+            // fall back to the configured role.
+            return redis != null ? redis.isElectedPrimary() : getNodeRole().equals("primary");
+        }
+        return getNodeRole().equals("primary");
     }
 
     public String getNodeId() {

@@ -6,7 +6,14 @@ import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorMana
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
+import me.bounser.nascraft.database.BaseDatabase;
+import me.bounser.nascraft.database.Database;
 import me.bounser.nascraft.database.DatabaseManager;
+import me.bounser.nascraft.database.DatabaseMigrator;
+import me.bounser.nascraft.database.mysql.MySQL;
+import me.bounser.nascraft.database.mysql.MysqlDialect;
+import me.bounser.nascraft.database.sqlite.SqliteDatabase;
+import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.managers.DebtManager;
@@ -21,14 +28,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.StringUtil;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class NascraftCommand extends Command {
 
-    private final List<String> arguments = Arrays.asList("reload", "edit", "stop", "resume", "info", "save", "logs", "forgivedebt");
+    private final List<String> arguments = Arrays.asList("reload", "edit", "stop", "resume", "info", "save", "logs", "forgivedebt", "migrate");
 
     private final List<String> tradesArguments = Arrays.asList("<player nick or uuid>", "<item>", "global");
 
@@ -215,9 +224,51 @@ public class NascraftCommand extends Command {
 
                 break;
 
+            case "migrate":
+                handleMigrate(sender, args);
+                break;
+
             default:
                 sender.sendMessage(syntaxError);
         }
+    }
+
+    private void handleMigrate(CommandSender sender, String[] args) {
+
+        String prefix = ChatColor.DARK_PURPLE + "[NC] ";
+
+        if (args.length != 2 || !args[1].equalsIgnoreCase("mysql")) {
+            sender.sendMessage(prefix + ChatColor.RED + "Usage: /nascraft migrate mysql - copies the current SQLite database into the MySQL configured in config.yml.");
+            return;
+        }
+
+        Database current = DatabaseManager.get().getDatabase();
+        if (!(current instanceof SqliteDatabase)) {
+            sender.sendMessage(prefix + ChatColor.RED + "Migration source must be SQLite (current database.type is not SQLite).");
+            return;
+        }
+
+        sender.sendMessage(prefix + ChatColor.GRAY + "Migrating SQLite -> MySQL in the background. Tip: run /nascraft stop first for a clean copy. Watch the console for progress.");
+
+        final BaseDatabase source = (BaseDatabase) current;
+        FoliaScheduler.runAsync(Nascraft.getInstance(), () -> {
+            Config c = Config.getInstance();
+            MySQL target = new MySQL(c.getHost(), c.getPort(), c.getDatabase(), c.getUser(), c.getPassword());
+            try {
+                target.connect(); // builds the MySQL schema
+                int rows;
+                try (Connection s = source.getConnection(); Connection d = target.getConnection()) {
+                    d.setAutoCommit(false);
+                    rows = DatabaseMigrator.copyAll(s, d, new MysqlDialect());
+                    d.commit();
+                }
+                Nascraft.getInstance().getLogger().info("[Migrate] Done - " + rows + " row(s) copied to MySQL. Set database.type: MySQL and restart.");
+            } catch (Exception e) {
+                Nascraft.getInstance().getLogger().log(Level.WARNING, "[Migrate] Failed: " + e.getMessage(), e);
+            } finally {
+                target.close();
+            }
+        });
     }
 
     public static boolean isValidUUID(String uuidString) {

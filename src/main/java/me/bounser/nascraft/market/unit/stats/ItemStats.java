@@ -1,5 +1,6 @@
 package me.bounser.nascraft.market.unit.stats;
 
+import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.market.unit.Item;
 
@@ -34,20 +35,24 @@ public class ItemStats {
 
             dataDay.add(dayInstant);
 
-            DatabaseManager.get().getDatabase().saveDayPrice(item, dayInstant);
-
             while (dataDay.size() > 288)  dataDay.remove(0);
 
-            // if (dataDay.size() < 12) return;
+            // Persist OHLCV candles on the primary node only. Followers keep the
+            // in-memory series above (for their own GUI charts) but must not write
+            // duplicate candle rows into the shared database.
+            if (Config.getInstance().isPrimaryNode()) {
 
-            Instant bigDayInstant = new Instant(
-                    LocalDateTime.now(),
-                    priceAverage(dataDay),
-                    volumeAdder(dataDay));
+                DatabaseManager.get().getDatabase().saveDayPrice(item, dayInstant);
 
-            DatabaseManager.get().getDatabase().saveMonthPrice(item, bigDayInstant);
+                Instant bigDayInstant = new Instant(
+                        LocalDateTime.now(),
+                        priceAverage(dataDay),
+                        volumeAdder(dataDay));
 
-            DatabaseManager.get().getDatabase().saveHistoryPrices(item, bigDayInstant);
+                DatabaseManager.get().getDatabase().saveMonthPrice(item, bigDayInstant);
+
+                DatabaseManager.get().getDatabase().saveHistoryPrices(item, bigDayInstant);
+            }
         }
     }
 

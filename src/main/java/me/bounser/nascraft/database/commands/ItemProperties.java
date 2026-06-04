@@ -1,12 +1,15 @@
 package me.bounser.nascraft.database.commands;
 
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.database.ItemState;
 import me.bounser.nascraft.database.SqlDialect;
 import me.bounser.nascraft.database.SqlDialects;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ItemProperties {
 
@@ -84,5 +87,18 @@ public class ItemProperties {
                 }
             }
         }
+    }
+
+    public static Map<String, ItemState> loadStates(Connection connection) throws SQLException {
+        Map<String, ItemState> states = new HashMap<>();
+        try (PreparedStatement prep = connection.prepareStatement(
+                "SELECT identifier, stock, version FROM items");
+             ResultSet rs = prep.executeQuery()) {
+            while (rs.next()) {
+                states.put(rs.getString("identifier"),
+                        new ItemState(rs.getDouble("stock"), rs.getLong("version")));
+            }
+        }
+        return states;
     }
 }

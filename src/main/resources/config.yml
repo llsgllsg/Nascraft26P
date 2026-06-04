@@ -4,13 +4,67 @@
 language: 'en_US'
 
 database:
-  # Available types: SQLite
+  # Available types: SQLite, MySQL
+  #
+  # SQLite (default) stores everything in a local file (data/sqlite.db) and is
+  # perfect for a single server. For a cross-server / networked setup (several
+  # servers sharing one market) you MUST use MySQL, because a SQLite file cannot
+  # be shared between servers. See the 'cross-server' section below.
   type: 'SQLite'
+
+  # Connection settings used only when type is 'MySQL'. Requires MySQL 8.0+ or
+  # MariaDB 10.2+.
+  mysql:
+    host: 'localhost'
+    port: 3306
+    database: 'nascraft'
+    user: 'root'
+    password: ''
 
   # How many days should logs of trades last in the database?
   # With the option 60, all trades older than 60 days will be automatically removed.
   # Use -1 to disable (Keep all trades logged).
   days-until-history-removed: 60
+
+# Cross-server (network) support.
+#
+# Run several Minecraft servers that share ONE market: the same prices, stock,
+# portfolios, balances and history everywhere. Requirements:
+#   1. database.type set to 'MySQL' (shared persistence), and
+#   2. a Redis server reachable by every instance (real-time price sync + locks).
+#
+# Exactly ONE instance must be the 'primary': it runs the market simulation
+# (price evolution, scheduled jobs) and broadcasts updates. All other instances
+# are 'secondary': they serve players and execute trades, but mirror the
+# primary's prices instead of running their own simulation.
+#
+# Single-node features: the Discord bridge and the self-hosted website should be
+# enabled on ONE instance only (the Discord bot uses a single token, and the web
+# port is per-host). They are independent of the primary/secondary role.
+cross-server:
+  # Turn networked mode on. When false, this is a normal standalone server and
+  # the role / redis settings below are ignored.
+  enabled: false
+
+  # This instance's role: 'primary' (owns the simulation) or 'secondary'.
+  # Set exactly one server in your network to 'primary'.
+  # Ignored when auto-elect is true (the primary is then chosen automatically).
+  role: 'primary'
+
+  # Automatically elect the primary via Redis instead of pinning it with 'role'.
+  # When true, the instances hold a short Redis lease and one becomes primary; if
+  # it goes down another takes over within ~30s. Leave false to use 'role' above.
+  auto-elect: false
+
+  # A unique name for this instance (used in logs, network messages and election).
+  node-id: 'server-1'
+
+  # Redis connection, shared by every instance in the network.
+  redis:
+    host: 'localhost'
+    port: 6379
+    # Leave empty if your Redis has no password (AUTH disabled).
+    password: ''
 
 currencies:
   # Currency to be used by default by all items.
@@ -206,6 +260,35 @@ limit-orders:
       display: "90 days"
       fee: 0.06
       min-fee: 6
+
+# Self-hosted website.
+website:
+  # Turn the website on or off.
+  enabled: false
+  # Port the website will be served on.
+  # Access it at http://<your-server-ip>:<port>
+  # Make sure the port is open/forwarded and not already used by another service.
+  port: 8080
+
+  # Browser title + header wordmark.
+  title: "Nascraft Market"
+  # Accent colour (hex). Restyles the whole web UI, both Regular and Pro modes.
+  accent: "#6E56CF"
+  # Default experience when a user first arrives: regular | pro
+  default-mode: "regular"
+  # If true, users cannot switch between Regular and Pro modes.
+  lock-mode: false
+  # Default colour theme: system | light | dark
+  default-theme: "system"
+  # In-game command a player runs to get a one-time web login code.
+  login-command: "webcode"
+  # Session security.
+  session:
+    # Bind each login to the browser/device it was created on. Recommended.
+    bind-device: true
+    # Also bind a session to the client IP. More secure, but logs users out when
+    # their IP changes (mobile networks, dynamic ISPs).
+    bind-ip: false
 
 # Use with caution.
 discord-bot:

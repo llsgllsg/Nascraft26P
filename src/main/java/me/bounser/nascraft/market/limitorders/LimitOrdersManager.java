@@ -60,6 +60,8 @@ public class LimitOrdersManager {
 
     public void checkOrders() {
 
+        if (!Config.getInstance().isPrimaryNode()) return;
+
         for (LimitOrder limitOrder : new ArrayList<>(limitOrders.keySet())) {
 
             if (!limitOrders.get(limitOrder)) continue;

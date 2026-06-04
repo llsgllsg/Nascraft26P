@@ -39,6 +39,9 @@ public class DebtManager {
         FoliaScheduler.runGlobalTimer(Nascraft.getInstance(),
                 () -> {
 
+                    // Loans are global shared state, liquidate on the primary only.
+                    if (!Config.getInstance().isPrimaryNode()) return;
+
                     HashMap<UUID, Double> debtors = DatabaseManager.get().getDatabase().getUUIDAndDebt();
 
                     for (UUID debtorUUID : debtors.keySet()) {
@@ -66,6 +69,9 @@ public class DebtManager {
 
         FoliaScheduler.runGlobalTimer(Nascraft.getInstance(),
                 () -> {
+
+                    // Interest must be charged exactly once per day, primary only.
+                    if (!Config.getInstance().isPrimaryNode()) return;
 
                     HashMap<UUID, Double> debtors = DatabaseManager.get().getDatabase().getUUIDAndDebt();
 

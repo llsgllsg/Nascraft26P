@@ -105,6 +105,8 @@ public class TasksManager {
 
         FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
+            if (!Config.getInstance().isPrimaryNode()) return;
+
             RedisManager redis = Nascraft.getInstance().getRedisManager();
 
             for (Item item : MarketManager.getInstance().getAllParentItems()) {
@@ -129,9 +131,13 @@ public class TasksManager {
 
         FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
 
-            DatabaseManager.get().getDatabase().saveEverything();
-
-            DatabaseManager.get().getDatabase().saveCPIValue(MarketManager.getInstance().getConsumerPriceIndex());
+            // Item state + CPI are authoritative/global — only the primary writes
+            // them to the shared DB (followers would clobber). Per-player balance
+            // and portfolio-worth saves run on every node, for that node's players.
+            if (Config.getInstance().isPrimaryNode()) {
+                DatabaseManager.get().getDatabase().saveEverything();
+                DatabaseManager.get().getDatabase().saveCPIValue(MarketManager.getInstance().getConsumerPriceIndex());
+            }
 
             PortfoliosManager.getInstance().savePortfoliosWorthOfOnlinePlayers();
 

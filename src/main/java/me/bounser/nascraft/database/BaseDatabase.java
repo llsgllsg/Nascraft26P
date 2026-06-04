@@ -206,6 +206,10 @@ public abstract class BaseDatabase implements Database {
         purgeAlerts();
     }
 
+    public Map<String, ItemState> loadItemStates() {
+        return queryConnection(ItemProperties::loadStates);
+    }
+
     // ------------------------------------------------------------------
     // Discord links (native linking)
     // ------------------------------------------------------------------
