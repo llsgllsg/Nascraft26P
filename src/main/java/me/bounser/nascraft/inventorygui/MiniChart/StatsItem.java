@@ -6,21 +6,21 @@ import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.item.ItemProvider;
-import xyz.xenondevs.invui.item.builder.ItemBuilder;
-import xyz.xenondevs.invui.item.impl.AbstractItem;
+import xyz.xenondevs.invui.item.impl.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatsItem extends AbstractItem {
+public class StatsItem implements Item {
 
     private Item item;
     private ChartType type;
@@ -88,20 +88,22 @@ public class StatsItem extends AbstractItem {
             lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
-        return new ItemBuilder(item.getItemStack().getType())
-                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
-                .addLegacyLoreLines(lore);
+        ItemStack stack = new ItemStack(item.getItemStack().getType());
+        var meta = stack.getItemMeta();
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(title));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
 
+        return player -> stack;
     }
 
     public void setChartType(ChartType chartType) {
         this.type = chartType;
-
         notifyWindows();
     }
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
-
+        // 点击处理逻辑（如有需要）
     }
 }
