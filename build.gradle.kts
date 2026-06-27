@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "me.bounser"
-version = "1.9.4"
+version = "1.9.2"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -34,7 +34,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.66")   // ✅ 使用正确格式
+    // ✅ 使用版本范围自动获取最新的 26.1.build.xxx 版本
+    compileOnly("io.papermc.paper:paper-api:[26.1.build,)")
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
@@ -61,7 +62,8 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testImplementation("io.papermc.paper:paper-api:26.1.2.build.66")   // ✅ 与主依赖保持一致
+    // ✅ 测试依赖也使用相同的版本范围
+    testImplementation("io.papermc.paper:paper-api:[26.1.build,)")
 }
 
 fun latestPaperMinecraftVersion(): String =
