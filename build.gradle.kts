@@ -3,7 +3,7 @@ import java.net.URI
 plugins {
     java
     kotlin("jvm") version "2.2.0"
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "9.4.1"
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
