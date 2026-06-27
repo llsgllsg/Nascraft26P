@@ -1,7 +1,6 @@
 name: Build for Minecraft 26.1.2
 
 on:
-  # 允许手动触发
   workflow_dispatch:
     inputs:
       mc_version:
@@ -14,28 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 检出代码
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. 设置 Java 25 环境
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '25'
 
-      # 3. 自动更新 paper-api 版本
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew    # <--- 新增这行
+
       - name: Update paper-api version in build.gradle.kts
         run: |
-          # 使用 sed 命令替换版本号
           sed -i 's/compileOnly("io.papermc.paper:paper-api:.*"/compileOnly("io.papermc.paper:paper-api:${{ github.event.inputs.mc_version }}-R0.1-SNAPSHOT"/g' build.gradle.kts
 
-      # 4. 使用 Gradle 构建项目
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-      # 5. 上传构建产物 (JAR 文件)
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
         with:
