@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "me.bounser"
-version = "1.9.2"
+version = "1.9.4"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
@@ -34,22 +34,22 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.66")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.66")   // ✅ 使用正确格式
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
     compileOnly("jfree:jfreechart:1.0.13")
 
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
-    compileOnly("me.clip:placeholderapi:2.12.2")                // ✅ 更新
+    compileOnly("me.clip:placeholderapi:2.12.2")
     compileOnly("org.xerial:sqlite-jdbc:3.43.0.0")
     compileOnly("com.zaxxer:HikariCP:5.1.0")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")           // ✅ 更新
-    compileOnly("com.discordsrv:discordsrv:1.30.5")            // ✅ 更新
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("com.discordsrv:discordsrv:1.30.5")
     compileOnly("commons-io:commons-io:2.14.0")
 
-    compileOnly("net.dv8tion:JDA:5.3.0")                       // ✅ 更新
-    compileOnly("net.kyori:adventure-text-minimessage:5.1.1")  // ✅ 更新
+    compileOnly("net.dv8tion:JDA:5.3.0")
+    compileOnly("net.kyori:adventure-text-minimessage:5.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
     compileOnly("redis.clients:jedis:5.1.2")
@@ -61,7 +61,7 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testImplementation("io.papermc.paper:paper-api:26.1.2-R0.1-SNAPSHOT")  // ✅ 更新
+    testImplementation("io.papermc.paper:paper-api:26.1.2.build.66")   // ✅ 与主依赖保持一致
 }
 
 fun latestPaperMinecraftVersion(): String =
