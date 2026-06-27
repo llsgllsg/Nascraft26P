@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mc_version:
-        description: '目标Minecraft版本 (例如 26.1.2)'
+        description: '版本'
         required: true
         default: '26.1.2'
 
@@ -23,14 +23,14 @@ jobs:
           java-version: '25'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew    # <--- 新增这行
+        run: chmod +x gradlew
 
       - name: Update paper-api version in build.gradle.kts
         run: |
           sed -i 's/compileOnly("io.papermc.paper:paper-api:.*"/compileOnly("io.papermc.paper:paper-api:${{ github.event.inputs.mc_version }}-R0.1-SNAPSHOT"/g' build.gradle.kts
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build --no-daemon --stacktrace
 
       - name: Upload JAR as artifact
         uses: actions/upload-artifact@v4
