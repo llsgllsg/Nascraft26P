@@ -41,15 +41,15 @@ dependencies {
     compileOnly("jfree:jfreechart:1.0.13")
 
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
-    compileOnly("me.clip:placeholderapi:2.11.5")
+    compileOnly("me.clip:placeholderapi:2.12.2")                // ✅ 更新
     compileOnly("org.xerial:sqlite-jdbc:3.43.0.0")
     compileOnly("com.zaxxer:HikariCP:5.1.0")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("com.discordsrv:discordsrv:1.28.0")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")           // ✅ 更新
+    compileOnly("com.discordsrv:discordsrv:1.30.5")            // ✅ 更新
     compileOnly("commons-io:commons-io:2.14.0")
 
-    compileOnly("net.dv8tion:JDA:5.0.0-beta.18")
-    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
+    compileOnly("net.dv8tion:JDA:5.3.0")                       // ✅ 更新
+    compileOnly("net.kyori:adventure-text-minimessage:5.1.1")  // ✅ 更新
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
     compileOnly("redis.clients:jedis:5.1.2")
@@ -57,11 +57,11 @@ dependencies {
     implementation("de.tr7zw:item-nbt-api:2.13.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
-    testRuntimeOnly   ("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testImplementation("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    testImplementation("io.papermc.paper:paper-api:26.1.2-R0.1-SNAPSHOT")  // ✅ 更新
 }
 
 fun latestPaperMinecraftVersion(): String =
