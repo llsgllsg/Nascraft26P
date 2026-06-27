@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:[26.1.build,)")
-    implementation("xyz.xenondevs.invui:invui:1.43")
+    implementation("xyz.xenondevs.invui:invui:2.2.0")
     compileOnly("jfree:jfreechart:1.0.13")
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
     compileOnly("me.clip:placeholderapi:2.12.2")
