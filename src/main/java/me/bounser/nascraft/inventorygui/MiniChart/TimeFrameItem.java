@@ -4,23 +4,23 @@ import me.bounser.nascraft.chart.price.ChartType;
 import me.bounser.nascraft.config.lang.Lang;
 import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.unit.Item;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.item.ItemProvider;
-import xyz.xenondevs.invui.item.builder.ItemBuilder;
-import xyz.xenondevs.invui.item.impl.AbstractItem;
+import xyz.xenondevs.invui.item.impl.Item;
 import xyz.xenondevs.invui.window.CartographyWindow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeFrameItem extends AbstractItem {
+public class TimeFrameItem implements Item {
 
     private final Item item;
     private final StatsItem statsItem;
@@ -71,9 +71,13 @@ public class TimeFrameItem extends AbstractItem {
             lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
-        return new ItemBuilder(Material.CLOCK)
-                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
-                .setLegacyLore(lore);
+        ItemStack stack = new ItemStack(Material.CLOCK);
+        var meta = stack.getItemMeta();
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(title));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+
+        return player -> stack;
     }
 
     @Override
