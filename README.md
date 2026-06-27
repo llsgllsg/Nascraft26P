@@ -8,4 +8,3 @@
 ## A Minecraft item shop with live valuations and in-game graphs powered by AdvancedGUI
 ## 这是一个分叉版本
 
-## Full description of the plugin at: https://www.spigotmc.org/resources/108216/
