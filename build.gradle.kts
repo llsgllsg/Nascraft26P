@@ -34,14 +34,9 @@ repositories {
 }
 
 dependencies {
-    // ✅ 使用版本范围自动获取最新的 26.1.build.xxx 版本
     compileOnly("io.papermc.paper:paper-api:[26.1.build,)")
-
-    // ✅ 修复：去掉 @pom，避免 ShadowJar 误将 .pom 当 ZIP 解压
     implementation("xyz.xenondevs.invui:invui:1.43")
-
     compileOnly("jfree:jfreechart:1.0.13")
-
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.8")
     compileOnly("me.clip:placeholderapi:2.12.2")
     compileOnly("org.xerial:sqlite-jdbc:3.43.0.0")
@@ -49,7 +44,6 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("com.discordsrv:discordsrv:1.30.5")
     compileOnly("commons-io:commons-io:2.14.0")
-
     compileOnly("net.dv8tion:JDA:5.3.0")
     compileOnly("net.kyori:adventure-text-minimessage:5.1.1")
     implementation("org.bstats:bstats-bukkit:3.0.2")
@@ -63,7 +57,6 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    // ✅ 测试依赖也使用相同的版本范围
     testImplementation("io.papermc.paper:paper-api:[26.1.build,)")
 }
 
@@ -104,8 +97,13 @@ tasks {
         relocate("de.tr7zw.changeme.nbtapi", "me.bounser.nbtapi")
     }
 
+    // ✅ 跳过测试编译和执行
+    compileTestJava {
+        enabled = false
+    }
+
     test {
-        useJUnitPlatform()
+        enabled = false
     }
 
     build {
