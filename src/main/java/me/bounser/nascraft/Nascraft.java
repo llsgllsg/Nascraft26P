@@ -34,7 +34,7 @@ import me.bounser.nascraft.managers.EventsManager;
 import me.bounser.nascraft.placeholderapi.PAPIExpansion;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
 import me.bounser.nascraft.config.Config;
-import me.bounser.nascraft.premium.PremiumLoader;
+// [MODIFIED] import me.bounser.nascraft.premium.PremiumLoader;   // 已注释，该功能模块不存在
 import me.bounser.nascraft.sellwand.WandListener;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
 import me.leoko.advancedgui.AdvancedGUI;
@@ -201,7 +201,7 @@ public class Nascraft extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EventsManager(), this);
         ItemChartReduced.load();
 
-        PremiumLoader.enable(this);
+        // [MODIFIED] PremiumLoader.enable(this);   // 已注释，该功能模块不存在
 
         long purgeTicks = 20L * 60L * 60L * 6L;
         FoliaScheduler.runAsyncTimer(this, () -> {
@@ -219,7 +219,7 @@ public class Nascraft extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        PremiumLoader.disable();
+        // [MODIFIED] PremiumLoader.disable();   // 已注释，该功能模块不存在
 
         if (redisManager != null) redisManager.disconnect();
 
@@ -359,5 +359,4 @@ public class Nascraft extends JavaPlugin {
             getLogger().info("Layout (Nascraft.json) present!");
         }
     }
-
 }
