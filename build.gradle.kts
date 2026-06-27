@@ -37,7 +37,8 @@ dependencies {
     // ✅ 使用版本范围自动获取最新的 26.1.build.xxx 版本
     compileOnly("io.papermc.paper:paper-api:[26.1.build,)")
 
-    implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
+    // ✅ 修复：去掉 @pom，避免 ShadowJar 误将 .pom 当 ZIP 解压
+    implementation("xyz.xenondevs.invui:invui:1.43")
 
     compileOnly("jfree:jfreechart:1.0.13")
 
