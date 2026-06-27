@@ -11,12 +11,12 @@ group = "me.bounser"
 version = "1.9.2"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 repositories {
@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.2-R0.1-SNAPSHOT")
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
