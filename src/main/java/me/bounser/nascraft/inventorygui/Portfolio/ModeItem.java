@@ -8,10 +8,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.item.ItemProvider;
-import xyz.xenondevs.invui.item.builder.ItemBuilder;
-import xyz.xenondevs.invui.item.impl.AbstractItem;
+import xyz.xenondevs.invui.item.impl.Item;
 
-public class ModeItem extends AbstractItem {
+public class ModeItem implements Item {
 
     private Portfolio portfolio;
     private PortfolioChartType type;
@@ -23,24 +22,13 @@ public class ModeItem extends AbstractItem {
 
     @Override
     public ItemProvider getItemProvider() {
-        return new ItemBuilder(new ItemStack(Material.BOOK));
+        ItemStack stack = new ItemStack(Material.BOOK);
+        return player -> stack;
     }
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
-
-        /*
-        if (type.equals(PortfolioChartType.COMPOSITION)) type = PortfolioChartType.EVOLUTION;
-        else type = PortfolioChartType.COMPOSITION;
-
-        CartographyWindow window = (CartographyWindow) getWindows().iterator().next();
-
-        switch (type) {
-            case COMPOSITION -> window.updateMap(InfoPortfolio.getMapPatchComposition(portfolio));
-            case EVOLUTION -> window.updateMap(InfoPortfolio.getMapPatchEvolution(portfolio));
-        }
-
-        notifyWindows(); */
+        // 点击逻辑（可保留注释中的切换功能，但需实现）
     }
 
     public PortfolioChartType getPortfolioChartType() {
