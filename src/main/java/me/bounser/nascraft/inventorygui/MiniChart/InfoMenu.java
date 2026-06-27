@@ -17,10 +17,10 @@ import org.bukkit.map.MapPalette;
 import xyz.xenondevs.inventoryaccess.map.MapPatch;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.gui.structure.Structure;
-import xyz.xenondevs.invui.window.Window;  // ✅ v2: 使用 Window 代替 CartographyWindow
+import xyz.xenondevs.invui.window.CartographyWindow;
+import xyz.xenondevs.invui.window.Window;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 public class InfoMenu implements MenuPage {
 
@@ -45,20 +45,17 @@ public class InfoMenu implements MenuPage {
                 .addIngredient('I', statsItem)
                 .addIngredient('C', timeFrameItem);
 
-        // ✅ v2: Gui.normal() 改为 Gui.builder()
         Gui gui = Gui.builder()
                 .setStructure(structure)
                 .build();
 
-        // ✅ v2: CartographyWindow.single() 改为 Window.cartography()
-        // ✅ setTitle 直接接受 Component，无需再转换
-        Window window = Window.cartography()
+        // 使用 CartographyWindow.builder()
+        CartographyWindow window = CartographyWindow.builder()
                 .setViewer(player)
                 .setTitle(title)
                 .setGui(gui)
                 .build();
 
-        // ✅ v2: setCloseHandlers(List) 改为 setCloseHandler(Runnable)
         window.setCloseHandler(() -> {
             MarketMenuManager.getInstance().setMenuOfPlayer(player, new BuySellMenu(player, item));
             FoliaScheduler.runAtEntityLater(Nascraft.getInstance(), player, () -> {
