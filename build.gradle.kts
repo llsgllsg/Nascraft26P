@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.66")
 
     implementation("xyz.xenondevs.invui:invui:1.43@pom") { isTransitive = true }
 
