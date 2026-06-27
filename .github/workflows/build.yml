@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mc_version:
-        description: '版本'
+        description: '目标Minecraft版本 (例如 26.1.2)'
         required: true
         default: '26.1.2'
 
@@ -22,15 +22,18 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
 
-      # 关键修改：使用 setup-gradle 安装指定版本
+      # 直接安装指定版本的 Gradle，绕过项目中的 gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.5.1'   # 直接指定版本
+          gradle-version: '9.5.1'
 
-      - name: Update paper-api version in build.gradle.kts
-        run: |
-          sed -i 's/compileOnly("io.papermc.paper:paper-api:.*"/compileOnly("io.papermc.paper:paper-api:${{ github.event.inputs.mc_version }}-R0.1-SNAPSHOT"/g' build.gradle.kts
-
+      # 不再使用 sed 修改版本号，完全依赖你在 build.gradle.kts 中的手动配置
       - name: Build with Gradle
-        run: gradle build --no-daemon --stacktrace   # 注意：使用 gradle 而不是 ./gradlew
+        run: gradle build --no-daemon --stacktrace
+
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nascraft-${{ github.event.inputs.mc_version }}
+          path: build/libs/*.jar
