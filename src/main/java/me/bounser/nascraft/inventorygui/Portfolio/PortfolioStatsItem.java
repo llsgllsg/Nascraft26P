@@ -8,9 +8,9 @@ import me.bounser.nascraft.formatter.RoundUtils;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.portfolio.Portfolio;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -19,14 +19,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.item.ItemProvider;
-import xyz.xenondevs.invui.item.builder.ItemBuilder;
-import xyz.xenondevs.invui.item.impl.AbstractItem;
+import xyz.xenondevs.invui.item.impl.Item;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class PortfolioStatsItem extends AbstractItem {
+public class PortfolioStatsItem implements Item {
 
     private final Portfolio portfolio;
     private final Player player;
@@ -43,11 +42,11 @@ public class PortfolioStatsItem extends AbstractItem {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_COMPOSITION_STATS_NAME));
 
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
 
-        SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
+        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
         skullMeta.setOwningPlayer(player);
-        item.setItemMeta(skullMeta);
+        itemStack.setItemMeta(skullMeta);
 
         String loreString = Lang.get().message(Message.PORTFOLIO_COMPOSITION_STATS_LORE)
                 .replace("[COMPOSITION]", getLoreComposition());
@@ -59,14 +58,17 @@ public class PortfolioStatsItem extends AbstractItem {
             lore.add(LegacyComponentSerializer.legacySection().serialize(componentLine));
         }
 
-        return new ItemBuilder(item)
-                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
-                .setLegacyLore(lore);
+        var meta = itemStack.getItemMeta();
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(title));
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
+
+        return player -> itemStack;
     }
 
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
-
+        // 空实现
     }
 
     public String getLoreComposition() {
