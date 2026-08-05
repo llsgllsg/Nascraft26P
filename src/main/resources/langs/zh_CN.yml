@@ -1,0 +1,495 @@
+# Nascraft zh_CN - ${project.version}
+# by @Bounser（简体中文汉化）
+#
+# ─────────────────────────────────────────────────────────
+# 调色板：
+#   品牌渐变色（标题）     : #b06bff → #ff5dcc
+#   资产组合渐变色         : #8c2eff → #cd75ff
+#   成功 / 买入             : #4ade80
+#   危险 / 卖出 / 错误     : #f87171
+#   金钱 / 价格             : #fbbf24
+#   信息 / 通知             : #38bdf8
+#   标签（弱灰）           : #9ca3af
+#   标签（弱紫）           : #a78bfa
+#   警示渐变色             : #fbbf24 → #f97316
+#   返回按钮               : #ff5e4f
+# ─────────────────────────────────────────────────────────
+
+# 小数分隔符。可选：point (.) / comma (,)
+separator: "point"
+
+# 通用：
+price: "价格"
+material: "物品材质"
+default_item_format: "<color:#e2e8f0>[ALIAS]</color>"
+default_category_format: "<color:#b06bff>[NAME]</color>"
+
+# 可用占位符：[AMOUNT]、[NAME]、[WORTH]
+buy_message: "<color:#38bdf8>你刚刚购买了 <b>[AMOUNT]</b> 个 <b>[NAME]</b>，总价值 </color><color:#4ade80>[WORTH]</color>"
+sell_message: "<color:#38bdf8>你刚刚出售了 <b>[AMOUNT]</b> 个 <b>[NAME]</b>，总价值 </color><color:#4ade80>[WORTH]</color>"
+
+limit_buy_message: "<color:#38bdf8>已设置限价买入单，以 </color><color:#fbbf24>[WORTH]</color><color:#38bdf8> 的价格购买 <b>[AMOUNT]</b> 个 <b>[NAME]</b></color>"
+limit_sell_message: "<color:#38bdf8>已设置限价卖出单，以 </color><color:#fbbf24>[WORTH]</color><color:#38bdf8> 的价格出售 <b>[AMOUNT]</b> 个 <b>[NAME]</b></color>"
+limit_buy_completed: "<color:#38bdf8>限价单已完成：以 </color><color:#4ade80>[WORTH]</color><color:#38bdf8> 的价格购买了 <b>[AMOUNT]</b> 个 <b>[NAME]</b></color>"
+limit_sell_completed: "<color:#38bdf8>限价单已完成：以 </color><color:#4ade80>[WORTH]</color><color:#38bdf8> 的价格出售了 <b>[AMOUNT]</b> 个 <b>[NAME]</b></color>"
+limit_max_orders_reached: "<color:#f87171>✘ 你无法同时拥有更多的限价单！</color>"
+
+not_enough_money: "<color:#f87171>✘ 你的钱不够支付这笔交易！</color>"
+not_enough_items: "<color:#f87171>✘ 没有足够的物品可以出售！</color>"
+not_enough_space: "<color:#f87171>✘ 背包空间不足！</color>"
+top_limit_reached: "<color:#f87171>✘ 没有人愿意向你出售该物品！</color> <color:#9ca3af>(已达到最高价格)</color>"
+bottom_limit_reached: "<color:#f87171>✘ 没有人愿意购买该物品！</color> <color:#9ca3af>(已达到最低价格)</color>"
+shop_closed: "<color:#f87171>✘ 购买时出错：商店已关闭</color>"
+
+# 命令
+no_permission: "<color:#f87171>✘ 你没有权限。</color>"
+click_to_confirm: "\n<color:#fbbf24>[ <b>点击此处确认</b> ]</color>\n"
+list_segment: "\n<color:#9ca3af>> <color:#4ade80>[NAME] x [AMOUNT] = [WORTH]</color></color>"
+
+# nsellall
+sellall_everything_error: "<color:#f87171>✘ 你没有可出售的物品！</color>"
+sellall: "<color:#38bdf8>你刚刚出售了 <b>[AMOUNT]</b> 个 <b>[NAME]</b>，总价值 </color><color:#4ade80>[WORTH]</color>"
+sellall_error_without_item: "<color:#f87171>✘ 你没有可出售的 [NAME]！</color>"
+sellall_error_wrong_material: "<color:#f87171>✘ 无法识别的材质。用法：/sellall [material]</color>"
+sellall_estimated_value: "<color:#9ca3af>预计价值：</color> <color:#4ade80>\n[WORTH]</color>"
+sellall_total: "<color:#38bdf8>总共出售：</color> <color:#4ade80>[WORTH]</color>"
+
+# nsell
+sell_title: "           <b><gradient:#b06bff:#ff5dcc>出售菜单</gradient></b>"
+sell_close: "<b><color:#f87171>关闭</color></b>"
+sell_button_name: "<b><color:#fbbf24>出售全部内容</color></b>"
+sell_button_lore: "<color:#9ca3af>大约可获得：</color> \n[WORTH-LIST]"
+sell_remove_item: "<u><color:#f87171>⏵ 点击从出售列表中移除</color></u>"
+sell_help_title: "<b><color:#a78bfa>这个功能怎么用？</color></b>"
+sell_help_lore: "<color:#9ca3af>选择所有你想出售的物品。</color>\n<color:#9ca3af>预计价值不保证准确，</color>\n<color:#9ca3af>会在交易完成后发生变化。</color>"
+sell_action_message: "<color:#38bdf8>你刚刚出售了总价值 <b>[WORTH]</b> 的物品</color>"
+sell_item_not_allowed: "<color:#f87171>✘ 这不是有效的物品！</color>"
+sell_full: "<color:#f87171>✘ 出售栏已满！</color>"
+
+# sellhand
+sellhand_invalid: "<color:#f87171>请手持一个有效物品！</color>"
+sellhand_error_hand: "<color:#f87171>✘ 错误！确认前请不要更换手中的物品</color>"
+sellhand_estimated_value: "<color:#9ca3af>预计价值：</color> \n"
+
+# alert
+alert_invalid_use: "<color:#f87171>✘ 命令用法无效。/setalert [material] [price]</color>"
+alert_not_linked: "<color:#f87171>✘ 你需要先关联你的账户才能使用此命令！</color>"
+alert_in_watchlist: "<color:#f87171>✘ 该物品已在你的关注列表中。</color>"
+alert_invalid_price: "<color:#f87171>✘ 命令用法无效。价格必须是数字。（例如 120.90）</color>"
+alert_not_recognized: "<color:#f87171>✘ 无法识别的物品。</color>"
+alert_setup: "<color:#38bdf8>提醒设置成功！达到价格时你将收到私信通知。</color>"
+# alerts
+alerts_empty: "<color:#f87171>你还没有设置任何提醒。</color>"
+alerts_header: "<color:#fbbf24>当前提醒：</color>\n"
+alerts_list_segment: "\n<color:#fbbf24>> <b>[NAME]</b></color> <color:#9ca3af>价格达到</color> <b><color:#fbbf24>[WORTH]</color></b>"
+
+alert_reached_up: "<color:#fbbf24>✉</color> <color:#38bdf8>物品的提醒已触发：</color> [NAME] <color:#9ca3af>~</color> [PRICE1] <color:#4ade80>价格刚刚达到：[PRICE2]！</color>"
+alert_reached_down: "<color:#fbbf24>✉</color> <color:#38bdf8>物品的提醒已触发：</color> [NAME] <color:#9ca3af>~</color> [PRICE1] <color:#f87171>价格刚刚跌至：[PRICE2]！</color>"
+
+# SELLWAND（出售魔棒）
+
+sellwand_estimated_value: "<color:#38bdf8>预计价值：</color> <b><color:#4ade80>\n[WORTH]</color></b>"
+sellwand_sold: "<color:#38bdf8>已出售内容，获得：</color> <b><color:#4ade80>[WORTH]</color></b>"
+sellwand_sold_with_multiplier: "<color:#38bdf8>已出售内容，获得：</color>"
+sellwand_sold_with_multiplier_segment: "<color:#a78bfa>[INITIAL-WORTH] x [MULTIPLIER] = <b><color:#4ade80>[WORTH]</color></b></color>"
+sellwand_ran_out: "<color:#f87171>✘ 这根出售魔棒已没有剩余次数。</color>"
+sellwand_nothing_to_sell: "<color:#f87171>✘ 没有可出售的物品！</color>"
+sellwand_cooldown: "<color:#f87171>冷却中，还剩 [TIME]！</color>"
+sellwand_minutes: "[MINUTES] 分钟 [SECONDS] 秒"
+sellwand_seconds: "[SECONDS] 秒"
+sellwand_too_much: "<color:#f87171>✘ 这根魔棒无法出售这么多！</color>"
+
+# LINK 命令
+
+link_already_linked: "<color:#38bdf8>已经关联过了！</color>"
+link_wrong_use: "<color:#f87171>✘ 命令用法错误！</color>"
+link_wrong_format:  "<color:#f87171>✘ 代码格式错误！</color>"
+link_no_process_found: "<color:#f87171>✘ 找不到该代码对应的关联流程。</color>"
+link_success: "<color:#38bdf8>已成功与用户关联：</color> <b><color:#a78bfa>[USER]</color></b>"
+link_unlinked: "<color:#38bdf8>你已与用户解除关联：</color> <b><color:#a78bfa>[USER]</color></b>"
+link_direct_message: ":link: 你的 Discord 账户已成功与 Minecraft 用户 ``[USER]`` 关联"
+
+# DISCORD 命令
+
+discordcmd_not_linked: "<color:#f87171>✘ 你还没有关联账户！</color>"
+discordcmd_linked: "<color:#38bdf8>你已与以下账户关联：</color> <b><color:#a78bfa>[USER]</color></b>"
+
+# 资产组合
+
+portfolio_title: "<b><gradient:#8c2eff:#cd75ff>资产组合</gradient></b>"
+portfolio_cant_afford_expansion: "<color:#f87171>✘ 你的钱不够！</color>"
+portfolio_locked_title: "<b><color:#f87171>已锁定</color></b>"
+portfolio_locked_lore: " \n<color:#4ade80>⏵ 点击以 </color><color:#fbbf24>[AMOUNT]</color><color:#4ade80> 购买下一个栏位</color>\n "
+portfolio_info_title: "<b><gradient:#8c2eff:#cd75ff>你的资产组合</gradient></b>"
+portfolio_info_lore: "<color:#a78bfa>资产组合价值：</color>\n[WORTH]\n \n<color:#4ade80>⏵ 点击查看你持仓的图表</color>\n<color:#4ade80>以及资产组合的演变。</color>"
+portfolio_amount: "<color:#a78bfa>数量：</color> <color:#4ade80>[AMOUNT]</color>\n\n<color:#a78bfa>价值：</color> [WORTH]\n \n<color:#4ade80>⏵ 点击取出</color>"
+portfolio_no_space: "<color:#f87171>✘ 你的背包没有空间来移动该物品！</color>"
+portfolio_no_storage: "<color:#f87171>✘ 已达上限，你的资产组合无法容纳该物品！</color>"
+portfolio_invalid: "<color:#f87171>✘ 无效的物品！</color>"
+portfolio_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+
+portfolio_composition_title: "          <gradient:#8c2eff:#cd75ff>资产组合构成</gradient>"
+portfolio_composition_stats_name: "<color:#38bdf8>资产组合构成：</color>"
+portfolio_composition_stats_lore: "\n [COMPOSITION]"
+portfolio_composition_stats_segment: "[COLOR]■ <color:#a78bfa>[PERCENTAGE]</color> [NAME] <color:#9ca3af>-</color> [WORTH]\n "
+portfolio_composition_empty: " <color:#9ca3af>你的资产组合是空的。</color>\n "
+
+portfolio_debt_name: "<b><color:#f87171>债务</color></b>"
+portfolio_debt_lore: "<color:#9ca3af>以你的资产组合价值为抵押获取贷款。</color>\n\n<color:#4ade80>⏵ 点击打开债务管理</color>"
+portfolio_debt_title: "          <b><color:#f87171>债务管理</color></b>"
+portfolio_debt_exp_name: "<b><color:#f87171>债务如何运作</color></b>"
+portfolio_debt_exp_lore: "<color:#9ca3af>你资产组合中的物品是非流动的，</color>\n<color:#9ca3af>也就是说，在出售之前你无法动用它们的价值。</color>\n\n<color:#9ca3af>通过该系统，你可以借入资金，</color>\n<color:#9ca3af>唯一的成本就是贷款的利息。</color>\n\n<color:#9ca3af>一旦贷款确认，你的资产组合将会被锁定，</color>\n<color:#9ca3af>如果其价值跌破某一阈值，</color>\n<color:#9ca3af>你的资产可能会被强制平仓以偿还债务。</color>\n"
+portfolio_debt_info_name: "<b><color:#f87171>债务</color></b>"
+portfolio_debt_info_lore: "<color:#a78bfa>你目前的债务总计：</color>\n[CURR-DEBT] <color:#9ca3af>(占资产组合的 [CURR-PER]%)</color>\n\n<color:#a78bfa>最高可贷款额：</color>\n[MAX] <color:#9ca3af>(占资产组合的 [MAX-PER]%)</color>\n\n<color:#a78bfa>下次利息支付时间：(在 [TIME] 后)</color>\n[INTEREST]\n\n<color:#a78bfa>已累计支付的利息：</color> [LIFETIME]"
+portfolio_debt_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+portfolio_debt_repay_everything_name: "<b><color:#4ade80>全部偿还</color></b>"
+portfolio_debt_repay_everything_lore: "\n<color:#a78bfa>你将支付：</color> [AMOUNT]\n "
+portfolio_debt_take_all_name: "<b><color:#fbbf24>借取最高贷款额的 90%</color></b>"
+portfolio_debt_take_all_lore: "\n<color:#a78bfa>你将获得：</color> [AMOUNT]\n\n<color:#a78bfa>日利率为：</color> <color:#fbbf24>[INTEREST]%</color>\n\n<color:#9ca3af>(已应用 10% 的安全保证金)</color>"
+portfolio_debt_custom_name: "<b><color:#fbbf24>申请贷款</color></b>"
+portfolio_debt_custom_lore: "\n<color:#a78bfa>点击设置借款金额</color>\n\n<color:#a78bfa>你最多可以借款</color> [ADDITIONAL]\n\n<color:#a78bfa>日利率为：</color> <color:#fbbf24>[INTEREST]%</color>"
+portfolio_debt_repay_name: "<b><color:#4ade80>偿还</color></b>"
+portfolio_debt_repay_lore: "\n<color:#a78bfa>点击设置还款金额</color>\n\n<color:#a78bfa>当前债务：</color> [DEBT]"
+
+portfolio_debt_alert: "<gradient:#fbbf24:#f97316>⚠ <b>注意</b> ⚠</gradient>\n<color:#f87171>你的债务已超过保证金的 95%。请偿还债务或向资产组合中补充物品，以避免被强制平仓</color>"
+portfolio_debt_liquidated: "<gradient:#fbbf24:#f97316>⚠ <b>提醒</b> ⚠</gradient>\n<color:#f87171>你的债务已超过上限，你的资产组合已被强制平仓以偿还债务。</color>"
+portfolio_debt_money: "<color:#f87171>你的债务已超过上限，已从你的账户中扣除 [AMOUNT] 以保持在限额之内。</color>"
+portfolio_debt_interest_payed: "<color:#38bdf8>已扣除你的债务利息。([AMOUNT])</color>"
+portfolio_debt_interest_acc: "<color:#38bdf8>无法扣除你的债务利息，已将其计入你的总债务。(+[AMOUNT])</color>"
+portfolio_debt_repayed_all: "<color:#38bdf8>你已还清所有债务！([AMOUNT])</color>"
+portfolio_debt_repayed: "<color:#38bdf8>你已偿还 [AMOUNT]。你目前的债务为 [DEBT]</color>"
+portfolio_debt_take_loan: "<color:#38bdf8>你已获得 [AMOUNT] 的贷款。你目前的总债务为 [DEBT]</color>"
+portfolio_debt_no_collateral: "<color:#38bdf8>你的资产组合中没有可用于抵押贷款的物品</color>"
+portfolio_debt_cant_take_loan: "<color:#38bdf8>你的资产组合中的物品不足以申请这笔贷款</color>"
+portfolio_debt_min_loan: "<color:#38bdf8>贷款金额最低为 [AMOUNT]</color>"
+portfolio_debt_portfolio_locked: "<color:#38bdf8>请先偿还债务，才能从资产组合中取出物品</color>"
+portfolio_debt_dis_locked: ":exclamation: 请先偿还债务，才能使用资产组合中的物品"
+portfolio_debt_anvil_not_enough: "金钱不足，无法支付"
+portfolio_debt_anvil_invalid: "无效金额"
+portfolio_debt_anvil_repay: "还款："
+portfolio_debt_anvil_repay_title: "偿还债务"
+portfolio_debt_anvil_custom: "贷款："
+portfolio_debt_anvil_custom_title: "申请新贷款"
+
+portfolio_top_name: "<gradient:#8c2eff:#cd75ff>资产组合排行</gradient>"
+portfolio_top_button_lore: "\n<color:#4ade80>⏵ 点击查看排行榜</color>"
+portfolio_top_title: "<gradient:#8c2eff:#cd75ff>资产组合排行</gradient>"
+portfolio_top_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+portfolio_top_name_1: "<b><color:#fbbf24>第 1 名资产组合</color></b>"
+portfolio_top_name_2: "<b><color:#cbd5e1>第 2 名资产组合</color></b>"
+portfolio_top_name_3: "<b><color:#c97b4f>第 3 名资产组合</color></b>"
+portfolio_top_name_others: "<b><color:#38bdf8>第 [POS] 名资产组合</color></b>"
+portfolio_top_lore: "\n<color:#a78bfa>持有人：</color> <color:#f472b6>[OWNER]</color>\n\n<color:#a78bfa>资产组合价值：</color> [WORTH]\n<color:#a78bfa>债务：</color> [DEBT]\n<color:#a78bfa>净资产：</color> [NET]\n\n<color:#a78bfa>构成：</color>\n"
+portfolio_top_lore_list: "  <color:#4ade80>[PER]%</color> <color:#e2e8f0>[NAME]</color>\n"
+portfolio_top_lore_extra: "<color:#a78bfa>还有 <color:#4ade80>[NUM-3]</color> 个其他物品...</color>\n "
+portfolio_top_lore_extra_single: "<color:#a78bfa>还有 <color:#4ade80>1</color> 个其他物品...</color>\n "
+
+# 市场
+
+market_cmd_invalid_use: "<color:#f87171>✘ 命令用法无效。/market <Buy/Sell> <Item> <Quantity></color>"
+market_cmd_invalid_quantity: "<color:#f87171>✘ 无效的数量</color>"
+market_cmd_max_quantity_reached: "<color:#f87171>✘ 数量不能超过 64！</color>"
+market_cmd_invalid_identifier: "<color:#f87171>✘ 该标识符无效！</color>"
+market_cmd_invalid_option: "<color:#f87171>✘ 该选项无效！</color>"
+market_cmd_invalid_category: "<color:#f87171>✘ 该分类不存在！</color>"
+market_cmd_invalid_item: "<color:#f87171>✘ 该物品不存在！</color>"
+
+# 市场 GUI
+
+gui_fillers_name: " "
+
+gui_positive_change: "<color:#4ade80>+[PERCENTAGE]%</color>"
+gui_no_change: "<color:#9ca3af>~[PERCENTAGE]%</color>"
+gui_negative_change: "<color:#f87171>[PERCENTAGE]%</color>"
+
+gui_main_menu_title: "        <b><gradient:#b06bff:#ff5dcc>实时物品市场</gradient></b>"
+
+gui_alerts_name_linked: "<b><color:#fbbf24>提醒</color></b>"
+gui_alerts_lore_linked: "<color:#9ca3af>当物品达到某个价格时，在 <color:#38bdf8>Discord</color></color>\n<color:#9ca3af>收到通知（私信）</color>\n\n<color:#9ca3af>你目前有 [ALERTS] 个提醒</color>\n\n<color:#fbbf24>点击进行管理。</color>"
+gui_alerts_name_not_linked: "<b><color:#fbbf24>提醒</color></b>"
+gui_alerts_lore_not_linked: "<color:#9ca3af>当物品达到某个价格时，在 <color:#38bdf8>Discord</color> 收到通知或私信</color>\n \n<color:#f87171>✘ 你的账户尚未与 Discord 关联。</color>"
+
+gui_limit_orders_name: "<b><color:#a78bfa>限价单</color></b>"
+gui_limit_orders_lore: " \n<color:#9ca3af>以指定价格买入和卖出物品。</color>\n\n<color:#9ca3af>你目前有 <color:#a78bfa>[TOTAL]</color> 个限价单。</color>\n  <color:#a78bfa>╠═</color> <color:#9ca3af>正在成交： [TO-FILL]</color>\n  <color:#a78bfa>╠═</color> <color:#9ca3af>已完成： [FILLED]</color>\n  <color:#a78bfa>╚═</color> <color:#9ca3af>已过期： [EXPIRED]</color>\n\n<color:#4ade80>⏵ 点击查看你的限价单状态。</color>"
+
+gui_information_name: "<b><gradient:#b06bff:#ff5dcc>市场菜单</gradient></b>"
+gui_information_lore: "<color:#9ca3af>从市场购买物品，也可以出售给市场。</color>\n<color:#9ca3af>浏览下面的分类，</color>\n<color:#9ca3af>与各种物品进行交易。</color>"
+
+gui_portfolio_name_linked: "<b><gradient:#8c2eff:#cd75ff>你的资产组合</gradient></b>"
+gui_portfolio_name_not_linked: "<b><gradient:#8c2eff:#cd75ff>你的资产组合</gradient></b>"
+gui_portfolio_lore_linked: "<color:#9ca3af>点击进入你的资产组合库存</color>\n\n<color:#4ade80>✔ 你已与 Discord 关联</color>"
+gui_portfolio_lore_not_linked: " \n<color:#9ca3af>点击进入你的资产组合</color>\n \n<color:#f87171>✘ 你的账户尚未与 Discord 关联，</color>\n<color:#f87171>操作仅限于游戏内交易。</color>"
+
+gui_trends_name: "<b><gradient:#b06bff:#ff5dcc>市场趋势</gradient></b> <color:#9ca3af>(最近一小时)</color>"
+gui_trends_lore: " \n<color:#38bdf8> 最受欢迎：</color> <color:#f97316>🔥</color> [POPULAR] <color:#f97316>🔥</color>\n \n<color:#38bdf8> 涨跌最猛：</color>\n<color:#fbbf24> 1.</color> [1]\n<color:#cbd5e1> 2.</color> [2]\n<color:#c97b4f> 3.</color> [3]"
+gui_trends_positive: "<color:#4ade80>▲ [CHANGE]%</color> [NAME]"
+gui_trends_negative: "<color:#f87171>▼ [CHANGE]%</color> [NAME]"
+
+gui_categories_lore_segment: "<color:#a78bfa>●</color> <color:#9ca3af>[ALIAS]</color>"
+gui_category_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+gui_category_previous_name: "<b><color:#ff5e4f>←</color></b>"
+gui_category_next_name: "<b><color:#ff5e4f>→</color></b>"
+gui_category_item_lore: " \n<color:#9ca3af>价格：</color> <b><color:#fbbf24>[PRICE]</color></b>\n<color:#9ca3af>最近一小时变化：</color> [CHANGE]\n\n<b><color:#4ade80>● 买入：  </color></b> <color:#fbbf24>[BUY-PRICE]</color>\n<b><color:#f87171>● 卖出： </color></b> <color:#fbbf24>[SELL-PRICE]</color>\n \n<u><color:#4ade80>⏵ 点击操作该物品</color></u>"
+
+gui_buysell_item_lore: " \n<color:#9ca3af>价格：</color> <b><color:#fbbf24>[PRICE]</color></b>\n<color:#9ca3af>最近一小时变化：</color> [CHANGE]\n\n<b><color:#4ade80>● 买入：  </color></b> <color:#fbbf24>[BUY-PRICE]</color>\n<b><color:#f87171>● 卖出： </color></b> <color:#fbbf24>[SELL-PRICE]</color>"
+gui_buysell_alerts_name_linked: "<color:#4ade80>✎</color> <b><color:#fbbf24>为该物品设置提醒</color></b>"
+gui_buysell_alerts_name_setup: "<b><color:#fbbf24>提醒</color></b>"
+gui_buysell_alerts_name_not_linked: "<b><color:#fbbf24>为该物品设置提醒</color></b>"
+gui_buysell_alerts_lore_linked: "<color:#9ca3af>点击选择一个价格。价格达到后</color>\n<color:#9ca3af>你将通过 Discord 收到通知。</color>"
+gui_buysell_alerts_lore_setup: "<color:#9ca3af>你已为该物品设置了价格提醒：</color>\n\n<color:#fbbf24>> [PRICE]</color>\n\n<color:#9ca3af>点击以移除它。</color>"
+gui_buysell_alerts_lore_not_linked: "<color:#9ca3af>点击选择一个价格。价格达到后</color>\n<color:#9ca3af>你将收到通知。</color>\n\n<color:#f87171>✘ 你无法设置提醒，因为</color>\n<color:#f87171>你的账户尚未关联。</color>"
+gui_buysell_info_name: "<b><color:#38bdf8>图表</color></b>"
+gui_buysell_info_lore: "<color:#9ca3af>查看价格的变化趋势</color>"
+gui_buysell_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+gui_buysell_limit_name_unset: "<b><color:#fbbf24>取消限价单</color></b>"
+gui_buysell_limit_name_set: "<b><color:#fbbf24>设置限价单</color></b>"
+gui_buysell_limit_lore_set: "\n <color:#a78bfa>限价单让你可以决定</color>\n <color:#a78bfa>你将为该物品支付/获得的价格。</color>\n <color:#a78bfa>一旦价格达到，订单会</color>\n <color:#a78bfa>自动执行。</color>\n\n <color:#a78bfa>如果价格一直未达到，订单会过期，</color>\n <color:#a78bfa>且可以随时取消。</color>\n\n<b><color:#4ade80>⏵ 点击设置</color></b>"
+
+gui_buysell_buy_buttons_name: "<b><color:#4ade80>购买 [AMOUNT]</color></b>"
+gui_buysell_buy_buttons_lore: " \n<color:#9ca3af>⏵ 点击以 </color><color:#fbbf24>[WORTH]</color><color:#9ca3af> 购买 [AMOUNT]</color>"
+
+gui_buysell_sell_buttons_name: "<b><color:#f87171>出售 [AMOUNT]</color></b>"
+gui_buysell_sell_buttons_lore: " \n<color:#9ca3af>⏵ 点击以 </color><color:#fbbf24>[WORTH]</color><color:#9ca3af> 出售 [AMOUNT]</color>"
+
+gui_info_title: "              <gradient:#8c2eff:#cd75ff>价格走势</gradient>"
+gui_info_timeframe_name: "<u><color:#fbbf24>时间范围</color></u>"
+gui_info_timeframe_lore_before: " "
+gui_info_timeframe_lore_unselected_segment: "<color:#9ca3af>[OPTION]</color>\n"
+gui_info_timeframe_lore_selected_segment: "<color:#fbbf24>[OPTION]</color> <color:#4ade80>☜</color>\n"
+gui_info_timeframe_option_1: "天"
+gui_info_timeframe_option_2: "月"
+gui_info_timeframe_option_3: "年"
+gui_info_timeframe_option_4: "全部"
+gui_info_timeframe_lore_after: " \n<color:#4ade80>⏵ 点击切换选项</color>"
+gui_info_statistics_name: "[ITEM-NAME] <color:#fbbf24>- 统计</color>"
+gui_info_statistics_lore: "\n<color:#9ca3af>当前价格：</color> [PRICE]\n \n<b><color:#fbbf24>[OPTION]</color></b>\n <color:#fbbf24>╠═</color> <color:#9ca3af>变化：</color> [CHANGE] \n <color:#fbbf24>╠═</color> <color:#9ca3af>最高：</color> [HIGH] \n <color:#fbbf24>╚═</color> <color:#9ca3af>最低：</color> [LOW]"
+gui_info_positive_change: "<color:#4ade80>▲ [CHANGE]%</color>"
+gui_info_negative_change: "<color:#f87171>▼ [CHANGE]%</color>"
+
+gui_alerts_title: "<b><color:#fbbf24>提醒</color></b>"
+gui_alerts_lore: "\n<color:#9ca3af>目标价格：</color> <color:#fbbf24>[PRICE]</color>\n\n<color:#4ade80>⏵ 点击移除该提醒。</color>"
+gui_alerts_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+
+anvil_alert_title: "提醒：[ALIAS]"
+anvil_alert_text: "价格："
+anvil_alert_invalid_price: "无效的价格。"
+anvil_alert_invalid: "无效"
+anvil_alert_limit_reached: "提醒数量已达上限"
+anvil_alert_repeated: "提醒重复"
+
+gui_limit_orders_title: "<b><color:#a78bfa>限价单</color></b>"
+gui_limit_orders_name_buy: "[ITEM-NAME]"
+gui_limit_orders_name_sell: "[ITEM-NAME]"
+gui_limit_orders_change_positive: "<color:#4ade80>+[CHANGE]%</color>"
+gui_limit_orders_change_negative: "<color:#f87171>[CHANGE]%</color>"
+gui_limit_orders_lore_unfilled_buy: "\n<b><color:#4ade80>买入单</color></b>\n<color:#9ca3af>过期时间： [EXPIRATION]</color>\n\n<color:#9ca3af>限价：</color> [PRICE]\n<color:#9ca3af>当前价格：</color> [CURRENT-PRICE]\n<color:#a78bfa>(需要变动：[CHANGE])</color>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n\n<b><color:#4ade80>⏵ 点击取消</color></b>\n<color:#9ca3af>取消后你将获得 [COMPENSATION]</color>\n<color:#9ca3af>和 [QUANTITY] x [NAME]</color>"
+gui_limit_orders_lore_filled_buy: "\n<b><color:#4ade80>买入单已完成</color></b>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n<color:#9ca3af>每件物品的平均成交价：</color> [PRICE-ITEM]\n\n<b><color:#4ade80>⏵ 点击领取</color></b>\n<color:#9ca3af>你将获得 [QUANTITY] x [NAME]</color>\n<color:#9ca3af>和 [COMPENSATION]</color>"
+gui_limit_orders_lore_unfilled_sell: "\n<b><color:#f87171>卖出单</color></b>\n<color:#9ca3af>过期时间： [EXPIRATION]</color>\n\n<color:#9ca3af>限价：</color> [PRICE]\n<color:#9ca3af>当前价格：</color> [CURRENT-PRICE]\n<color:#a78bfa>(需要变动：[CHANGE])</color>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n\n<b><color:#4ade80>⏵ 点击取消</color></b>\n<color:#9ca3af>取消后你将获得 [COMPENSATION]</color>\n<color:#9ca3af>和 [QUANTITY] x [NAME]</color>"
+gui_limit_orders_lore_filled_sell: "\n<b><color:#f87171>卖出单已完成</color></b>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n<color:#9ca3af>每件物品的平均成交价：</color> [PRICE-ITEM]\n\n<b><color:#4ade80>⏵ 点击领取</color></b>\n<color:#9ca3af>你将获得 [QUANTITY] x [NAME]</color>\n<color:#9ca3af>和 [COMPENSATION]</color>"
+gui_limit_orders_lore_expired_buy: "\n<b><color:#9ca3af>买入单已过期</color></b>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n\n<b><color:#4ade80>⏵ 点击领取</color></b>\n<color:#9ca3af>你将获得 [QUANTITY] x [NAME]</color>\n<color:#9ca3af>和 [COMPENSATION]</color>"
+gui_limit_orders_lore_expired_sell: "\n<b><color:#9ca3af>卖出单已过期</color></b>\n\n<color:#9ca3af>订单状态：</color> <color:#fbbf24>[FILLED]/[TO-FILL]</color>\n\n<b><color:#4ade80>⏵ 点击领取</color></b>\n<color:#9ca3af>你将获得 [QUANTITY] x [NAME]</color>\n<color:#9ca3af>和 [COMPENSATION]</color>"
+
+gui_limit_orders_received_money_items: "<color:#38bdf8>你刚刚收到 <b>[AMOUNT]</b> x <b>[NAME]</b> 和 </color><color:#4ade80>[MONEY]</color>"
+gui_limit_orders_received_money: "<color:#38bdf8>你刚刚收到</color> <color:#4ade80>[MONEY]</color>"
+gui_limit_orders_received_items: "<color:#38bdf8>你刚刚收到 <b>[AMOUNT]</b> x <b>[NAME]</b></color>"
+
+gui_limit_order_day: "天"
+gui_limit_order_hour: "小时"
+gui_limit_order_minute: "分钟"
+gui_limit_order_second: "秒"
+gui_limit_order_days: "天"
+gui_limit_order_hours: "小时"
+gui_limit_order_minutes: "分钟"
+gui_limit_order_seconds: "秒"
+gui_limit_order_now: "现在"
+
+gui_limit_orders_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+
+gui_set_limit_order_back_name: "<color:#ff5e4f>⏪ 返回</color>"
+gui_set_limit_order_time_name: "<b><color:#fbbf24>订单时长</color></b>"
+gui_set_limit_order_time_lore: "<color:#9ca3af>超过时长后，</color>\n<color:#9ca3af>未成交的订单会过期。</color>\n\n<color:#fbbf24>选项：</color>\n[DURATIONS]\n<color:#4ade80>⏵ 点击切换选项</color>"
+gui_set_limit_order_duration_segment_selected: "<color:#a78bfa>| [DURATION]</color> <color:#9ca3af>([FEE]% 手续费，最低 [MIN]$)</color> <color:#4ade80>☜</color>\n"
+gui_set_limit_order_duration_segment_not_selected: "<color:#9ca3af>| [DURATION]</color> <color:#9ca3af>([FEE]% 手续费，最低 [MIN]$)</color>\n"
+gui_set_limit_order_price_name: "<b><color:#fbbf24>价格</color></b>"
+gui_set_limit_order_price_lore_not_set: "<color:#9ca3af>设置订单执行</color>\n<color:#9ca3af>时的价格。</color>\n\n<color:#4ade80>⏵ 点击设置价格</color>"
+gui_set_limit_order_price_lore_set: "<color:#9ca3af>设置订单执行</color>\n<color:#9ca3af>时的价格。</color>\n\n<color:#a78bfa>价格：</color> [PRICE]\n\n<color:#4ade80>⏵ 点击修改价格</color>"
+gui_set_limit_order_quantity_name: "<b><color:#fbbf24>数量</color></b>"
+gui_set_limit_order_quantity_lore_not_set: "<color:#9ca3af>设置交易的</color>\n<color:#9ca3af>物品数量。</color>\n\n<color:#4ade80>⏵ 点击设置数量</color>"
+gui_set_limit_order_quantity_lore_set: "<color:#9ca3af>设置交易的</color>\n<color:#9ca3af>物品数量。</color>\n\n<color:#a78bfa>数量：</color> <color:#4ade80>[AMOUNT]</color>\n\n<color:#4ade80>⏵ 点击修改数量</color>"
+gui_set_limit_order_buy_name: "<b><color:#4ade80>设置买入单</color></b>"
+gui_set_limit_order_buy_lore_unfilled: "\n<color:#9ca3af>填写设置订单所需的</color>\n<color:#9ca3af>信息。（价格、数量）</color>\n "
+gui_set_limit_order_buy_lore: "\n<u><color:#fbbf24>订单确认</color></u>\n\n[CAUTION]<color:#a78bfa>物品：</color> [NAME]\n<color:#a78bfa>价格：</color> [PRICE]\n<color:#a78bfa>数量：</color> <color:#4ade80>[AMOUNT]</color>\n\n<color:#a78bfa>时长：</color> <color:#9ca3af>[DURATION]</color>\n <color:#a78bfa>╠═ 过期</color> <color:#4ade80>[DATE]</color>\n <color:#a78bfa>╚═ 手续费：</color> [FEE]\n\n<b><color:#4ade80>⏵ 点击确认</color></b>\n<color:#9ca3af>确认后将从你的账户中</color>\n<color:#9ca3af>冻结 [HELD]，</color>\n<color:#9ca3af>并收取 [FEE] 的手续费。</color>"
+gui_set_limit_order_sell_name: "<b><color:#f87171>设置卖出单</color></b>"
+gui_set_limit_order_sell_lore_unfilled: "\n<color:#9ca3af>填写设置订单所需的</color>\n<color:#9ca3af>信息。（价格、数量）</color>\n "
+gui_set_limit_order_sell_lore: "\n<u><color:#fbbf24>订单确认</color></u>\n\n[CAUTION]<color:#a78bfa>物品：</color> [NAME]\n<color:#a78bfa>价格：</color> [PRICE]\n<color:#a78bfa>数量：</color> <color:#4ade80>[AMOUNT]</color>\n\n<color:#a78bfa>时长：</color> <color:#9ca3af>[DURATION]</color>\n <color:#a78bfa>╠═ 过期</color> <color:#4ade80>[DATE]</color>\n <color:#a78bfa>╚═ 手续费：</color> [FEE]\n\n<b><color:#4ade80>⏵ 点击确认</color></b>\n<color:#9ca3af>确认后将从你的背包中冻结</color>\n<color:#9ca3af>[AMOUNT] x [NAME] 个物品，</color>\n<color:#9ca3af>并向你的账户收取 [FEE] 手续费。</color>"
+gui_set_limit_order_buy_caution: "<gradient:#fbbf24:#f97316>⚠ <b>注意</b> ⚠</gradient>\n<color:#f97316>限价高于当前</color>\n<color:#f97316>价格 ([PRICE])！</color>\n\n"
+gui_set_limit_order_sell_caution: "<gradient:#fbbf24:#f97316>⚠ <b>注意</b> ⚠</gradient>\n<color:#f97316>限价低于当前</color>\n<color:#f97316>价格 ([PRICE])！</color>\n\n"
+
+anvil_limit_price_title: "限价：[NAME]"
+anvil_limit_price_text: "价格："
+anvil_limit_price_invalid: "无效的价格。"
+anvil_limit_quantity_title: "数量：[NAME]"
+anvil_limit_quantity_text: "数量："
+anvil_limit_quantity_invalid: "无效的数量。"
+anvil_limit_quantity_max_reached: "最高 [MAX]"
+
+# DISCORD - 不支持 MiniMessage。 ---------------------------------
+
+discord_status: "价格如何变动"
+
+# 日志
+
+discord_log_trade_linked: "> [[NICK]](https:[UUID]) 或 [[USER]](https:id-[ID]) [ACTION] 了 ``[QUANTITY]`` 个 ``[ALIAS]``，价值 **[WORTH]**"
+discord_log_trade_not_linked: "> [[NICK]](https:[UUID]) [ACTION] 了 ``[QUANTITY]`` 个 ``[ALIAS]``，价值 **[WORTH]**"
+discord_log_buy: ":inbox_tray: 买入"
+discord_log_sell: ":outbox_tray: 卖出"
+discord_log_linked: "> :link: 用户 [[NICK]](https:[UUID]) 已与 Discord 账户 [[DISCORD-NAME]](https:id-[ID]) 关联"
+discord_log_unlinked: "> :chains: 用户 [[NICK]](https:[UUID]) 已与 Discord 账户 [[DISCORD-NAME]](https:id-[ID]) 解除关联"
+
+# 主菜单
+
+discord_main_title: ":green_circle:  实时物品市场"
+discord_main_footer: "选择一个物品以查看详细信息并进行操作（买入/卖出）。\n交易中的价格可能会有所变动。"
+discord_top_gainers: "涨幅最高"
+discord_most_popular: "最受欢迎"
+discord_big_dippers: "跌幅最大"
+discord_buy: "买入"
+discord_sell: "卖出"
+discord_outdated: ":warning: 注意：信息已过时！"
+discord_day_high: "一天最高："
+discord_day_low: "一天最低："
+discord_historical_high: "历史最高："
+discord_daily_volume: "成交量（24 小时）："
+discord_position: "市场排名："
+discord_trend: "趋势（24 小时）："
+discord_inventory_value: "价值："
+discord_buy_slot: "购买栏位，价格 "
+discord_sell_all: "全部出售"
+discord_confirm: "确认"
+
+discord_market_paused: ":pause_button: 市场已暂停！服务器重新上线后将恢复。"
+
+discord_detailed_graph_of: "详细图表"
+discord_1_day: "1 天"
+discord_1_month: "1 个月"
+discord_1_year: "1 年"
+discord_all: "全部"
+
+discord_cpi_evolution: "CPI 走势"
+discord_compare_cpi: "比较 CPI 与物品"
+discord_flows: "市场资金流"
+
+discord_material_to_compare: "你想比较的物品名称。"
+discord_comparison_title: "比较 CPI 与对象"
+discord_comparison_label: "物品名称"
+
+discord_cpi_y: "CPI"
+discord_cpi: "CPI"
+discord_cpi_vs_item: "CPI vs [NAME]（相对回报）"
+discord_flow_y_1: "累计资金流（$）"
+discord_flow_y_2: "每日变动（$）"
+discord_flow_legend_1: "市场资金流"
+discord_flow_legend_2: "已收取税费"
+
+discord_advanced_tools: "工具："
+discord_advanced_graphs: "图表："
+
+discord_button_1: "搜索物品"
+discord_button_2: "交易记录"
+discord_button_3: "高级"
+discord_button_4: "关联账户"
+discord_button_5: "库存"
+discord_button_6: "余额"
+discord_button_7: "经纪商"
+
+discord_graph_y_left: "价格（$）"
+discord_graph_y_right: "成交量"
+
+discord_wiki: "# :information_source: 市场信息\n> 使用这个频道，你可以在**不进入游戏的情况下购买/出售物品以及做更多事情！** 要开始使用，你必须先关联你的 Discord 账户，点击 :link: **账户关联** 按钮并按照说明操作即可。\n## 点击一个分类了解更多"
+discord_wiki_1: "库存"
+discord_wiki_2: "余额"
+discord_wiki_3: "提醒"
+discord_wiki_4: "动态订单"
+discord_wiki_5: "会话"
+discord_wiki_6: "经纪商"
+
+discord_wiki_inventory: "## :school_satchel: 库存\n> 一旦你关联账户，**你在游戏内的金钱将与你的 Discord 账户共享**，反之亦然，**你还会获得一个虚拟库存**，你可以在其中存放通过 Discord 购买的物品。每个栏位最多可以存放 **999 个同一种物品**。两个栏位不能存放同一种材质。你可以通过按下 :school_satchel: **库存** 按钮购买更多栏位并查看库存内容和价值。"
+discord_wiki_balance: "## :coin: 余额\n> 如果你已关联账户，:coin: **余额** 按钮会展示你的财务状况统计。它会显示**你的 Discord 和 Minecraft 账户共享的钱包**，以及其他信息，例如你**资产组合的当前价值**和**在经纪商管理下的资金**。"
+discord_wiki_alerts: "## :bell: 提醒\n> 如果你对某个物品感兴趣，你可以设置一个**提醒**，当物品价格达到**你预先设定的阈值**时，你会收到一条**私信**。要设置你自己的提醒，请使用 :bell:**提醒**"
+
+discord_not_linked_short: "尚未关联！"
+discord_not_linked: ":exclamation: 你的账户尚未关联！请在游戏内运行 ``/link`` 开始关联账户的流程。"
+discord_insufficient_balance: ":x: 金钱不足！你目前的余额是：**[VALUE1]**，你至少需要 **[VALUE2]**"
+discord_without_space: ":x: 你的资产组合空间不足！"
+
+discord_alert_name: "提醒"
+discord_alerts_name: "提醒"
+discord_no_alerts_setup: "你还没有设置任何提醒！"
+discord_alert_header: "提醒 :bell:\n\n"
+discord_alert_segment: "> ``[NAME]`` 价格： [PRICE]"
+discord_add_alert_button: "添加提醒"
+discord_remove_alert_button: "移除提醒"
+discord_add_alert_argument_material: "要追踪的物品材质。"
+discord_add_alert_argument_price: "当价格达到该值时你想收到通知的价格。"
+discord_create_alert: "创建提醒"
+discord_alert_at_price: "价格： [PRICE]"
+discord_alert_remove_select: "选择你想移除的提醒。"
+discord_alert_invalid_material: "该材质无效！"
+discord_alert_invalid_price: "该价格无效！"
+discord_alert_success: "成功！当价格达到设定值时你将收到一条私信。"
+discord_alert_limit_reached: "提醒数量已达上限！请先移除一些提醒再创建新的。"
+discord_alert_already_listed: "该物品已在你的关注列表中！"
+discord_alert_reached_segment: ":bell: [EMOJI] 物品提醒已触发：``[NAME] ([PRICE1])`` 当前价格：``[PRICE2]``"
+discord_alert_not_in_watchlist: ":x: 该物品不在你的关注列表中。"
+discord_alert_removed: ":no_bell: 已移除 **[NAME]** 的提醒。"
+
+discord_link_discordsrv: ":link: 请在游戏内使用 ``/link`` 开始关联流程！"
+discord_link_native: ":link: 请在游戏内使用 ``/link [CODE]`` 关联你的账户！"
+discord_link_discordsrv_extensive: ":link: 要与市场互动，你必须先关联你的 Minecraft 和 Discord 账户。\n请在游戏内使用 ``/discord link`` 开始此流程！"
+discord_link_discordsrv_already: ":link: 你已将账户与用户关联：``[UUID]``"
+discord_link_native_extensive: ":link: 要与市场互动，你必须先关联你的 Minecraft 和 Discord 账户。\n\n> 请在游戏内使用 ``/link [CODE]`` 关联你的账户！"
+discord_link_native_already: ":link: 你已将账户与用户关联：``[NICKNAME]``"
+discord_unlink_button: "解除账户关联"
+discord_unlinked: ":link: 你已与 ``[NICKNAME]`` 解除账户关联"
+discord_already_unlinked: ":exclamation: 你本来就没有关联账户！"
+
+discord_market_closed: ":lock: 市场当前已关闭！"
+
+discord_buy_feedback: ":inbox_tray: 你刚刚以 **[WORTH]** 的价格购买了 **[QUANTITY]** 个 **[ALIAS]**\n\n:coin: 你的余额现在是：**[BALANCE]**"
+discord_buy_more_feedback: ":inbox_tray: 你刚刚以 **[WORTH]** 的价格购买了 **[QUANTITY]** 个 **[ALIAS]**（每个 **[WORTH-EACH]**）\n\n:coin: 你的余额现在是：**[BALANCE]**"
+discord_buy_limit_feedback: ":regional_indicator_x: 没有人出售该物品！你无法购买它。"
+
+discord_not_enough_items: ":x: 你的资产组合中没有足够的该物品！"
+
+discord_sell_feedback: ":outbox_tray: 你刚刚以 **[WORTH]** 的价格出售了 **[QUANTITY]** 个 **[ALIAS]**\n\n:coin: 你的余额现在是：**[BALANCE]**"
+discord_sell_more_feedback: ":outbox_tray: 你刚刚以 **[WORTH]** 的价格出售了 **[QUANTITY]** 个 **[ALIAS]**（每个 **[WORTH-EACH]**）\n\n:coin: 你的余额现在是：**[BALANCE]**"
+discord_sold_everything: "你刚刚以 **[VALUE]** 的价格出售了所有物品"
+discord_sell_limit_feedback: ":regional_indicator_x: 没有人购买该物品！你无法出售它。"
+
+discord_not_enough_slot: ":x: 你的金钱不足以购买另一个栏位！你需要 **[PRICE]**"
+discord_already_max_slots: ":x: 你已购买了最大数量的栏位！"
+discord_slot_bought: "已购买第 [NUM] 号栏位！"
+
+discord_trade_history_title: ":scroll: **交易记录：** 第 [PAGE] 页（[NUM-TRADES]/15）"
+
+discord_balance_title: ":coin:  **余额：**"
+discord_balance_report: "\n> :green_circle: :dollar: **钱包**（Minecraft）：``[PURSE]``\n> :yellow_circle: :school_satchel: **资产组合**：``[INVENTORY-VALUE]``\n>\n> :abacus: **总计**：``[TOTAL]``\n"
+discord_purse: "钱包"
+discord_inventory: "库存"
+
+discord_material_to_operate: "你想操作的物品材质"
+discord_material_not_recognized: ":x: 无法识别的物品！"
+
+discord_not_allowed_command: ":exclamation: 你没有权限使用此命令！"
+
+# LAYOUT 文字：
+# 主标题。
+advancedgui_title: "物品市场"
+# 其他文字：
+advancedgui_top_movers: "涨跌最猛"
+advancedgui_subtop: "最近 30 分钟"
+advancedgui_buy: "买入"
+advancedgui_sell: "卖出"
+advancedgui_price: "价格："
+advancedgui_amount_selection: "选择数量："
+advancedgui_trend: "趋势："

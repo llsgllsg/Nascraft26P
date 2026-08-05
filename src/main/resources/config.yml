@@ -1,0 +1,416 @@
+# Nascraft config.yml - ${project.version}
+
+# 要使用的语言文件。可用：en_US es_ES it_IT de_DE pt_BR zh_CN
+language: 'zh_CN'
+
+database:
+  # 可用类型：SQLite、MySQL
+  #
+  # SQLite（默认）将所有内容存储在本地文件（data/sqlite.db）中，非常适合单服务器使用。
+  # 对于跨服务器 / 组网环境（多台服务器共享同一个市场），你必须使用 MySQL，
+  # 因为 SQLite 文件无法在服务器之间共享。请参阅下面的“cross-server”部分。
+  type: 'SQLite'
+
+  # 仅在 type 为 'MySQL' 时使用的连接设置。要求 MySQL 8.0+ 或 MariaDB 10.2+。
+  mysql:
+    host: 'localhost'
+    port: 3306
+    database: 'nascraft'
+    user: 'root'
+    password: ''
+
+  # 交易日志应在数据库中保留多少天？
+  # 设置为 60 时，超过 60 天的所有交易将自动被删除。
+  # 使用 -1 来禁用（保留所有交易日志）。
+  days-until-history-removed: 60
+
+# 跨服务器（组网）支持。
+#
+# 运行多台共享同一个市场的 Minecraft 服务器：各处价格、库存、资产组合、
+# 余额和历史记录都相同。要求：
+#   1. database.type 设置为 'MySQL'（共享持久化），以及
+#   2. 每个实例都能访问一台 Redis 服务器（实时价格同步 + 锁）。
+#
+# 必须有且仅有一个实例为 'primary'（主实例）：它负责运行市场模拟
+# （价格演变、定时任务）并广播更新。所有其他实例为 'secondary'（从实例）：
+# 它们为玩家服务并执行交易，但镜像主实例的价格，而不是运行自己的模拟。
+#
+# 单节点功能：Discord 桥接和自托管网站应只在 ONE 个实例上启用
+# （Discord 机器人使用单个令牌，而 Web 端口是按主机分配的）。
+# 它们与主/从角色无关。
+cross-server:
+  # 开启组网模式。为 false 时，这是普通的独立服务器，
+  # 下面的 role / redis 设置将被忽略。
+  enabled: false
+
+  # 此实例的角色：'primary'（拥有模拟权）或 'secondary'。
+  # 在组网中只将一台服务器设置为 'primary'。
+  # 当 auto-elect 为 true 时忽略（此时会自动选择主实例）。
+  role: 'primary'
+
+  # 通过 Redis 自动选举主实例，而不是用 'role' 手动指定。
+  # 为 true 时，各实例会持有短暂的 Redis 租约，其中一个成为主实例；如果
+  # 它宕机，另一个会在约 30 秒内接管。为 false 则使用上面的 'role'。
+  auto-elect: false
+
+  # 此实例的唯一名称（用于日志、组网消息和选举）。
+  node-id: 'server-1'
+
+  # Redis 连接，由组网中的每个实例共享。
+  redis:
+    host: 'localhost'
+    port: 6379
+    # 如果你的 Redis 没有密码（未启用 AUTH），请留空。
+    password: ''
+
+currencies:
+  # 所有物品默认使用的货币。
+  # 它也将是诸如 Discord 库存扩容等事物的默认价格。
+  default-currency: 'vault'
+
+  suppliers:
+
+    # 必须安装 Vault！
+    vault:
+      format: "<gradient:#f09947:#feed81>[AMOUNT]$</gradient>"
+      not-enough: "<gradient:#FB6363:#C4B3FD>✘ 你的钱不够购买那个物品！</gradient>"
+      decimal-positions: 3
+      top-limit: 9999999
+      low-limit: 0.005
+
+    #################################################################
+    #  要添加其他货币，必须安装 PLACEHOLDERAPI                      #
+    #################################################################
+
+    # !!! 请记住，如果你打算使用 Discord 扩展，即使玩家离线，
+    # !!! 命令和占位符也必须正常工作！
+
+    # 另一种货币的示例：
+    player-points:
+      deposit-cmd: 'playerpoints:p give [USER-NAME] [AMOUNT]'
+      withdraw-cmd: 'playerpoints:p take [USER-NAME] [AMOUNT]'
+      balance-placeholder: '%playerpoints_points%'
+      not-enough: "<gradient:#FB6363:#C4B3FD>✘ 你的点数不够购买那个物品！</gradient>"
+      format: "<gradient:#ba24ff:#e8d1ff>[AMOUNT]p</gradient>"
+      decimal-positions: 0
+      top-limit: 9999
+      low-limit: 10
+
+    # 添加你自己的供应商！想加多少就加多少。
+
+price-options:
+  # 启用噪声后，价格会以伪随机的方式随时间变化。
+  noise:
+    enabled: true
+    # 用这个因子修改噪声的默认强度。
+    default-intensity: 1
+    # 全局乘数
+    intensity-multiplier: 1
+    # 应用噪声的时间（秒）。默认 60 秒，即每 60 秒价格会随机变化一次。
+    time: 60
+  # 默认弹性适用于所有物品，除非在 items.yml 中明确为某物品单独设置。
+  default-elasticity: 1
+  # 全局乘数 —— 请注意，该变量会改变所有价格曲线的形态，
+  # 使所有现有物品的价格立即发生变化。
+  elasticity-multiplier: 1
+
+market-control:
+
+  # 如果市场关闭，玩家将无法购买/出售。
+  closed: false
+
+  # 虽然买卖操作会分别征税，但无论税费如何拆分，总税额都是相同的。
+  # 差价由两种操作的偏差决定。在默认情况下，卖出为 6%，买入为 4%，总差价为 10%。
+
+  # 为避免助长地下经济，请尽量保持低税率。
+  # 高税率可能会鼓励玩家之间直接交易，绕过中介，
+  # 从而减少从税收中收取的金额，使市场效率降低。
+  #
+  # 如果物品在 items.yml 中没有明确设置其他税费，则将默认应用此值。
+  taxation:
+    sell: 0.06 # 玩家出售物品时征收 6% 的税。
+    buy: 0.04 # 玩家购买物品时征收 4% 的税。
+
+    # 选择是否将税费计入价格波动。
+    # 示例：如果某物品购买时税率为 100%，当启用此选项时，
+    # 你购买该物品时，价格会按你购买了 1 + 1 * 100% = 2 个物品来计算。
+    take-into-account-taxes: false
+
+  # 玩家是否需要有 "nascraft.market" 权限才能直接使用命令操作？
+  market-permission: true
+
+commands:
+  nascraft:
+    enabled: true
+    alias: 'nas'
+  market:
+    enabled: true
+    alias: 'shop'
+  portfolio:
+    enabled: true
+    alias: 'p'
+  link:
+    enabled: true
+    alias: 'nlink'
+  discord:
+    enabled: true
+    alias: 'dis'
+  alerts:
+    enabled: true
+    alias: 'nalerts'
+  setalerts:
+    enabled: true
+    alias: 'nsetalert'
+  givesellwand:
+    enabled: true
+    alias: 'givesw'
+  sellall:
+    enabled: true
+    alias: 'nsellall'
+  sellhand:
+    enabled: true
+    alias: 'nsellhand'
+  sell-menu:
+    enabled: true
+    alias: 'sell'
+    size: 45
+    help:
+      enabled: true
+      slot: 4
+      texture: 'bc8ea1f51f253ff5142ca11ae45193a4ad8c3ab5e9c6eec8ba7a4fcb7bac40'
+    filler:
+      material: 'black_stained_glass_pane'
+    sell-button:
+      slot: 40
+      material: 'yellow_stained_glass_pane'
+    close-button:
+      enabled: true
+      slot: 8
+      material: 'red_stained_glass_pane'
+
+portfolio:
+  # 资产组合的默认大小。
+  default-size: 5
+
+  storage-limit: 999
+  # 计算下一个栏位价格的公式。slot_price_factor * #slot + slot_price_base = 价格
+  # 例如，购买第 6 号栏位的价格将是 (1000 * 6) + 10000 = 16000$
+  slot-price-factor: 1000
+  slot-price-base: 10000
+  in-game-gui:
+    fillers:
+      material: 'black_stained_glass_pane'
+    locked:
+      material: 'gray_stained_glass_pane'
+
+  # 玩家可以将资产组合中的物品作为贷款的抵押品。
+  # 他们只能借取以默认货币计价的贷款。
+  loans:
+    enabled: true
+    # 从绝对值来看，贷款可以有多大。
+    max-size: 999999
+    # 贷款的最小金额。
+    min-size: 100
+    # 在税费和资产价值衰减之上，额外应用一个安全保证金。
+    security-margin: 0.1
+    # 保证金检查周期（秒）
+    margin-checking-period: 20
+    # 贷款要收取的利息
+    # 每天收取一次。
+    # 如果发生违约（玩家没有足够的钱支付利息），
+    # 将从他们的资产组合中出售足够的物品来支付。
+    interest-rate:
+      # 每天几点收取利息。24 小时制。
+      when: '12:00'
+      # 每天要支付的利息占债务总额的百分比（在此示例中为 0.5%）
+      percentage: 0.005
+      # 作为利息收取的最低金额。
+      minimum: 1
+    # 显示服务器中较大的资产组合。
+    top:
+      # 以分钟为单位。
+      update-frequency: 1
+
+limit-orders:
+  enabled: true
+  # 一个玩家同时可以激活的限价单的最大数量。
+  max-per-player: 9
+  # 订单的最大规模
+  order-max-size: 999
+  # 以秒为单位
+  checking-period: 10
+
+  durations:
+    1:
+      # 以天为单位
+      duration: 3
+      display: "3 days"
+      fee: 0.01
+      min-fee: 1
+    2:
+      duration: 30
+      display: "30 days"
+      fee: 0.03
+      min-fee: 3
+    3:
+      duration: 90
+      display: "90 days"
+      fee: 0.06
+      min-fee: 6
+
+# 自托管网站。
+website:
+  # 打开或关闭网站。
+  enabled: false
+  # 网站的端口。
+  # 在 http://<你的服务器 IP>:<端口> 访问它
+  # 确保该端口已开放/已转发，并且没有被其他服务占用。
+  port: 8080
+
+  # 浏览器标题 + 页眉文字商标。
+  title: "Nascraft 市场"
+  # 强调色（十六进制）。会重新设置整个 Web UI 的样式，包括 Regular 和 Pro 模式。
+  accent: "#6E56CF"
+  # 用户首次访问时的默认体验：regular | pro
+  default-mode: "regular"
+  # 如果为 true，用户将无法在 Regular 和 Pro 模式之间切换。
+  lock-mode: false
+  # 默认颜色主题：system | light | dark
+  default-theme: "system"
+  # 玩家在游戏内运行以获得一次性 Web 登录代码的命令。
+  login-command: "webcode"
+  # 会话安全。
+  session:
+    # 将每次登录绑定到创建它的浏览器/设备上。推荐开启。
+    bind-device: true
+    # 还将会话绑定到客户端 IP。更安全，但在 IP 变化时
+    # 会将用户登出（移动网络、动态 ISP）。
+    bind-ip: false
+
+# 请谨慎使用。
+discord-bot:
+  enabled: false
+  token: 'TOKEN-ID'
+  # 通过 Discord 执行管理员命令所需的角色。
+  # 当前命令：/stop、/resume、/seeinv [ID]、/seebal [ID]
+  admin-role-id: 'ADMIN-ROLE-ID'
+  # 你可以选择一个频道，用于在执行每笔交易时发送交易信息。
+  # 你很可能希望将该频道设为私有，但这不是必须的。
+  log-trades:
+    enabled: false
+    channel: 'LOGS-TEXTCHANNEL-ID'
+
+  # 让用户出售/购买物品的菜单
+  # !! 该功能处于测试阶段！!!
+  main-menu:
+    enabled: false
+    # 可用方法：NATIVE、DISCORDSRV（DISCORDSRV 当前无法使用）
+    link-method: 'NATIVE'
+    # 这个频道应仅供机器人使用。其中的每条消息都会被删除。
+    channel: 'MAINMENU-TEXTCHANNEL-ID'
+    # Discord 税费：
+    taxation:
+      override: true
+      # 默认情况下，我们会应用较低的税费，以吸引用户通过 Discord 操作。
+      buy: 0.04
+      sell: 0.05
+    options:
+      # 每条消息的更新间隔（秒）。
+      update-time: 60
+      # 访问 Discord 百科的按钮。
+      wiki:
+        enabled: true
+      # 游戏内命令和 Discord 命令/按钮。
+      alerts:
+        enabled: true
+        # 提醒过期的时间（天）。
+        expiration: 10
+      # 单个物品的图表（1 天、1 个月、1 年、全部）
+      detailed-graphs:
+        enabled: true
+      # 通过按钮访问个人交易日志。
+      personal-log:
+        enabled: true
+      # 主菜单物品的快速选择栏
+      selection-bar:
+        enabled: true
+      # 在高级选项内生成 CPI 走势图的按钮
+      cpi:
+        enabled: true
+      cpi-comparison:
+        enabled: true
+      flows:
+        enabled: true
+
+sell-wands:
+  enabled: true
+  wands:
+    # ID —— 仅指标识符。
+    basic:
+      material: 'stick'
+      # 推荐用于编辑格式的网站：https://webui.advntr.dev/
+      display-name: '<b><gradient:#19e312:#a3e300>基础魔棒</gradient></b>'
+      lore:
+        - '<b><gradient:#00eeff:#2e69ff>⏵ 右键</gradient></b> <color:#517d58>预估价值。</color>'
+        - '<b><gradient:#ff383b:#ff2403>⏵ 左键</gradient></b> <color:#517d58>点击容器以</color>'
+        - '<color:#517d58>将其全部内容出售给市场！</color>'
+        - ' '
+        - '<color:#517d58>剩余次数：</color> <b><color:#a3e300>[USES]</color></b>'
+      # 魔棒的最大使用次数。或者你也可以对出售数量设置上限。
+      # 参见 "MILLONAIRE WAND"。
+      # 如果这些都不设置，魔棒可以无限次使用。（参见 "PERMANENT WAND"）。
+      uses: 10
+      # 使用该魔棒所需的权限。如果未定义，则不要求权限。
+      permission: 'nascraft.wand.basic'
+
+    permanent:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '<b><gradient:#e74cf5:#f51d41>永久魔棒</gradient></b>'
+      lore:
+        - '<b><gradient:#00eeff:#2e69ff>⏵ 右键</gradient></b> <color:#8077ba>预估价值。</color>'
+        - '<b><gradient:#ff383b:#ff2403>⏵ 左键</gradient></b> <color:#8077ba>点击容器，将其</color>'
+        - '<color:#8077ba>全部内容按价值的</color>'
+        - '<color:#8077ba><b><color:#ff2403>50%</color></b> 出售给市场</color>'
+        - '<i><color:#343d66>⌛ 两次使用之间有 5 分钟的冷却时间。</color></i>'
+        - ' '
+        - '<b><gradient:#f51d41:#e74cf5>无限使用次数</gradient><b>'
+      multiplier: 0.5
+      # 限制这支魔棒可用的货币。
+      currencies:
+        - 'vault'
+      # 设置两次使用之间的最小冷却时间（秒）。
+      cooldown: 300 # 300/60 = 5 分钟冷却时间。
+      permission: 'nascraft.wand.advanced'
+
+    millionaire:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '<b><gradient:#F57E00:#EFF551>百万魔棒</gradient></b>'
+      lore:
+        - '<b><gradient:#ff383b:#ff2403>⏵ 左键</gradient></b> <color:#85784D>预估价值。</color>'
+        - '<b><gradient:#00eeff:#2e69ff>⏵ 右键</gradient></b> <color:#85784D>点击容器，将其</color>'
+        - '<color:#85784d>全部内容按价值的</color>'
+        - '<color:#85784d><color:#EFF551>150%</color> 出售给市场</color>'
+        - ' '
+        - '<color:#85784d>剩余可出售：</color> <b>[PROFIT-LEFT]</b>'
+      currencies:
+        - 'vault'
+      # 这支魔棒最多可以出售价值 1,000,000$（包括乘数）的物品。
+      max-profit: 1000000
+      multiplier: 1.5
+      permission: 'nascraft.wand.millonaire'
+      # 更改每个动作对应的点击方式。使用 'none' 来禁用。
+      # 默认：sell（出售）：right（右键） estimate（预估）：left（左键）
+      sell: 'right'
+      estimate: 'left'
+
+# 检查 AdvancedGUI 的布局是否存在，如果不存在，则将其放入 AdvancedGUI 的布局文件夹中。
+auto-resources-injection: true
+
+# 实验性功能。请谨慎使用
+ignored-keys:
+  #- "Day"
+
+# AdvancedGUI 布局按钮使用之间的冷却时间（秒）。
+layout-cooldown: 1

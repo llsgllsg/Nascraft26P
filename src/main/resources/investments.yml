@@ -1,0 +1,48 @@
+# 可用策略：
+# - equal-weighted（等权：市场的平均回报）
+# - price-weighted（价格加权：按价格加权的市场平均回报）
+# - minimum-volatility（低波动：波动最小的 # 个物品（默认 3 个）的回报，等权）
+# - high-volatility（高波动：波动最大的 # 个物品（默认 3 个）的回报，等权）
+# - cash（现金：0 回报）
+# - winners（赢家：最近一小时内表现最好的 # 个物品（默认 3 个）的回报，等权）
+# - losers（输家：最近一小时内表现最差的 # 个物品（默认 3 个）的回报，等权）
+
+investments:
+  enabled: true
+  funds:
+    # 经纪商的标识符
+    1:
+      display-name: "指数型经纪商"
+      # 该经纪商将遵循的策略
+      strategy:
+        # 策略类型
+        equal-weighted:
+          # 占总资产组合的比重
+          weight: 1 # 1 = 100%
+    2:
+      display-name: "稳健型经纪商"
+      strategy:
+        # 示例：波动最小的五个标的
+        # 将占基金的 60%，等权分配
+        minimum-volatility:
+          caped-at: 5
+          weight: 0.6
+        cash:
+          weight: 0.4
+    3:
+      display-name: "激进型经纪商"
+      strategy:
+        winners:
+          caped-at: 4
+          weight: 0.5
+        price-weighted:
+          weight: 0.3
+        random:
+          caped-at: 5
+          weight: 0.2
+    4:
+      display-name: "价值型经纪商"
+      strategy:
+        losers:
+          caped-at: 5
+          weight: 1
