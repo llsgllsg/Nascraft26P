@@ -1,12 +1,13 @@
 package me.bounser.nascraft.commands.admin.marketeditor.edit.item;
 
-import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorManager;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.managers.currencies.CurrenciesManager;
 import me.bounser.nascraft.managers.currencies.Currency;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.bounser.nascraft.util.AnvilPrompt;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class EditItemMenuListener implements Listener {
 
         if (!event.getWhoClicked().hasPermission("nascraft.admin")) return;
 
-        if (event.getView().getTopInventory().getSize() != 27 || !event.getView().getTitle().equals("§8§lEditing Item")) return;
+        if (event.getView().getTopInventory().getSize() != 27 || !event.getView().getTitle().equals(Lang.get().message(Message.MARKETEDITOR_ITEM_TITLE))) return;
 
         Player player = (Player) event.getWhoClicked();
 
@@ -51,7 +52,7 @@ public class EditItemMenuListener implements Listener {
 
                 assert newItem != null;
                 if (newItem.getType() == Material.AIR || newItem.getAmount() == 0) {
-                    player.sendMessage(ChatColor.RED + "Invalid item!");
+                    player.sendMessage(Lang.get().message(Message.MARKETEDITOR_INVALID_ITEM));
                     return;
                 }
 
@@ -68,39 +69,33 @@ public class EditItemMenuListener implements Listener {
 
                 ItemMeta metaDelete = deletePanel.getItemMeta();
 
-                if (metaDelete.getDisplayName().equals(ChatColor.RED + "§lDELETE ITEM")) {
-                    metaDelete.setDisplayName(ChatColor.RED + "§lCONFIRM");
+                if (metaDelete.getDisplayName().equals(Lang.get().message(Message.MARKETEDITOR_DELETE_ITEM))) {
+                    metaDelete.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CONFIRM));
                     deletePanel.setItemMeta(metaDelete);
                 } else {
                     EditorManager.getInstance().getEditItemMenuFromPlayer(player).removeItem();
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Item deleted.");
+                    player.sendMessage(Lang.get().message(Message.MARKETEDITOR_ITEM_DELETED));
                 }
                 break;
 
             case 4:
 
                 openAnvil(player,
-                        ChatColor.LIGHT_PURPLE + "Initial price set correctly!",
-                        "Initial price...",
-                        "Initial price",
+                        Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_SET),
+                        Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_ANVIL_TITLE),
                         "initialprice");
 
                 break;
 
             case 5:
-                new AnvilGUI.Builder()
-                        .onClick((slot, stateSnapshot) -> {
-                            EditorManager.getInstance().getEditItemMenuFromPlayer(player).setAlias(stateSnapshot.getText());
-                            stateSnapshot.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Alias set correctly!");
-                            return Arrays.asList(
-                                    AnvilGUI.ResponseAction.close(),
-                                    AnvilGUI.ResponseAction.run(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(stateSnapshot.getPlayer()).open())
-                                    );
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.MARKETEDITOR_ALIAS_ANVIL_TEXT))
+                        .title(Lang.get().message(Message.MARKETEDITOR_ALIAS_ANVIL_TITLE))
+                        .onSubmit(input -> {
+                            EditorManager.getInstance().getEditItemMenuFromPlayer(player).setAlias(input);
+                            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_ALIAS_SET));
+                            return AnvilPrompt.Result.accept(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(player).open());
                         })
-                        .preventClose()
-                        .text("Item Alias...")
-                        .title("Item Alias")
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 break;
 
@@ -122,9 +117,8 @@ public class EditItemMenuListener implements Listener {
 
                 openAnvil(
                         player,
-                        ChatColor.LIGHT_PURPLE + "Elasticity set correctly!",
-                        "Price Elasticity...",
-                        "Price Elasticity",
+                        Lang.get().message(Message.MARKETEDITOR_ELASTICITY_SET),
+                        Lang.get().message(Message.MARKETEDITOR_ELASTICITY_ANVIL_TITLE),
                         "elasticity");
                 break;
 
@@ -132,9 +126,8 @@ public class EditItemMenuListener implements Listener {
 
                 openAnvil(
                         player,
-                        ChatColor.LIGHT_PURPLE + "Noise intensity set correctly!",
-                        "Noise intensity...",
-                        "Noise intensity",
+                        Lang.get().message(Message.MARKETEDITOR_NOISE_SET),
+                        Lang.get().message(Message.MARKETEDITOR_NOISE_ANVIL_TITLE),
                         "noiseintensity");
                 break;
 
@@ -142,9 +135,8 @@ public class EditItemMenuListener implements Listener {
 
                 openAnvil(
                         player,
-                        ChatColor.LIGHT_PURPLE + "Support set correctly!",
-                        "Price Support...",
-                        "Price Support",
+                        Lang.get().message(Message.MARKETEDITOR_SUPPORT_SET),
+                        Lang.get().message(Message.MARKETEDITOR_SUPPORT_ANVIL_TITLE),
                         "support");
                 break;
 
@@ -152,18 +144,17 @@ public class EditItemMenuListener implements Listener {
 
                 openAnvil(
                         player,
-                        ChatColor.LIGHT_PURPLE + "Resistance set correctly!",
-                        "Price Resistance...",
-                        "Price Resistance",
+                        Lang.get().message(Message.MARKETEDITOR_RESISTANCE_SET),
+                        Lang.get().message(Message.MARKETEDITOR_RESISTANCE_ANVIL_TITLE),
                         "resistance");
                 break;
 
             case 15:
 
-                new AnvilGUI.Builder()
-                        .onClick((slot, stateSnapshot) -> {
-
-                            String categoryReference = stateSnapshot.getText();
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.MARKETEDITOR_CATEGORY_ANVIL_TEXT))
+                        .title(Lang.get().message(Message.MARKETEDITOR_CATEGORY_ANVIL_TITLE))
+                        .onSubmit(categoryReference -> {
 
                             Category selectedCategory = null;
 
@@ -173,42 +164,32 @@ public class EditItemMenuListener implements Listener {
 
                             if (selectedCategory == null) {
 
-                                return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText("Category not recognized!"));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.MARKETEDITOR_CATEGORY_NOT_RECOGNIZED));
 
                             } else {
                                 EditorManager.getInstance().getEditItemMenuFromPlayer(player).setCategory(selectedCategory);
-                                stateSnapshot.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Category set correctly!");
-                                return Arrays.asList(
-                                        AnvilGUI.ResponseAction.close(),
-                                        AnvilGUI.ResponseAction.run(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(stateSnapshot.getPlayer()).open())
-                                );
+                                player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_SET));
+                                return AnvilPrompt.Result.accept(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(player).open());
                             }
 
                         })
-                        .preventClose()
-                        .text("Category...")
-                        .title("Category")
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 break;
         }
     }
 
-    public void openAnvil(Player player, String setupedCorrectly, String text, String title, String type) {
+    public void openAnvil(Player player, String setupedCorrectly, String title, String type) {
 
-        new AnvilGUI.Builder()
-                .onClick((slot, stateSnapshot) -> {
-                    if(slot != AnvilGUI.Slot.OUTPUT) {
-                        return Collections.emptyList();
-                    }
-
+        AnvilPrompt.builder()
+                .title(title)
+                .onSubmit(input -> {
                     try {
-                        float value = Float.parseFloat(stateSnapshot.getText());
+                        float value = Float.parseFloat(input);
 
                         if (value < 0)
-                            return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText("Cannot be negative!"));
+                            return AnvilPrompt.Result.reject(Lang.get().message(Message.MARKETEDITOR_CANNOT_BE_NEGATIVE));
 
-                        stateSnapshot.getPlayer().sendMessage(setupedCorrectly);
+                        player.sendMessage(setupedCorrectly);
 
                         switch (type) {
 
@@ -230,18 +211,11 @@ public class EditItemMenuListener implements Listener {
 
                         }
 
-                        return Arrays.asList(
-                                AnvilGUI.ResponseAction.close(),
-                                AnvilGUI.ResponseAction.run(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(stateSnapshot.getPlayer()).open()
-                                ));
+                        return AnvilPrompt.Result.accept(() -> EditorManager.getInstance().getEditItemMenuFromPlayer(player).open());
                     } catch (NumberFormatException e) {
-                        return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText("Not a valid format!"));
+                        return AnvilPrompt.Result.reject(Lang.get().message(Message.MARKETEDITOR_NOT_VALID_FORMAT));
                     }
                 })
-                .preventClose()
-                .text(text)
-                .title(title)
-                .plugin(Nascraft.getInstance())
                 .open(player);
 
     }

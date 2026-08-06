@@ -36,7 +36,9 @@ public class Images {
 
         BufferedImage image = ItemTextureProvider.getImage(material);
         if (image == null) {
-            return null;
+            // Fallback so child items always get a non-null icon (textures may not be
+            // ready yet if the client JAR download is still running).
+            image = ItemTextureProvider.generateFallbackIcon(material.name());
         }
         images.put(material, image);
 

@@ -2,6 +2,8 @@ package me.bounser.nascraft.commands.admin.marketeditor.edit.category;
 
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorManager;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import org.bukkit.Bukkit;
@@ -46,7 +48,7 @@ public class CategoryEditor {
 
     public void open() {
 
-        Inventory inventory = Bukkit.createInventory(player, 27, "§8§lEdit Category");
+        Inventory inventory = Bukkit.createInventory(player, 27, Lang.get().message(Message.MARKETEDITOR_CATEGORY_EDITOR_TITLE));
 
         insertPanes(inventory);
         insertCategoryOptions(inventory);
@@ -76,21 +78,21 @@ public class CategoryEditor {
 
         ItemStack closeButton = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta meta = closeButton.getItemMeta();
-        meta.setDisplayName(ChatColor.RED + "§lCANCEL");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CANCEL));
         closeButton.setItemMeta(meta);
 
         inventory.setItem(11, closeButton);
 
         ItemStack confirmButton = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         ItemMeta metaConfirm = confirmButton.getItemMeta();
-        metaConfirm.setDisplayName(ChatColor.GREEN + "§lSAVE CHANGES");
+        metaConfirm.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SAVE_CHANGES));
         confirmButton.setItemMeta(metaConfirm);
 
         inventory.setItem(9, confirmButton);
 
         ItemStack deletePanel = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta metaDelete = deletePanel.getItemMeta();
-        metaDelete.setDisplayName(ChatColor.RED + "§lDELETE CATEGORY");
+        metaDelete.setDisplayName(Lang.get().message(Message.MARKETEDITOR_DELETE_CATEGORY));
         deletePanel.setItemMeta(metaDelete);
 
         inventory.setItem(17, deletePanel);
@@ -102,38 +104,38 @@ public class CategoryEditor {
         inventory.setItem(10, getItemStackOfOption(
                 identifier,
                 Arrays.asList(
-                        ChatColor.GRAY + "Display named: " + ChatColor.GOLD + displayName,
-                        ChatColor.GRAY + "Material: " + ChatColor.GOLD + material.name()),
+                        Lang.get().message(Message.MARKETEDITOR_CATEGORY_DISPLAY_NAME_LORE) + ChatColor.GOLD + displayName,
+                        Lang.get().message(Message.MARKETEDITOR_CATEGORY_MATERIAL_LORE) + ChatColor.GOLD + material.name()),
                 material
         ));
 
         inventory.setItem(9, getItemStackOfOption(
-                ChatColor.GREEN + "§lSAVE CHANGES",
+                Lang.get().message(Message.MARKETEDITOR_SAVE_CHANGES),
                 Collections.singletonList(""),
                 Material.LIME_STAINED_GLASS_PANE
         ));
 
         inventory.setItem(11, getItemStackOfOption(
-                ChatColor.RED + "§lCANCEL",
+                Lang.get().message(Message.MARKETEDITOR_CANCEL),
                 Collections.singletonList(""),
                 Material.RED_STAINED_GLASS_PANE
         ));
 
         inventory.setItem(17, getItemStackOfOption(
-                ChatColor.RED + "§lDELETE CATEGORY",
+                Lang.get().message(Message.MARKETEDITOR_DELETE_CATEGORY),
                 Collections.singletonList(""),
                 Material.RED_STAINED_GLASS_PANE
         ));
 
         inventory.setItem(13, getItemStackOfOption(
-                ChatColor.GRAY + "Category display name",
-                Arrays.asList(ChatColor.GOLD + displayName, "", ChatColor.GRAY + "Click to change"),
+                Lang.get().message(Message.MARKETEDITOR_CATEGORY_DISPLAY_NAME_LABEL),
+                Arrays.asList(ChatColor.GOLD + displayName, "", Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)),
                 Material.PAPER
         ));
 
         inventory.setItem(14, getItemStackOfOption(
-                ChatColor.GRAY + "Category material",
-                Arrays.asList(ChatColor.GOLD + material.toString().toLowerCase(), "", ChatColor.GRAY + "Click with the new material."),
+                Lang.get().message(Message.MARKETEDITOR_CATEGORY_MATERIAL_LABEL),
+                Arrays.asList(ChatColor.GOLD + material.toString().toLowerCase(), "", Lang.get().message(Message.MARKETEDITOR_CATEGORY_MATERIAL_HINT)),
                 Material.PAPER
         ));
     }
@@ -175,7 +177,7 @@ public class CategoryEditor {
         try { categoriesFile.save(Config.getInstance().getCategoriesFile()); }
         catch (IOException e) { throw new RuntimeException(e); }
 
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Changes in categories saved.");
+        player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_CHANGES_SAVED));
         MarketEditorManager.getInstance().getMarketEditorFromPlayer(player).open();
     }
 
@@ -192,7 +194,7 @@ public class CategoryEditor {
         try { categoriesFile.save(Config.getInstance().getCategoriesFile()); }
         catch (IOException e) { throw new RuntimeException(e); }
 
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Category deleted.");
+        player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_DELETED));
         if (MarketEditorManager.getInstance().getMarketEditorFromPlayer(player) == null) {
             MarketEditorManager.getInstance().startEditing(player);
         } else {

@@ -296,7 +296,9 @@ public class MarketManager {
 
         List<Item> mostMoved = new ArrayList<>();
 
-        for (int i = 1; i <= quantity ; i++) {
+        // Guard: if the market has no parent items (e.g. nothing loaded from
+        // items.yml yet), items.get(0) below would throw IndexOutOfBoundsException.
+        for (int i = 1; i <= quantity && !items.isEmpty(); i++) {
 
             Item imax = items.get(0);
             for (Item item : items) {
@@ -322,7 +324,9 @@ public class MarketManager {
 
         List<Item> mostTraded = new ArrayList<>();
 
-        for (int i = 1; i <= quantity ; i++) {
+        // Guard: if the market has no parent items, items.get(0) below would
+        // throw IndexOutOfBoundsException (see /market crash on a fresh setup).
+        for (int i = 1; i <= quantity && !items.isEmpty(); i++) {
 
             Item imax = items.get(0);
             for (Item item : items) {

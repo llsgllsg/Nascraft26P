@@ -1,16 +1,17 @@
 package me.bounser.nascraft.commands.admin.marketeditor.propertieseditor;
 
-import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.commands.admin.marketeditor.edit.category.CategoryEditorManager;
 import me.bounser.nascraft.commands.admin.marketeditor.edit.item.EditorManager;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditor;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorInvListener;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorManager;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.bounser.nascraft.util.AnvilPrompt;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -70,13 +71,13 @@ public class PropertiesEditorInvListener implements Listener {
 
             case 46:
 
-                new AnvilGUI.Builder()
-                        .onClick((slot, stateSnapshot) -> {
-
-                            String identifier = stateSnapshot.getText();
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY_ANVIL_TEXT))
+                        .title(Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY_ANVIL_TITLE))
+                        .onSubmit(identifier -> {
 
                             if (MarketManager.getInstance().getCategoryFromIdentifier(identifier) != null)
-                                return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText("Repeated identifier!"));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.MARKETEDITOR_REPEATED_IDENTIFIER));
 
                             Category category = new Category(identifier);
 
@@ -94,18 +95,11 @@ public class PropertiesEditorInvListener implements Listener {
                                 throw new RuntimeException(e);
                             }
 
-                            stateSnapshot.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Category created correctly!");
+                            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_CREATED));
 
-                            return Arrays.asList(
-                                    AnvilGUI.ResponseAction.close(),
-                                    AnvilGUI.ResponseAction.run(() -> MarketEditorManager.getInstance().getMarketEditorFromPlayer(stateSnapshot.getPlayer()).open())
-                            );
+                            return AnvilPrompt.Result.accept(() -> MarketEditorManager.getInstance().getMarketEditorFromPlayer(player).open());
 
                         })
-                        .preventClose()
-                        .text("Identifier...")
-                        .title("New category")
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 return;
 

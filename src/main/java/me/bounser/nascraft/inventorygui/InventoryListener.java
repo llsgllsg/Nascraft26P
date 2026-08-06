@@ -23,7 +23,7 @@ import me.bounser.nascraft.market.unit.Item;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.bounser.nascraft.util.AnvilPrompt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -179,11 +179,13 @@ public class InventoryListener implements Listener {
                     return;
                 }
 
-                new AnvilGUI.Builder()
-                        .onClick((anvilSlot, stateSnapshot) -> {
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.ANVIL_ALERT_TEXT))
+                        .title(Lang.get().message(Message.ANVIL_ALERT_TITLE).replace("[ALIAS]", item.getName()))
+                        .onSubmit(input -> {
 
                             Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
-                            Matcher matcher = pattern.matcher(stateSnapshot.getText());
+                            Matcher matcher = pattern.matcher(input);
 
                             if (matcher.find()) {
                                 String doubleString = matcher.group();
@@ -192,29 +194,23 @@ public class InventoryListener implements Listener {
 
                                 return switch (DiscordAlerts.getInstance().setAlert(userId, item.getIdentifier(), value)) {
                                     case NOT_VALID ->
-                                            List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_ALERT_INVALID)));
+                                            AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_ALERT_INVALID));
                                     case LIMIT_REACHED ->
-                                            List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_ALERT_LIMIT_REACHED)));
+                                            AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_ALERT_LIMIT_REACHED));
                                     case REPEATED ->
-                                            List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_ALERT_REPEATED)));
+                                            AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_ALERT_REPEATED));
                                     default ->
-                                            Arrays.asList(
-                                            AnvilGUI.ResponseAction.close(),
-                                            AnvilGUI.ResponseAction.run(() -> {
+                                            AnvilPrompt.Result.accept(() -> {
                                                 MarketMenuManager.getInstance().setMenuOfPlayer(player, new BuySellMenu(player, item));
                                                 player.setMetadata("NascraftMenu", new FixedMetadataValue(Nascraft.getInstance(), "item-menu-" + item.getIdentifier()));
-                                            })
-                                    );
+                                            });
                                 };
 
                             } else {
-                                return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_ALERT_INVALID_PRICE)));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_ALERT_INVALID_PRICE));
                             }
 
                         })
-                        .text(Lang.get().message(Message.ANVIL_ALERT_TEXT))
-                        .title(Lang.get().message(Message.ANVIL_ALERT_TITLE).replace("[ALIAS]", item.getName()))
-                        .plugin(Nascraft.getInstance())
                         .open(player);
 
                 return;
@@ -338,11 +334,13 @@ public class InventoryListener implements Listener {
 
             if (config.getSetLimitOrderMenuPriceSlot() == slot) {
 
-                new AnvilGUI.Builder()
-                        .onClick((anvilSlot, stateSnapshot) -> {
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.ANVIL_LIMIT_PRICE_TEXT))
+                        .title(Lang.get().message(Message.ANVIL_LIMIT_PRICE_TITLE).replace("[NAME]", item.getName()))
+                        .onSubmit(input -> {
 
                             Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
-                            Matcher matcher = pattern.matcher(stateSnapshot.getText());
+                            Matcher matcher = pattern.matcher(input);
 
                             if (matcher.find()) {
                                 String doubleString = matcher.group();
@@ -354,30 +352,26 @@ public class InventoryListener implements Listener {
 
                                 menu.setPrice(value);
 
-                                return Arrays.asList(
-                                        AnvilGUI.ResponseAction.close(),
-                                        AnvilGUI.ResponseAction.run(menu::open)
-                                );
+                                return AnvilPrompt.Result.accept(menu::open);
 
                             } else {
-                                return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_LIMIT_PRICE_INVALID)));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_LIMIT_PRICE_INVALID));
                             }
 
                         })
-                        .text(Lang.get().message(Message.ANVIL_LIMIT_PRICE_TEXT))
-                        .title(Lang.get().message(Message.ANVIL_LIMIT_PRICE_TITLE).replace("[NAME]", item.getName()))
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 return;
             }
 
             if (config.getSetLimitOrderMenuQuantitySlot() == slot) {
 
-                new AnvilGUI.Builder()
-                        .onClick((anvilSlot, stateSnapshot) -> {
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_TEXT))
+                        .title(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_TITLE).replace("[NAME]", item.getName()))
+                        .onSubmit(input -> {
 
                             Pattern pattern = Pattern.compile("[-+]?\\d+");
-                            Matcher matcher = pattern.matcher(stateSnapshot.getText());
+                            Matcher matcher = pattern.matcher(input);
 
                             if (matcher.find()) {
                                 String intString = matcher.group();
@@ -385,24 +379,18 @@ public class InventoryListener implements Listener {
                                 int value = Math.abs(Integer.parseInt(intString));
 
                                 if (value == 0 || value > config.getMaxLimitOrderSize())
-                                    return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_MAX_REACHED)
-                                            .replace("[MAX]", String.valueOf(config.getMaxLimitOrderSize()))));
+                                    return AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_MAX_REACHED)
+                                            .replace("[MAX]", String.valueOf(config.getMaxLimitOrderSize())));
 
                                 menu.setQuantity(value);
 
-                                return Arrays.asList(
-                                        AnvilGUI.ResponseAction.close(),
-                                        AnvilGUI.ResponseAction.run(menu::open)
-                                );
+                                return AnvilPrompt.Result.accept(menu::open);
 
                             } else {
-                                return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_INVALID)));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_INVALID));
                             }
 
                         })
-                        .text(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_TEXT))
-                        .title(Lang.get().message(Message.ANVIL_LIMIT_QUANTITY_TITLE).replace("[NAME]", item.getName()))
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 return;
             }
@@ -698,11 +686,13 @@ public class InventoryListener implements Listener {
 
                 if (config.getDebtRepayEnabled() && config.getDebtRepaySlot() == slot) {
 
-                    new AnvilGUI.Builder()
-                            .onClick((anvilSlot, stateSnapshot) -> {
+                    AnvilPrompt.builder()
+                            .text(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_REPAY))
+                            .title(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_REPAY_TITLE))
+                            .onSubmit(input -> {
 
                                 Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
-                                Matcher matcher = pattern.matcher(stateSnapshot.getText());
+                                Matcher matcher = pattern.matcher(input);
 
                                 if (matcher.find()) {
                                     String intString = matcher.group();
@@ -710,10 +700,10 @@ public class InventoryListener implements Listener {
                                     double value = Math.abs(Double.parseDouble(intString));
 
                                     if (value == 0 || value > debt)
-                                        return List.of(AnvilGUI.ResponseAction.replaceInputText(String.valueOf(Formatter.roundToDecimals(debt, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission()))));
+                                        return AnvilPrompt.Result.reject(String.valueOf(Formatter.roundToDecimals(debt, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission())));
 
                                     if (!MoneyManager.getInstance().hasEnoughMoney(player, CurrenciesManager.getInstance().getDefaultCurrency(), value))
-                                        return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_NOT_ENOUGH)));
+                                        return AnvilPrompt.Result.reject(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_NOT_ENOUGH));
 
                                     MoneyManager.getInstance().simpleWithdraw(player, CurrenciesManager.getInstance().getDefaultCurrency(), value);
                                     DebtManager.getInstance().decreaseDebt(player.getUniqueId(), value);
@@ -722,16 +712,13 @@ public class InventoryListener implements Listener {
                                             .replace("[AMOUNT]", Formatter.format(CurrenciesManager.getInstance().getDefaultCurrency(), value, Style.ROUND_BASIC))
                                             .replace("[DEBT]", Formatter.format(CurrenciesManager.getInstance().getDefaultCurrency(), debt-value, Style.ROUND_BASIC)));
 
-                                    return Arrays.asList(AnvilGUI.ResponseAction.close());
+                                    return AnvilPrompt.Result.accept();
 
                                 } else {
-                                    return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_INVALID)));
+                                    return AnvilPrompt.Result.reject(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_INVALID));
                                 }
 
                             })
-                            .text(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_REPAY))
-                            .title(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_REPAY_TITLE))
-                            .plugin(Nascraft.getInstance())
                             .open(player);
                     return;
                 }
@@ -767,11 +754,13 @@ public class InventoryListener implements Listener {
 
                 if (config.getDebtCustomEnabled() && config.getDebtCustomSlot() == slot) {
 
-                    new AnvilGUI.Builder()
-                            .onClick((anvilSlot, stateSnapshot) -> {
+                    AnvilPrompt.builder()
+                            .text(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_CUSTOM))
+                            .title(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_CUSTOM_TITLE))
+                            .onSubmit(input -> {
 
                                 Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
-                                Matcher matcher = pattern.matcher(stateSnapshot.getText());
+                                Matcher matcher = pattern.matcher(input);
 
                                 if (matcher.find()) {
                                     String intString = matcher.group();
@@ -781,10 +770,10 @@ public class InventoryListener implements Listener {
                                     double minLoan = config.getLoansMinSize();
 
                                     if ((value + debt) < minLoan)
-                                        return List.of(AnvilGUI.ResponseAction.replaceInputText(String.valueOf(Formatter.roundToDecimals(minLoan, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission()))));
+                                        return AnvilPrompt.Result.reject(String.valueOf(Formatter.roundToDecimals(minLoan, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission())));
 
                                     if (value == 0 || (value + debt) > maxLoan)
-                                        return List.of(AnvilGUI.ResponseAction.replaceInputText(String.valueOf(Formatter.roundToDecimals(maxLoan-debt, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission()))));
+                                        return AnvilPrompt.Result.reject(String.valueOf(Formatter.roundToDecimals(maxLoan-debt, CurrenciesManager.getInstance().getDefaultCurrency().getDecimalPrecission())));
 
                                     MoneyManager.getInstance().simpleDeposit(player, CurrenciesManager.getInstance().getDefaultCurrency(), value);
                                     DebtManager.getInstance().increaseDebt(player.getUniqueId(), value);
@@ -793,16 +782,13 @@ public class InventoryListener implements Listener {
                                             .replace("[AMOUNT]", Formatter.format(CurrenciesManager.getInstance().getDefaultCurrency(), value, Style.ROUND_BASIC))
                                             .replace("[DEBT]", Formatter.format(CurrenciesManager.getInstance().getDefaultCurrency(), value + debt, Style.ROUND_BASIC)));
 
-                                    return Arrays.asList(AnvilGUI.ResponseAction.close());
+                                    return AnvilPrompt.Result.accept();
 
                                 } else {
-                                    return List.of(AnvilGUI.ResponseAction.replaceInputText(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_INVALID)));
+                                    return AnvilPrompt.Result.reject(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_INVALID));
                                 }
 
                             })
-                            .text(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_CUSTOM))
-                            .title(Lang.get().message(Message.PORTFOLIO_DEBT_ANVIL_CUSTOM_TITLE))
-                            .plugin(Nascraft.getInstance())
                             .open(player);
                     return;
                 }

@@ -419,4 +419,31 @@ public final class ItemTextureProvider {
         g.dispose();
         return up;
     }
+
+    private static final Color[] FALLBACK_COLORS = {
+            new Color(0x6E56CF), new Color(0x2E9E6B), new Color(0xC94B4B), new Color(0x2E7FC9),
+            new Color(0xC98B2E), new Color(0x8B5BC9), new Color(0x3FA9A9), new Color(0xA9A93F)
+    };
+
+    /**
+     * Deterministic placeholder icon, used when the real texture is not available yet
+     * (e.g. the client JAR download has not finished). Never returns null, so the
+     * market can always load items even before textures are ready.
+     */
+    public static BufferedImage generateFallbackIcon(String seed) {
+        int size = 64;
+        int idx = Math.abs(seed.hashCode()) % FALLBACK_COLORS.length;
+        Color base = FALLBACK_COLORS[idx];
+        BufferedImage icon = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = icon.createGraphics();
+        g.setColor(base);
+        g.fillRect(0, 0, size, size);
+        g.setColor(base.darker());
+        g.fillRect(0, 0, size, 4);
+        g.fillRect(0, size - 4, size, 4);
+        g.fillRect(0, 0, 4, size);
+        g.fillRect(size - 4, 0, 4, size);
+        g.dispose();
+        return icon;
+    }
 }

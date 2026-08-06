@@ -5,10 +5,12 @@ import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.commands.admin.marketeditor.edit.item.EditorManager;
 import me.bounser.nascraft.commands.admin.marketeditor.edit.category.CategoryEditorManager;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.unit.Item;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.bounser.nascraft.util.AnvilPrompt;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,7 +37,7 @@ public class MarketEditorInvListener implements Listener {
 
         if (!event.getWhoClicked().hasPermission("nascraft.admin")) return;
 
-        if (event.getView().getTopInventory().getSize() != 54 || !event.getView().getTitle().equals("§8§lAdmin view: Market")) return;
+        if (event.getView().getTopInventory().getSize() != 54 || !event.getView().getTitle().equals(Lang.get().message(Message.MARKETEDITOR_TITLE))) return;
 
         if (Objects.equals(event.getClickedInventory(), event.getView().getTopInventory())) event.setCancelled(true);
 
@@ -66,13 +68,13 @@ public class MarketEditorInvListener implements Listener {
 
             case 46:
 
-                new AnvilGUI.Builder()
-                        .onClick((slot, stateSnapshot) -> {
-
-                            String identifier = stateSnapshot.getText();
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY_ANVIL_TEXT))
+                        .title(Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY_ANVIL_TITLE))
+                        .onSubmit(identifier -> {
 
                             if (MarketManager.getInstance().getCategoryFromIdentifier(identifier) != null)
-                                return Arrays.asList(AnvilGUI.ResponseAction.replaceInputText("Repeated identifier!"));
+                                return AnvilPrompt.Result.reject(Lang.get().message(Message.MARKETEDITOR_REPEATED_IDENTIFIER));
 
                             Category category = new Category(identifier);
 
@@ -87,18 +89,11 @@ public class MarketEditorInvListener implements Listener {
                             try { categoriesFile.save(Config.getInstance().getCategoriesFile()); }
                             catch (IOException e) { throw new RuntimeException(e); }
 
-                            stateSnapshot.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Category created correctly!");
+                            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_CREATED));
 
-                            return Arrays.asList(
-                                    AnvilGUI.ResponseAction.close(),
-                                    AnvilGUI.ResponseAction.run(() -> MarketEditorManager.getInstance().getMarketEditorFromPlayer(stateSnapshot.getPlayer()).open())
-                            );
+                            return AnvilPrompt.Result.accept(() -> MarketEditorManager.getInstance().getMarketEditorFromPlayer(player).open());
 
                         })
-                        .preventClose()
-                        .text("Identifier...")
-                        .title("New category")
-                        .plugin(Nascraft.getInstance())
                         .open(player);
                 return;
 
@@ -113,10 +108,10 @@ public class MarketEditorInvListener implements Listener {
                     enabled = new ItemStack(Material.LIME_DYE);
 
                     metaEnabled = enabled.getItemMeta();
-                    metaEnabled.setDisplayName(ChatColor.GREEN + "§lMARKET ACTIVE");
+                    metaEnabled.setDisplayName(Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE));
                     metaEnabled.setLore(Arrays.asList(
-                            ChatColor.GRAY + "Click to stop the market.",
-                            ChatColor.GRAY + "Users won't be able to buy/sell."
+                            Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE_LORE_1),
+                            Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE_LORE_2)
                     ));
 
                     Config.getInstance().setMarketClosed();
@@ -125,10 +120,10 @@ public class MarketEditorInvListener implements Listener {
                     enabled = new ItemStack(Material.RED_DYE);
 
                     metaEnabled = enabled.getItemMeta();
-                    metaEnabled.setDisplayName(ChatColor.RED + "§lMARKET STOPPED");
+                    metaEnabled.setDisplayName(Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED));
                     metaEnabled.setLore(Arrays.asList(
-                            ChatColor.GRAY + "Click to resume the market.",
-                            ChatColor.GRAY + "Users will be able to buy/sell."
+                            Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED_LORE_1),
+                            Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED_LORE_2)
                     ));
 
                     Config.getInstance().setMarketOpen();
@@ -154,7 +149,7 @@ public class MarketEditorInvListener implements Listener {
                     EditorManager.getInstance().startEditing(player, itemStack);
 
                 } else {
-                    player.sendMessage(ChatColor.RED + "Drop an item to add it to the market!");
+                    player.sendMessage(Lang.get().message(Message.MARKETEDITOR_DROP_ITEM_ERROR));
                 }
 
                 return;

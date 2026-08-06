@@ -28,13 +28,14 @@ public class ImagesManager {
 
         Material material = resolveMaterial(identifier);
         if (material == null) {
-            Nascraft.getInstance().getLogger().info("Unable to resolve material for image: " + identifier);
-            return null;
+            Nascraft.getInstance().getLogger().info("Unable to resolve material for image: " + identifier + " - using fallback icon.");
+            return ItemTextureProvider.generateFallbackIcon(identifier);
         }
 
         BufferedImage image = ItemTextureProvider.getImage(material);
         if (image == null) {
-            Nascraft.getInstance().getLogger().info("Unable to render texture for material: " + material.name().toLowerCase());
+            Nascraft.getInstance().getLogger().info("Unable to render texture for material: " + material.name().toLowerCase() + " - using fallback icon.");
+            return ItemTextureProvider.generateFallbackIcon(identifier);
         }
         return image;
     }

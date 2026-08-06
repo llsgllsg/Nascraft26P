@@ -1,5 +1,7 @@
 package me.bounser.nascraft.commands.admin.marketeditor.overview;
 
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
 import me.bounser.nascraft.market.MarketManager;
@@ -38,7 +40,7 @@ public class MarketEditor {
     }
 
     public void open() {
-        Inventory inventory = Bukkit.createInventory(player, 54, "§8§lAdmin view: Market");
+        Inventory inventory = Bukkit.createInventory(player, 54, Lang.get().message(Message.MARKETEDITOR_TITLE));
 
         insertFillingPanes(inventory);
         insertArrows(inventory);
@@ -62,7 +64,7 @@ public class MarketEditor {
 
         ItemStack closeButton = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta meta = closeButton.getItemMeta();
-        meta.setDisplayName(ChatColor.RED + "§lCLOSE");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CLOSE));
         closeButton.setItemMeta(meta);
 
         inventory.setItem(8, closeButton);
@@ -72,22 +74,22 @@ public class MarketEditor {
 
         ItemStack arrow = new ItemStack(Material.ARROW);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "§lSCROLL UP");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SCROLL_UP));
         arrow.setItemMeta(meta);
 
         inventory.setItem(0, arrow);
 
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "§lSCROLL DOWN");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SCROLL_DOWN));
         arrow.setItemMeta(meta);
 
         inventory.setItem(45, arrow);
 
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "§l< LEFT");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SCROLL_LEFT));
         arrow.setItemMeta(meta);
 
         inventory.setItem(52, arrow);
 
-        meta.setDisplayName(ChatColor.LIGHT_PURPLE + "§lRIGHT >");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SCROLL_RIGHT));
         arrow.setItemMeta(meta);
 
         inventory.setItem(53, arrow);
@@ -97,10 +99,10 @@ public class MarketEditor {
 
         ItemStack info = new ItemStack(Material.CHEST);
         ItemMeta meta = info.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_PURPLE + "§lMARKET EDITOR");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_HEADER));
         meta.setLore(Arrays.asList(
-                ChatColor.GRAY + "In this menu you can add, remove",
-                ChatColor.GRAY + "and edit items of the market."
+                Lang.get().message(Message.MARKETEDITOR_HEADER_LORE_1),
+                Lang.get().message(Message.MARKETEDITOR_HEADER_LORE_2)
         ));
         info.setItemMeta(meta);
 
@@ -111,10 +113,10 @@ public class MarketEditor {
 
         ItemStack newItem = new ItemStack(Material.HOPPER);
         ItemMeta metaNewItem = newItem.getItemMeta();
-        metaNewItem.setDisplayName(ChatColor.BLUE + "§lADD ITEM TO MARKET");
+        metaNewItem.setDisplayName(Lang.get().message(Message.MARKETEDITOR_ADD_ITEM));
         metaNewItem.setLore(Arrays.asList(
-                ChatColor.GRAY + "Drop here an item to configure",
-                ChatColor.GRAY + "it as a new item."
+                Lang.get().message(Message.MARKETEDITOR_ADD_ITEM_LORE_1),
+                Lang.get().message(Message.MARKETEDITOR_ADD_ITEM_LORE_2)
         ));
         newItem.setItemMeta(metaNewItem);
 
@@ -122,9 +124,9 @@ public class MarketEditor {
 
         ItemStack newCategory = new ItemStack(Material.WRITABLE_BOOK);
         ItemMeta newCategoryItemMeta = newCategory.getItemMeta();
-        newCategoryItemMeta.setDisplayName(ChatColor.BLUE + "§lNEW CATEGORY");
+        newCategoryItemMeta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY));
         newCategoryItemMeta.setLore(Arrays.asList(
-                ChatColor.GRAY + "Click to create a new category."
+                Lang.get().message(Message.MARKETEDITOR_NEW_CATEGORY_LORE)
         ));
         newCategory.setItemMeta(newCategoryItemMeta);
 
@@ -137,20 +139,20 @@ public class MarketEditor {
             enabled = new ItemStack(Material.LIME_DYE);
 
             metaEnabled = enabled.getItemMeta();
-            metaEnabled.setDisplayName(ChatColor.GREEN + "§lMARKET ACTIVE");
+            metaEnabled.setDisplayName(Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE));
             metaEnabled.setLore(Arrays.asList(
-                    ChatColor.GRAY + "Click to stop the market.",
-                    ChatColor.GRAY + "Users won't be able to buy/sell."
+                    Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE_LORE_1),
+                    Lang.get().message(Message.MARKETEDITOR_MARKET_ACTIVE_LORE_2)
             ));
 
         } else {
             enabled = new ItemStack(Material.RED_DYE);
 
             metaEnabled = enabled.getItemMeta();
-            metaEnabled.setDisplayName(ChatColor.RED + "§lMARKET STOPPED");
+            metaEnabled.setDisplayName(Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED));
             metaEnabled.setLore(Arrays.asList(
-                    ChatColor.GRAY + "Click to resume the market.",
-                    ChatColor.GRAY + "Users will be able to buy/sell."
+                    Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED_LORE_1),
+                    Lang.get().message(Message.MARKETEDITOR_MARKET_STOPPED_LORE_2)
             ));
         }
 
@@ -178,9 +180,9 @@ public class MarketEditor {
 
             ItemMeta CategoryMeta = categoryItemStack.getItemMeta();
 
-            CategoryMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Category: " + category.getDisplayName());
-            CategoryMeta.setLore(Arrays.asList(ChatColor.GRAY + "Identifier: " + ChatColor.GOLD + category.getIdentifier(),
-                    "", ChatColor.GREEN + "§lCLICK TO EDIT"));
+            CategoryMeta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CATEGORY_LABEL) + category.getDisplayName());
+            CategoryMeta.setLore(Arrays.asList(Lang.get().message(Message.MARKETEDITOR_IDENTIFIER_LABEL) + ChatColor.GOLD + category.getIdentifier(),
+                    "", Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)));
 
             categoryItemStack.setItemMeta(CategoryMeta);
 
@@ -205,7 +207,7 @@ public class MarketEditor {
 
                     ItemMeta meta = itemStack.getItemMeta();
 
-                    meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Alias: " + item.getName());
+                    meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_ALIAS_LABEL) + item.getName());
 
                     Component price = MiniMessage.miniMessage().deserialize(Formatter.format(item.getCurrency(), item.getPrice().getInitialValue(), Style.ROUND_BASIC));
 
@@ -213,13 +215,13 @@ public class MarketEditor {
                     Component resistance = MiniMessage.miniMessage().deserialize(Formatter.format(item.getCurrency(), item.getPrice().getResistance(), Style.ROUND_BASIC));
 
                     meta.setLore(Arrays.asList(
-                            ChatColor.GRAY + "Initial price: " + LegacyComponentSerializer.legacySection().serialize(price),
-                            ChatColor.GRAY + "Elasticity: " + ChatColor.GREEN + item.getPrice().getElasticity(),
-                            ChatColor.GRAY + "Noise Intensity: " + ChatColor.GREEN + item.getPrice().getNoiseIntensity(),
-                            ChatColor.GRAY + "Support: " + (item.getPrice().getSupport() == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(support)),
-                            ChatColor.GRAY + "Resistance: " + (item.getPrice().getResistance() == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(resistance)),
+                            Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_LABEL) + LegacyComponentSerializer.legacySection().serialize(price),
+                            Lang.get().message(Message.MARKETEDITOR_ELASTICITY_LABEL) + ChatColor.GREEN + item.getPrice().getElasticity(),
+                            Lang.get().message(Message.MARKETEDITOR_NOISE_LABEL) + ChatColor.GREEN + item.getPrice().getNoiseIntensity(),
+                            Lang.get().message(Message.MARKETEDITOR_SUPPORT_LABEL) + (item.getPrice().getSupport() == 0 ? ChatColor.RED + Lang.get().message(Message.MARKETEDITOR_DISABLED) : LegacyComponentSerializer.legacySection().serialize(support)),
+                            Lang.get().message(Message.MARKETEDITOR_RESISTANCE_LABEL) + (item.getPrice().getResistance() == 0 ? ChatColor.RED + Lang.get().message(Message.MARKETEDITOR_DISABLED) : LegacyComponentSerializer.legacySection().serialize(resistance)),
                             " ",
-                            ChatColor.GREEN + "§lCLICK TO EDIT"
+                            Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
                     ));
 
                     itemStack.setItemMeta(meta);

@@ -183,8 +183,14 @@ public class MainMenu implements MenuPage {
 
             List<Item> moreMoved = MarketManager.getInstance().getMostTraded(3);
 
+            // getMostTraded may return an empty list when the market has no items
+            // loaded yet; guard against get(0) throwing on that.
+            String popular = "";
+            List<Item> mostTraded = MarketManager.getInstance().getMostTraded(1);
+            if (!mostTraded.isEmpty()) popular = mostTraded.get(0).getTaggedName();
+
             String trendsLore = Lang.get().message(Message.GUI_TRENDS_LORE)
-                            .replace("[POPULAR]", MarketManager.getInstance().getMostTraded(1).get(0).getTaggedName());
+                            .replace("[POPULAR]", popular);
 
             int i = 1;
 

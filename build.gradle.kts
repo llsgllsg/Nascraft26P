@@ -16,7 +16,6 @@ buildscript {
 
 plugins {
     java
-    kotlin("jvm") version "2.1.21"
     id("com.gradleup.shadow") version "8.3.5"
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
@@ -40,12 +39,15 @@ java {
     // The 26.2 target runs on Java 25 (paper-api 26.2 + invui 2.3.0 are compiled for
     // Java 25 only), so its bytecode and the JVM attribute Gradle uses to resolve the
     // runtime classpath must be 25 as well. The 1.21.11 target stays on Java 21.
+    // The toolchain is set explicitly (was previously configured via the removed
+    // kotlin { jvmToolchain } block) so javac runs on the matching JDK. Note the
+    // Gradle daemon itself must stay on Java 21: Gradle 8.14.3's embedded Kotlin DSL
+    // compiler cannot parse Java 25's version string ("25.0.3").
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(toolchainJvm))
+    }
     sourceCompatibility = JavaVersion.toVersion(toolchainJvm)
     targetCompatibility = JavaVersion.toVersion(toolchainJvm)
-}
-
-kotlin {
-    jvmToolchain(toolchainJvm)
 }
 
 repositories {
@@ -87,7 +89,6 @@ dependencies {
     compileOnly("net.dv8tion:JDA:5.0.0-beta.18")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
-    implementation("net.wesjd:anvilgui:1.10.4-SNAPSHOT")
     compileOnly("redis.clients:jedis:5.1.2")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("de.tr7zw:item-nbt-api:2.13.1")
@@ -126,6 +127,9 @@ val stageInvui2 = tasks.register<Copy>("stageInvui2Source") {
         exclude("me/bounser/nascraft/inventorygui/Portfolio/InfoPortfolio.java")
         exclude("me/bounser/nascraft/inventorygui/Portfolio/ModeItem.java")
         exclude("me/bounser/nascraft/inventorygui/Portfolio/PortfolioStatsItem.java")
+        // invui 2.x anvil API differs from 1.x; src/invui2/java provides the
+        // version-specific AnvilPrompt for the 26.2 target.
+        exclude("me/bounser/nascraft/util/AnvilPrompt.java")
     }
     from("src/invui2/java")
 }
@@ -168,7 +172,6 @@ tasks {
         }
 
         relocate("org.bstats", "me.bounser.bstats")
-        relocate("net.wesjd.anvilgui", "me.bounser.anvilgui")
         relocate("de.tr7zw.changeme.nbtapi", "me.bounser.nbtapi")
     }
 

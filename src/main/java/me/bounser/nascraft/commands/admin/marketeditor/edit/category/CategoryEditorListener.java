@@ -1,8 +1,9 @@
 package me.bounser.nascraft.commands.admin.marketeditor.edit.category;
 
-import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditor;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
+import me.bounser.nascraft.util.AnvilPrompt;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class CategoryEditorListener implements Listener {
 
         if (!event.getWhoClicked().hasPermission("nascraft.admin")) return;
 
-        if (event.getView().getTopInventory().getSize() != 27 || !event.getView().getTitle().equals("§8§lEdit Category") || event.getCurrentItem() == null) return;
+        if (event.getView().getTopInventory().getSize() != 27 || !event.getView().getTitle().equals(Lang.get().message(Message.MARKETEDITOR_CATEGORY_EDITOR_TITLE)) || event.getCurrentItem() == null) return;
 
         Player player = (Player) event.getWhoClicked();
 
@@ -50,8 +51,8 @@ public class CategoryEditorListener implements Listener {
 
                 ItemMeta metaDelete = deletePanel.getItemMeta();
 
-                if (metaDelete.getDisplayName().equals(ChatColor.RED + "§lDELETE CATEGORY")) {
-                    metaDelete.setDisplayName(ChatColor.RED + "§lCONFIRM");
+                if (metaDelete.getDisplayName().equals(Lang.get().message(Message.MARKETEDITOR_DELETE_CATEGORY))) {
+                    metaDelete.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CONFIRM));
                     deletePanel.setItemMeta(metaDelete);
                 } else {
                     categoryEditor.removeCategory();
@@ -60,24 +61,17 @@ public class CategoryEditorListener implements Listener {
                 return;
 
             case 13:
-                new AnvilGUI.Builder()
-                        .onClick((slot, stateSnapshot) -> {
-
-                            String categoryName = stateSnapshot.getText();
+                AnvilPrompt.builder()
+                        .text(Lang.get().message(Message.MARKETEDITOR_CATEGORY_NAME_ANVIL_TEXT))
+                        .title(Lang.get().message(Message.MARKETEDITOR_CATEGORY_NAME_ANVIL_TITLE))
+                        .onSubmit(categoryName -> {
 
                             categoryEditor.setDisplayName(categoryName);
 
-                            stateSnapshot.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Category display name correctly!");
-                            return Arrays.asList(
-                                    AnvilGUI.ResponseAction.close(),
-                                    AnvilGUI.ResponseAction.run(categoryEditor::open)
-                            );
+                            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_NAME_SET));
+                            return AnvilPrompt.Result.accept(categoryEditor::open);
 
                         })
-                        .preventClose()
-                        .text("Display name...")
-                        .title("Category name")
-                        .plugin(Nascraft.getInstance())
                         .open(player);
 
                 return;
@@ -87,7 +81,8 @@ public class CategoryEditorListener implements Listener {
                 if (event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)){
                     categoryEditor.setMaterial(event.getCursor().getType());
 
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Category material changed to: " + event.getCursor().getType().toString().toLowerCase());
+                    player.sendMessage(Lang.get().message(Message.MARKETEDITOR_CATEGORY_MATERIAL_SET)
+                            .replace("[MAT]", event.getCursor().getType().toString().toLowerCase()));
                     categoryEditor.open();
                 }
                 return;

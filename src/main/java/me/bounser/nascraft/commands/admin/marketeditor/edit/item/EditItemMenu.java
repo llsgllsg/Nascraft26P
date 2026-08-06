@@ -3,6 +3,8 @@ package me.bounser.nascraft.commands.admin.marketeditor.edit.item;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditor;
 import me.bounser.nascraft.commands.admin.marketeditor.overview.MarketEditorManager;
 import me.bounser.nascraft.config.Config;
+import me.bounser.nascraft.config.lang.Lang;
+import me.bounser.nascraft.config.lang.Message;
 import me.bounser.nascraft.managers.ImagesManager;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Style;
@@ -91,7 +93,7 @@ public class EditItemMenu {
 
     public void open() {
 
-        Inventory inventory = Bukkit.createInventory(player, 27, "§8§lEditing Item");
+        Inventory inventory = Bukkit.createInventory(player, 27, Lang.get().message(Message.MARKETEDITOR_ITEM_TITLE));
 
         insertPanes(inventory);
         insertOptions(inventory);
@@ -126,11 +128,11 @@ public class EditItemMenu {
             List<String> lore = meta.getLore();
 
             lore.add("");
-            lore.add(ChatColor.GREEN + "§lCLICK TO CHANGE");
+            lore.add(Lang.get().message(Message.MARKETEDITOR_CLICK_TO_CHANGE));
 
             meta.setLore(lore);
         } else {
-            meta.setLore(Arrays.asList("", ChatColor.GREEN + "§lCLICK TO CHANGE"));
+            meta.setLore(Arrays.asList("", Lang.get().message(Message.MARKETEDITOR_CLICK_TO_CHANGE)));
         }
 
         displayItemStack.setItemMeta(meta);
@@ -160,21 +162,21 @@ public class EditItemMenu {
 
         ItemStack closeButton = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta meta = closeButton.getItemMeta();
-        meta.setDisplayName(ChatColor.RED + "§lCANCEL");
+        meta.setDisplayName(Lang.get().message(Message.MARKETEDITOR_CANCEL));
         closeButton.setItemMeta(meta);
 
         inventory.setItem(11, closeButton);
 
         ItemStack confirmButton = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         ItemMeta metaConfirm = confirmButton.getItemMeta();
-        metaConfirm.setDisplayName(ChatColor.GREEN + "§lSAVE CHANGES");
+        metaConfirm.setDisplayName(Lang.get().message(Message.MARKETEDITOR_SAVE_CHANGES));
         confirmButton.setItemMeta(metaConfirm);
 
         inventory.setItem(9, confirmButton);
 
         ItemStack deletePanel = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta metaDelete = deletePanel.getItemMeta();
-        metaDelete.setDisplayName(ChatColor.RED + "§lDELETE ITEM");
+        metaDelete.setDisplayName(Lang.get().message(Message.MARKETEDITOR_DELETE_ITEM));
         deletePanel.setItemMeta(metaDelete);
 
         inventory.setItem(17, deletePanel);
@@ -186,102 +188,101 @@ public class EditItemMenu {
 
         inventory.setItem(4,
                 getItemStackOfOption(Material.GOLD_INGOT,
-                        "Initial Price " + ChatColor.UNDERLINE + "(REQUIRED)",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + LegacyComponentSerializer.legacySection().serialize(priceComponent),
+                        Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_REQUIRED),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_VALUE_LABEL) + LegacyComponentSerializer.legacySection().serialize(priceComponent),
                                 "",
-                                ChatColor.GRAY + "The initial price of the item gives a point",
-                                ChatColor.GRAY + "of initial stability at neutral internal stock (0)",
+                                Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_LORE_1),
+                                Lang.get().message(Message.MARKETEDITOR_INITIAL_PRICE_LORE_2),
                                 "",
-                                ChatColor.RED + "⚠ CAUTION ⚠ Changing this value will alter the",
-                                ChatColor.RED + "shape of the price curve, changing the current price.",
+                                Lang.get().message(Message.MARKETEDITOR_CAUTION_CURVE_1),
+                                Lang.get().message(Message.MARKETEDITOR_CAUTION_CURVE_2),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                        )));
 
         inventory.setItem(5,
                 getItemStackOfOption(Material.NAME_TAG,
-                "Alias",
-                        Arrays.asList(ChatColor.GRAY + "Alias: " + ChatColor.GREEN + alias,
+                Lang.get().message(Message.MARKETEDITOR_ALIAS_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_ALIAS_OPTION_LORE_1) + ChatColor.GREEN + alias,
                                 "",
-                                ChatColor.GRAY + "This is the name that will be displayed to players.",
+                                Lang.get().message(Message.MARKETEDITOR_ALIAS_OPTION_LORE_2),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                )));
 
         inventory.setItem(6,
                 getItemStackOfOption(Material.GOLD_NUGGET,
-                        "Currency",
-                        Arrays.asList(ChatColor.GRAY + "Currency: " + ChatColor.GREEN + currency.getCurrencyIdentifier(),
+                        Lang.get().message(Message.MARKETEDITOR_CURRENCY_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_CURRENCY_OPTION_LORE) + ChatColor.GREEN + currency.getCurrencyIdentifier(),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO SWITCH BETWEEN CURRENCIES")
-                ));
+                                Lang.get().message(Message.MARKETEDITOR_CURRENCY_SWITCH)
+                )));
 
         inventory.setItem(13,
                 getItemStackOfOption(Material.SLIME_BALL,
-                "Elasticity",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + ChatColor.GREEN + elasticity,
+                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_VALUE_LABEL) + ChatColor.GREEN + elasticity,
                                 "",
-                                ChatColor.GRAY + "This value determines the magnitude of the",
-                                ChatColor.GRAY + "changes due to player transactions. Has decimal precision.",
-                                ChatColor.GRAY + "A bigger value means that when a player buys or sells",
-                                ChatColor.GRAY + "the price will react with a bigger change. Conversely",
-                                ChatColor.GRAY + "when the value is lower this changes will be smaller.",
+                                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION_LORE_1),
+                                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION_LORE_2),
+                                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION_LORE_3),
+                                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION_LORE_4),
+                                Lang.get().message(Message.MARKETEDITOR_ELASTICITY_OPTION_LORE_5),
                                 "",
-                                ChatColor.RED + "⚠ CAUTION ⚠ Changing this value will alter the",
-                                ChatColor.RED + "shape of the price curve, changing the current price.",
+                                Lang.get().message(Message.MARKETEDITOR_CAUTION_CURVE_1),
+                                Lang.get().message(Message.MARKETEDITOR_CAUTION_CURVE_2),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                )));
 
         inventory.setItem(14,
                 getItemStackOfOption(Material.COMPARATOR,
-                "Noise Intensity",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + ChatColor.GREEN + noiseIntensity,
+                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_VALUE_LABEL) + ChatColor.GREEN + noiseIntensity,
                                 "",
-                                ChatColor.GRAY + "This value determines the sensibility of the",
-                                ChatColor.GRAY + "item to random changes. Has decimal precision.",
-                                ChatColor.GRAY + "A bigger value means that the price will fluctuate",
-                                ChatColor.GRAY + "in bigger quantities than when the value is lower.",
+                                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION_LORE_1),
+                                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION_LORE_2),
+                                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION_LORE_3),
+                                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION_LORE_4),
                                 "",
-                                ChatColor.RED + "⚠ CAUTION ⚠ High values can make the item",
-                                ChatColor.RED + "extremely volatile.",
+                                Lang.get().message(Message.MARKETEDITOR_NOISE_OPTION_CAUTION),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                )));
 
         Component supportComponent = MiniMessage.miniMessage().deserialize(Formatter.format(currency, support, Style.ROUND_BASIC));
 
         inventory.setItem(22,
                 getItemStackOfOption(Material.BEDROCK,
-                "Support",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + (support == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(supportComponent)),
+                Lang.get().message(Message.MARKETEDITOR_SUPPORT_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_VALUE_LABEL) + (support == 0 ? ChatColor.RED + Lang.get().message(Message.MARKETEDITOR_DISABLED) : LegacyComponentSerializer.legacySection().serialize(supportComponent)),
                                 "",
-                                ChatColor.GRAY + "If the noise is enabled, then the price of the",
-                                ChatColor.GRAY + "item will slowly tend to stay " + ChatColor.UNDERLINE + "ABOVE this value.",
+                                Lang.get().message(Message.MARKETEDITOR_SUPPORT_OPTION_LORE_1),
+                                Lang.get().message(Message.MARKETEDITOR_SUPPORT_OPTION_LORE_2),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                )));
 
         Component resistanceComponent = MiniMessage.miniMessage().deserialize(Formatter.format(currency, resistance, Style.ROUND_BASIC));
 
         inventory.setItem(23,
                 getItemStackOfOption(Material.WHITE_WOOL,
-                        "Resistance",
-                        Arrays.asList(ChatColor.GRAY + "Value: " + (resistance == 0 ? ChatColor.RED + "DISABLED" : LegacyComponentSerializer.legacySection().serialize(resistanceComponent)),
+                        Lang.get().message(Message.MARKETEDITOR_RESISTANCE_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_VALUE_LABEL) + (resistance == 0 ? ChatColor.RED + Lang.get().message(Message.MARKETEDITOR_DISABLED) : LegacyComponentSerializer.legacySection().serialize(resistanceComponent)),
                                 "",
-                                ChatColor.GRAY + "If the noise is enabled, then the price of the",
-                                ChatColor.GRAY + "item will slowly tend to stay " + ChatColor.UNDERLINE + "BELOW this value.",
+                                Lang.get().message(Message.MARKETEDITOR_RESISTANCE_OPTION_LORE_1),
+                                Lang.get().message(Message.MARKETEDITOR_RESISTANCE_OPTION_LORE_2),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO EDIT")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_EDIT)
+                )));
 
         inventory.setItem(15,
                 getItemStackOfOption(Material.CHEST,
-                        "Category",
-                        Arrays.asList(ChatColor.GRAY + "Category: " + ChatColor.GREEN + category.getIdentifier() + ChatColor.GRAY + " - " + ChatColor.GOLD + category.getDisplayName(),
+                        Lang.get().message(Message.MARKETEDITOR_CATEGORY_OPTION),
+                        Arrays.asList(Lang.get().message(Message.MARKETEDITOR_CATEGORY_OPTION_LORE) + ChatColor.GREEN + category.getIdentifier() + ChatColor.GRAY + " - " + ChatColor.GOLD + category.getDisplayName(),
                                 "",
-                                ChatColor.GREEN + "" + ChatColor.BOLD + "CLICK TO CHANGE")
-        ));
+                                Lang.get().message(Message.MARKETEDITOR_CLICK_TO_CHANGE)
+                )));
     }
 
     public static ItemStack getItemStackOfOption(Material material, String displayName, List<String> value) {
@@ -374,13 +375,13 @@ public class EditItemMenu {
                 prevCategory.removeItem(item);
             }
 
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "Property changes saved!");
+            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_ITEM_CHANGES_SAVED));
         } else {
             Item item = new Item(itemStack, identifier, alias, category, ImagesManager.getInstance().getImage(identifier));
             item.setCurrency(currency);
             category.addItem(item);
             MarketManager.getInstance().addItem(item);
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "New item saved!");
+            player.sendMessage(Lang.get().message(Message.MARKETEDITOR_NEW_ITEM_SAVED));
         }
 
         MarketEditorManager.getInstance().getMarketEditorFromPlayer(player).open();
