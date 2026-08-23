@@ -70,7 +70,10 @@ public final class AnvilPrompt {
             meta.setDisplayName(text.isEmpty() ? " " : text);
             placeholder.setItemMeta(meta);
 
-            Gui gui = Gui.empty(2, 1);
+            // Anvil has 4 slots: left(0), right(1), middle(2), output(3).
+            // GUI must have exactly 4 columns (1 row × 4 cols) to avoid
+            // ArrayIndexOutOfBoundsException when the player clicks slot 2.
+            Gui gui = Gui.empty(1, 4);
             gui.setItem(0, new SimpleItem(placeholder));
 
             AnvilWindow[] holder = new AnvilWindow[1];
