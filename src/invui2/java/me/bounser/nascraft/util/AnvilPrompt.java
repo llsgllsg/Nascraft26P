@@ -61,7 +61,10 @@ public final class AnvilPrompt {
 
             AnvilWindow window = AnvilWindow.builder()
                     .setTitle(title)
-                    .setUpperGui(Gui.empty(2, 1))
+                    // Anvil has 4 slots: left(0), right(1), middle(2), output(3).
+                    // GUI must have exactly 4 columns to avoid
+                    // ArrayIndexOutOfBoundsException when the player clicks slot 2.
+                    .setUpperGui(Gui.empty(1, 4))
                     .setTextFieldAlwaysEnabled(true)
                     .setResultAlwaysValid(true)
                     .setCloseable(false)
