@@ -1,6 +1,9 @@
 .gradle/
 build/
 
+# runServer（run-paper 插件）会把测试服务器、世界和日志下到这里，体积很大，不要提交
+run/
+
 .idea/
 *.iml
 out/
