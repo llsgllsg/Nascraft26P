@@ -47,6 +47,9 @@ jobs:
 
       - name: 准备构建配置
         run: |
+          # gradlew 在仓库里可能没有可执行位（Windows 提交的常见问题），显式补上。
+          chmod +x gradlew
+
           # gradle.properties 里的本地 Clash 代理和 D:/Zulu 工具链路径只适用于作者本机，
           # 在 Actions 上留着会让依赖下载全部失败，先把这些行剔掉，
           # 再写入 runner 上真实存在的两个 JDK 路径。

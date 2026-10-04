@@ -61,6 +61,9 @@ jobs:
 
       - name: 准备构建配置
         run: |
+          # gradlew 在仓库里可能没有可执行位（Windows 提交的常见问题），显式补上。
+          chmod +x gradlew
+
           sed -i '/^systemProp\..*roxy/d' gradle.properties
           sed -i '/^org\.gradle\.java\.installations\.paths/d' gradle.properties
 
