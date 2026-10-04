@@ -10,8 +10,11 @@ Nascraft 市场的汉化改造版（Paper 服务器插件）。这是一个由�
 |--------|----------------|------|-----------|
 | 1.21.11 | Paper / Purpur 1.21.11 | JDK 21 | invui 1.x |
 | 26.2   | Paper / Purpur 26.2    | JDK 25 | invui 2.x |
+| 26.3   | Paper / Purpur 26.3    | JDK 25 | invui 2.x |
 
-两个目标共享同一套源码；仅 26.2 会额外把 `src/invui2/java` 下的 6 个界面文件和 `AnvilPrompt`（invui 2.x 版）覆盖进构建。
+三个目标共享同一套源码；26.2 / 26.3 会额外把 `src/invui2/java` 下的 6 个界面文件和 `AnvilPrompt`（invui 2.x 版）覆盖进构建。
+
+当前版本号只写在 `gradle.properties` 的 `version` 里，产物文件名和 `plugin.yml` 的版本都取自它，改版本只需要改这一行。
 
 ## 功能
 
@@ -27,7 +30,7 @@ Nascraft 市场的汉化改造版（Paper 服务器插件）。这是一个由�
 
 ## 环境要求
 
-- Paper / Purpur 1.21.11 或 26.2
+- Paper / Purpur 1.21.11 / 26.2 / 26.3
 - Vault（必装，作为默认货币）
 - 可选：PlaceholderAPI（多货币）、AdvancedGUI（游戏内图表）
 - 依赖：redis.clients:jedis（跨服用）、JDA（Discord 用）
@@ -43,16 +46,39 @@ Nascraft 市场的汉化改造版（Paper 服务器插件）。这是一个由�
 命令：
 
 ```
-gradle shadowJar -PmcTarget=1.21.11   # 1.21.11（默认）
-gradle shadowJar -PmcTarget=26.2      # 26.2
+gradlew shadowJar "-PmcTarget=1.21.11"   # 1.21.11（默认）
+gradlew shadowJar "-PmcTarget=26.2"      # 26.2
+gradlew shadowJar "-PmcTarget=26.3"      # 26.3
 ```
 
-注意：Gradle daemon 必须运行在 JDK 21 上（即使构建 26.2 目标），因为 Gradle 8.14.3 内嵌的 Kotlin DSL 编译器无法解析 Java 25 的版本号 `25.0.3`。javac 会自动通过 Java 工具链切换到对应 JDK。
+> **PowerShell 用户注意**：`-PmcTarget=1.21.11` 必须整体加引号。
+> 不加引号时 PowerShell 会把参数拆坏，Gradle 只收到 `.21.11`，直接报
+> `Task '.21.11' not found` 并构建失败；这时 `build/libs` 里留着的是上一次构建的旧 jar，
+> 如果把它发出去，就会得到「没打依赖、启动报 `NoClassDefFoundError`」的坏包。
+> 用 CMD 或 Linux / macOS 的 shell 不需要加引号。
 
-产物：
+注意：Gradle daemon 必须运行在 JDK 21 上（即使构建 26.2 / 26.3 目标），因为 Gradle 8.14.3 内嵌的 Kotlin DSL 编译器无法解析 Java 25 的版本号 `25.0.3`。javac 会自动通过 Java 工具链切换到对应 JDK。
 
-- `build/libs/Nascraft-1.9.2-1.21.11.jar`
-- `build/libs/Nascraft-1.9.2-26.2.jar`
+产物（版本号取自 `gradle.properties`）：
+
+- `build/libs/Nascraft-26.3-1.21.11.jar`
+- `build/libs/Nascraft-26.3-26.2.jar`
+- `build/libs/Nascraft-26.3-26.3.jar`
+
+`shadowJar` 跑完会自动做一次打包自检：确认 bStats、invui、item-nbt-api 这些随包依赖确实被 shade 进 jar 了，缺任何一个都让构建失败，防止再把没打依赖的 jar 发布出去。
+
+## 自动构建与发布
+
+仓库自带两个 GitHub Actions 工作流：
+
+| 工作流 | 触发方式 | 作用 |
+|--------|----------|------|
+| `.github/workflows/build.yml` | push、Pull Request、手动 | 构建三个目标并上传产物（Actions 页面的 Artifacts 可下载） |
+| `.github/workflows/release.yml` | 推 `v*` tag，或手动触发 | 递增/指定版本号 → 提交 → 打 tag → 构建 → 发布 Release |
+
+手动发布：Actions → 发布 Release → Run workflow，填版本号（例如 `26.3`）或选递增方式即可。
+
+`gradle.properties` 里的本地 Clash 代理和 `D:/Zulu` 工具链路径只对作者本机有效，两个工作流都会在构建前把这几行删掉，再写入 runner 上真实的 JDK 路径。
 
 ## 安装
 
@@ -64,7 +90,9 @@ gradle shadowJar -PmcTarget=26.2      # 26.2
 
 ## 本仓库相对原版的改动
 
-- 适配 1.21.11 与 26.2（invui 1.x / 2.x）。
+- 适配 1.21.11、26.2 与 26.3（invui 1.x / 2.x）。
+- 版本号从 26.3 起与 MC 版本对齐，统一由 `gradle.properties` 的 `version` 控制。
+- 修复随包依赖没有被打进 jar 的问题（bStats / invui / item-nbt-api 缺失时，服务器加载会报 `NoClassDefFoundError: org/bstats/charts/CustomChart`）；`shadowJar` 现在带打包自检，不会再发出缺依赖的包。
 - anvil 输入弹窗不再依赖 anvilgui（其 NMS 包装只支持到 1.21.10，在 1.21.11 上会报 `NoClassDefFoundError`），改用 invui AnvilWindow。
 - 物品贴图未就绪时使用占位图标，物品始终可以加载；客户端 JAR 下载完成后重载即可显示真实贴图。
 - 修复 `/market` 在市场无物品时的空列表崩溃。
