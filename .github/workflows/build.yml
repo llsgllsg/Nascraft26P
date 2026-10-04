@@ -82,6 +82,8 @@ jobs:
           set -e
           VERSION=$(grep -m1 '^version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
           echo "版本号：$VERSION"
+          # 传给后面的上传步骤，让它按精确文件名取产物
+          echo "NASCRAFT_VERSION=$VERSION" >> "$GITHUB_ENV"
           for target in 1.21.11 26.2 26.3; do
             JAR="build/libs/Nascraft-${VERSION}-${target}.jar"
             test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
@@ -106,5 +108,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Nascraft-build
-          path: build/libs/Nascraft-*.jar
+          # 精确列出三个产物，不要用 build/libs/Nascraft-*.jar 这种通配符：
+          # 万一 jars 目录里还有没打依赖的普通 jar（Nascraft-<版本>.jar），
+          # 通配符会把它一起传上来，正是 issue #3 那类坏包的来源。
+          path: |
+            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-1.21.11.jar
+            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-26.2.jar
+            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-26.3.jar
           if-no-files-found: error
