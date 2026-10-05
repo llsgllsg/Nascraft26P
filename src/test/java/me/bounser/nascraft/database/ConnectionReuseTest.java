@@ -6,9 +6,9 @@ import me.bounser.nascraft.portfolio.Portfolio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.objenesis.ObjenesisStd;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -77,6 +77,26 @@ class ConnectionReuseTest {
         config.setConnectionTimeout(30_000);
         config.setPoolName("Nascraft-Test");
         return new TestDatabase(new HikariDataSource(config));
+    }
+
+    /**
+     * 把测试用的数据库装进 DatabaseManager 单例，让 Portfolio 构造时查到它。
+     *
+     * <p>这里刻意不用 Mockito 的 mockStatic：静态 mock 需要动态挂 java agent，
+     * 在 GitHub Actions 上会以 MockitoException / IllegalArgumentException 失败，
+     * 而本地却可能是好的。Objenesis 绕过构造函数直接造实例，再反射填两个私有字段，
+     * 行为完全确定，不需要任何 agent 或字节码增强。
+     */
+    private static void installDatabaseManager(Database database) throws Exception {
+        DatabaseManager manager = new ObjenesisStd().newInstance(DatabaseManager.class);
+
+        Field databaseField = DatabaseManager.class.getDeclaredField("database");
+        databaseField.setAccessible(true);
+        databaseField.set(manager, database);
+
+        Field instanceField = DatabaseManager.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, manager);
     }
 
     // ------------------------------------------------------------------
@@ -190,11 +210,8 @@ class ConnectionReuseTest {
             }
         });
 
-        try (MockedStatic<DatabaseManager> mocked = Mockito.mockStatic(DatabaseManager.class)) {
-            DatabaseManager manager = Mockito.mock(DatabaseManager.class);
-            Mockito.when(manager.getDatabase()).thenReturn(db);
-            mocked.when(DatabaseManager::get).thenReturn(manager);
-
+        installDatabaseManager(db);
+        try {
             // 修复前：这里会卡满 30 秒连接超时，再抛 SQLTransientConnectionException
             HashMap<UUID, Portfolio> top = db.getTopWorth(10);
 

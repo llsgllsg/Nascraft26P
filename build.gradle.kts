@@ -117,6 +117,9 @@ dependencies {
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
     // HikariCP 只是 compileOnly，测试运行时也要用（连接复用的回归测试自己建池）
     testImplementation("com.zaxxer:HikariCP:5.1.0")
+    // 用来在「不调用构造函数」的前提下造一个 DatabaseManager 实例。
+    // 不用 Mockito 的静态 mock：那需要动态挂 java agent，在 CI 上会失败。
+    testImplementation("org.objenesis:objenesis:3.3")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testImplementation("io.papermc.paper:paper-api:$paperApiVersion")
@@ -224,6 +227,11 @@ tasks {
 
     test {
         useJUnitPlatform()
+        // 测试失败时把完整堆栈打进日志，否则只有一行摘要没法排查
+        testLogging {
+            events("failed", "skipped")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 
     build {
