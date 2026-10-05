@@ -67,14 +67,22 @@ gradlew shadowJar "-PmcTarget=26.3"      # 26.3
 
 `shadowJar` 跑完会自动做一次打包自检：确认 bStats、invui、item-nbt-api 这些随包依赖确实被 shade 进 jar 了，缺任何一个都让构建失败，防止再把没打依赖的 jar 发布出去。
 
+跑测试：
+
+```
+gradlew test "-PmcTarget=1.21.11"
+```
+
+`src/test` 下有连接复用的回归测试（`ConnectionReuseTest`）。SQLite 的池只有 1 条连接，历史上「在查库的过程中又去查一次库」会把自己锁死、连带卡住服务器主线程 30 秒（打开资产榜单时的 `SQLTransientConnectionException`），这些测试就是为了拦住它再出现。
+
 ## 自动构建与发布
 
 仓库自带两个 GitHub Actions 工作流：
 
 | 工作流 | 触发方式 | 作用 |
 |--------|----------|------|
-| `.github/workflows/build.yml` | push、Pull Request、手动 | 构建三个目标并上传产物（Actions 页面的 Artifacts 可下载） |
-| `.github/workflows/release.yml` | 推 `v*` tag，或手动触发 | 递增/指定版本号 → 提交 → 打 tag → 构建 → 发布 Release |
+| `.github/workflows/build.yml` | push、Pull Request、手动 | 跑测试 + 构建三个目标并上传产物（Actions 页面的 Artifacts 可下载） |
+| `.github/workflows/release.yml` | 推 `v*` tag，或手动触发 | 递增/指定版本号 → 提交 → 打 tag → 跑测试 → 构建 → 发布 Release |
 
 手动发布：Actions → 发布 Release → Run workflow，填版本号（例如 `26.3`）或选递增方式即可。
 

@@ -156,8 +156,8 @@ jobs:
         run: |
           set -e
           for target in 1.21.11 26.2 26.3; do
-            echo "::group::构建 MC $target"
-            ./gradlew shadowJar "-PmcTarget=$target" --console=plain
+            echo "::group::构建并测试 MC $target"
+            ./gradlew test shadowJar "-PmcTarget=$target" --console=plain
             echo "::endgroup::"
           done
 

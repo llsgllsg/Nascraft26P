@@ -68,12 +68,13 @@ jobs:
           cat gradle.properties
 
       # 不带 clean，一次构建出三个 jar；三个目标文件名不同，会同时留在 build/libs。
+      # 同时跑 test：连接复用的回归测试（见 ConnectionReuseTest）只有真的跑起来才有意义。
       - name: 构建三个目标
         run: |
           set -e
           for target in 1.21.11 26.2 26.3; do
-            echo "::group::构建 MC $target"
-            ./gradlew shadowJar "-PmcTarget=$target" --console=plain
+            echo "::group::构建并测试 MC $target"
+            ./gradlew test shadowJar "-PmcTarget=$target" --console=plain
             echo "::endgroup::"
           done
 
