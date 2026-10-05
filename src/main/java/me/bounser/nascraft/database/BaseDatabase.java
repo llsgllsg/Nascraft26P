@@ -30,6 +30,20 @@ public abstract class BaseDatabase implements Database {
 
     protected HikariDataSource dataSource;
 
+    // 当前线程正在使用中的那条连接。
+    //
+    // SQLite 的池只有 1 条连接（SqliteDatabase#configureHikari 里 setMaximumPoolSize(1)），
+    // 所以「在 queryConnection 里面再调一次 queryConnection」会自己把自己锁死：
+    // 外层还握着那条唯一的连接，内层再申请只能等到 30 秒连接超时。
+    //
+    // 真实故障路径（Purpur 26.2 + Nascraft 26.3.1，跑在服务器主线程上）：
+    //   getTopWorth -> PortfoliosWorth.getTopWorth
+    //     -> PortfoliosManager.getPortfolio（该玩家不在缓存里）
+    //       -> new Portfolio -> retrievePortfolio -> queryConnection  ← 卡死
+    //
+    // 用 ThreadLocal 记住当前线程已持有的连接，嵌套调用直接复用，不再向池子伸手。
+    private final ThreadLocal<Connection> threadConnection = new ThreadLocal<>();
+
     // Configure the Hikari pool (JDBC URL, driver, credentials, pool size).
     protected abstract void configureHikari(HikariConfig config);
 
@@ -118,24 +132,66 @@ public abstract class BaseDatabase implements Database {
     }
 
     public void withConnection(SqlConsumer action) {
+        // 嵌套调用（当前线程已经拿着一条连接）时复用外层连接，见 threadConnection 注释。
+        Connection held = threadConnection.get();
+        if (held != null) {
+            try {
+                action.accept(held);
+                return;
+            } catch (SQLException e) {
+                throw fail("withConnection failed", e);
+            }
+        }
+
         try (Connection connection = dataSource.getConnection()) {
-            action.accept(connection);
+            threadConnection.set(connection);
+            try {
+                action.accept(connection);
+            } finally {
+                threadConnection.remove();
+            }
         } catch (SQLException e) {
             throw fail("withConnection failed", e);
         }
     }
 
     public <T> T queryConnection(SqlFunction<T> action) {
+        // 嵌套调用时复用外层连接：只有 1 条连接的池再申请一次就是死锁。
+        Connection held = threadConnection.get();
+        if (held != null) {
+            try {
+                return action.apply(held);
+            } catch (SQLException e) {
+                throw fail("queryConnection failed", e);
+            }
+        }
+
         try (Connection connection = dataSource.getConnection()) {
-            return action.apply(connection);
+            threadConnection.set(connection);
+            try {
+                return action.apply(connection);
+            } finally {
+                threadConnection.remove();
+            }
         } catch (SQLException e) {
             throw fail("queryConnection failed", e);
         }
     }
 
     public <T> T queryTransaction(SqlFunction<T> action) {
+        // 已经在一个连接/事务里：并入外层，不重复开启，也不在这里提交或回滚。
+        Connection held = threadConnection.get();
+        if (held != null) {
+            try {
+                return action.apply(held);
+            } catch (SQLException e) {
+                throw fail("queryTransaction failed", e);
+            }
+        }
+
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
+            threadConnection.set(connection);
             try {
                 T result = action.apply(connection);
                 connection.commit();
@@ -146,6 +202,7 @@ public abstract class BaseDatabase implements Database {
                 }
                 throw e;
             } finally {
+                threadConnection.remove();
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {

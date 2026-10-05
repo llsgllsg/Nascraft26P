@@ -115,6 +115,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
     testRuntimeOnly   ("org.junit.platform:junit-platform-launcher")
     testImplementation("org.xerial:sqlite-jdbc:3.43.0.0")
+    // HikariCP 只是 compileOnly，测试运行时也要用（连接复用的回归测试自己建池）
+    testImplementation("com.zaxxer:HikariCP:5.1.0")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testImplementation("io.papermc.paper:paper-api:$paperApiVersion")

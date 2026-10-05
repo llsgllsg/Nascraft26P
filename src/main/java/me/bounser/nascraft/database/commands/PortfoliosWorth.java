@@ -7,8 +7,10 @@ import me.bounser.nascraft.portfolio.Portfolio;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class PortfoliosWorth {
@@ -36,14 +38,20 @@ public class PortfoliosWorth {
         String sql = "SELECT uuid, worth FROM portfolios_worth " +
                      "WHERE (uuid, day) IN (SELECT uuid, MAX(day) FROM portfolios_worth GROUP BY uuid) " +
                      "ORDER BY worth DESC LIMIT ?";
+
+        // 先把结果集读干净，再去构造 Portfolio。
+        // getPortfolio 会再查一次库；如果还在遍历结果集的时候就查，等于在这条连接上
+        // 叠一条语句（SQLite 的池只有 1 条连接，历史上就是在这里卡死 30 秒的）。
+        List<UUID> uuids = new ArrayList<>();
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setInt(1, n);
             try (ResultSet rs = prep.executeQuery()) {
-                while (rs.next()) {
-                    UUID uuid = UUID.fromString(rs.getString("uuid"));
-                    result.put(uuid, PortfoliosManager.getInstance().getPortfolio(uuid));
-                }
+                while (rs.next()) uuids.add(UUID.fromString(rs.getString("uuid")));
             }
+        }
+
+        for (UUID uuid : uuids) {
+            result.put(uuid, PortfoliosManager.getInstance().getPortfolio(uuid));
         }
         return result;
     }
