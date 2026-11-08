@@ -72,9 +72,34 @@ jobs:
       - name: 构建三个目标
         run: |
           set -e
+
+          # GitHub 的 Release 资源偶尔会返回 504，导致 gradlew 下载 Gradle 发行版失败。
+          # 官方地址不可用时退回镜像，并用官方 SHA-256 校验后再解压，避免构建被外部故障卡死。
+          GRADLE_CMD=""
+          if ./gradlew --version --console=plain >/dev/null 2>&1; then
+            GRADLE_CMD=./gradlew
+          else
+            echo "Gradle wrapper 下载失败，改用镜像发行版"
+            for url in \
+              "https://mirrors.cloud.tencent.com/gradle/gradle-8.14.3-bin.zip" \
+              "https://mirrors.huaweicloud.com/gradle/gradle-8.14.3-bin.zip"
+            do
+              if curl -fsSL --retry 2 --connect-timeout 20 "$url" -o /tmp/gradle.zip \
+                && echo "bd71102213493060956ec229d946beee57158dbd89d0e62b91bca0fa2c5f3531  /tmp/gradle.zip" | sha256sum -c -; then
+                unzip -q /tmp/gradle.zip -d "$HOME/.local"
+                GRADLE_CMD="$HOME/.local/gradle-8.14.3/bin/gradle"
+                break
+              fi
+            done
+          fi
+          if [ -z "$GRADLE_CMD" ] || [ ! -x "$GRADLE_CMD" ]; then
+            echo "::error::无法获取 Gradle 发行版"
+            exit 1
+          fi
+
           for target in 1.21.11 26.2 26.3; do
             echo "::group::构建并测试 MC $target"
-            ./gradlew test shadowJar "-PmcTarget=$target" --console=plain
+            "$GRADLE_CMD" test shadowJar "-PmcTarget=$target" --console=plain
             echo "::endgroup::"
           done
 
