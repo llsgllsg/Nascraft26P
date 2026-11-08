@@ -51,7 +51,14 @@ val paperApiVersion = when (mcTarget) {
 }
 
 val useInvui2    = mcTarget != "1.21.11"
-val invuiVersion = if (useInvui2) "2.3.0" else "1.49"
+val invuiVersion = when (mcTarget) {
+    "1.21.11" -> "1.49"
+    // 26.3 的 CraftBukkit 把 CraftItemStack.asCraftMirror 改成了 asBukkitMirror。
+    // invui 2.3.0 还是在调旧方法，打开地图/制图台窗口会抛 NoSuchMethodError，
+    // 所以 26.3 用 2.5.1；26.2 的 CraftBukkit 里仍然只有 asCraftMirror，保持在 2.3.0。
+    "26.3"    -> "2.5.1"
+    else      -> "2.3.0"
+}
 val toolchainJvm = if (useInvui2) 25 else 21   // paper-api 26.2/26.3 是 Java 25 编译的
 
 java {
