@@ -116,7 +116,7 @@ public class MarketManager {
         if (categories.size() < 4 && (AGUI != null)) {
             LOGGER.severe("You need to have at least 4 categories! Disabling plugin...");
             Nascraft instance = Nascraft.getInstance();
-            if (instance != null) instance.getPluginLoader().disablePlugin(instance);
+            if (instance != null) Bukkit.getPluginManager().disablePlugin(instance);
         }
 
         for (Item item : items)

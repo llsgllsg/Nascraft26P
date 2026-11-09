@@ -5,6 +5,7 @@ import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Separator;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,7 @@ public class Lang {
 
         if (!language.exists()) {
             Nascraft.getInstance().getLogger().severe("Lang file selected does not exist!");
-            Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+            Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
         }
 
         lang = YamlConfiguration.loadConfiguration(language);
@@ -46,7 +47,7 @@ public class Lang {
 
         if (!language.exists()) {
             Nascraft.getInstance().getLogger().severe("Lang file selected does not exist!");
-            Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+            Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
         }
 
         lang = YamlConfiguration.loadConfiguration(language);

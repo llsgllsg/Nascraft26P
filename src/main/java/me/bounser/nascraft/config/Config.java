@@ -14,6 +14,7 @@ import me.bounser.nascraft.discord.linking.LinkingMethod;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -116,12 +117,12 @@ public class Config {
             Nascraft.getInstance().getLogger().warning("Error trying to recognize database type: " + config.getString("database.type").toUpperCase());
             Nascraft.getInstance().getLogger().warning("Is it a valid type of database?");
             e.printStackTrace();
-            Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+            Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
         }
 
         if (databaseType == null) {
             Nascraft.getInstance().getLogger().warning("DatabaseManager type not recognized: " + config.getString("database.type").toUpperCase());
-            Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+            Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
         }
 
         return databaseType;
@@ -703,7 +704,7 @@ public class Config {
                 Nascraft.getInstance().getLogger().severe("Couldn't load item with identifier: " + identifier);
                 Nascraft.getInstance().getLogger().severe("Reason: Material " + identifier.replaceAll("\\d", "").toUpperCase() + " is not valid!");
                 Nascraft.getInstance().getLogger().severe("Does the item exist in the version of your server?");
-                Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+                Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
             }
 
         for (String ignoredKey : getIgnoredKeys())
@@ -737,7 +738,7 @@ public class Config {
                 Nascraft.getInstance().getLogger().severe("Couldn't load item with identifier: " + identifier);
                 Nascraft.getInstance().getLogger().severe("Reason: Material " + identifier.replaceAll("\\d", "").toUpperCase() + " is not valid!");
                 Nascraft.getInstance().getLogger().severe("Does the item exist in the version of your server?");
-                Nascraft.getInstance().getPluginLoader().disablePlugin(Nascraft.getInstance());
+                Bukkit.getPluginManager().disablePlugin(Nascraft.getInstance());
             }
 
         return itemStack;
