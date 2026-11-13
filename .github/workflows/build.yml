@@ -1,12 +1,8 @@
 name: 构建 Nascraft
 
-# 每次 push（任意分支）、Pull Request 以及手动触发，都完整构建三个目标。
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
-# 同一分支上新的推送会取消还没跑完的旧构建。
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
@@ -18,11 +14,6 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      # 两个 JDK 都要装，顺序不能反：
-      #   * Gradle 自己必须跑在 JDK 21 上 —— Gradle 8.14.3 内嵌的 Kotlin DSL
-      #     编译器解析不了 Java 25 的版本号；
-      #   * 26.2 / 26.3 目标通过 Java 工具链用 JDK 25 编译 javac。
-      # setup-java 最后一次调用决定 JAVA_HOME，所以 21 放在最后。
       - name: 设置 JDK 25（26.2 / 26.3 的编译工具链）
         uses: actions/setup-java@v4
         with:
@@ -47,12 +38,8 @@ jobs:
 
       - name: 准备构建配置
         run: |
-          # gradlew 在仓库里可能没有可执行位（Windows 提交的常见问题），显式补上。
           chmod +x gradlew
 
-          # gradle.properties 里的本地 Clash 代理和 D:/Zulu 工具链路径只适用于作者本机，
-          # 在 Actions 上留着会让依赖下载全部失败，先把这些行剔掉，
-          # 再写入 runner 上真实存在的两个 JDK 路径。
           sed -i '/^systemProp\..*roxy/d' gradle.properties
           sed -i '/^org\.gradle\.java\.installations\.paths/d' gradle.properties
 
@@ -67,14 +54,10 @@ jobs:
           echo "Gradle 运行在：$JAVA_HOME"
           cat gradle.properties
 
-      # 不带 clean，一次构建出三个 jar；三个目标文件名不同，会同时留在 build/libs。
-      # 同时跑 test：连接复用的回归测试（见 ConnectionReuseTest）只有真的跑起来才有意义。
       - name: 构建三个目标
         run: |
           set -e
 
-          # GitHub 的 Release 资源偶尔会返回 504，导致 gradlew 下载 Gradle 发行版失败。
-          # 官方地址不可用时退回镜像，并用官方 SHA-256 校验后再解压，避免构建被外部故障卡死。
           GRADLE_CMD=""
           if ./gradlew --version --console=plain >/dev/null 2>&1; then
             GRADLE_CMD=./gradlew
@@ -108,14 +91,12 @@ jobs:
           set -e
           VERSION=$(grep -m1 '^version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
           echo "版本号：$VERSION"
-          # 传给后面的上传步骤，让它按精确文件名取产物
           echo "NASCRAFT_VERSION=$VERSION" >> "$GITHUB_ENV"
           for target in 1.21.11 26.2 26.3; do
             JAR="build/libs/Nascraft-${VERSION}-${target}.jar"
             test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
 
             # issue #3 防回归：确认随包依赖真的被 shade 进 jar 了。
-            # 少依赖的 jar 一样能"构建成功"，但装到服务器上会直接
             # NoClassDefFoundError: org/bstats/charts/CustomChart。
             for entry in \
               me/bounser/bstats/charts/CustomChart.class \
@@ -134,9 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Nascraft-build
-          # 精确列出三个产物，不要用 build/libs/Nascraft-*.jar 这种通配符：
-          # 万一 jars 目录里还有没打依赖的普通 jar（Nascraft-<版本>.jar），
-          # 通配符会把它一起传上来，正是 issue #3 那类坏包的来源。
+
           path: |
             build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-1.21.11.jar
             build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-26.2.jar
