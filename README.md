@@ -157,7 +157,7 @@ QQ 端命令：
 - **Gradle 8.14.3**（仓库自带 wrapper）
 - 能访问 Maven 仓库与 GitHub；下载依赖困难时可配置代理
 
-> `gradle.properties` 中的代理与 `D:/Zulu` 工具链路径是作者本机配置，本地构建前请改成你自己的路径，或直接删掉对应行。
+> `gradle.properties` 中的代理与 `D:/Zulu`，本地构建前请改成你自己的路径
 
 ### 构建命令
 
