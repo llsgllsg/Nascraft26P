@@ -161,6 +161,9 @@ commands:
   setalerts:
     enabled: true
     alias: 'nsetalert'
+  linkqq:
+    enabled: true
+    alias: 'qq'
   givesellwand:
     enabled: true
     alias: 'givesw'
@@ -341,6 +344,40 @@ discord-bot:
         enabled: true
       flows:
         enabled: true
+
+# 通过 OneBot v11 协议接入 QQ 机器人。
+# 个人 QQ 可用 NapCat / LLOneBot / Lagrange / go-cqhttp；
+# QQ 官方机器人渠道可用 gensokyo / @onebots/adapter-qq 等 OneBot v11 适配器。
+onebot:
+  enabled: false
+  # OneBot v11 HTTP API 地址（不要带 /send_private_msg 后缀）。
+  api-url: 'http://127.0.0.1:3000'
+  # 与 OneBot 实现约定的 access token；留空表示不校验。
+  access-token: ''
+  # 将游戏内交易日志发送到 QQ 群。
+  log-trades:
+    enabled: false
+    # 接收交易日志的 QQ 群号。
+    group-ids: []
+  # QQ 价格提醒。
+  alerts:
+    enabled: false
+    # 检查价格提醒的间隔（秒）。
+    check-interval: 60
+  # 接收 OneBot 事件上报（HTTP POST）的 Webhook 服务。
+  # 需要在 OneBot 实现里把 HTTP 上报地址填成 http://<host>:<port>/<path>。
+  webhook:
+    enabled: false
+    host: '127.0.0.1'
+    port: 8765
+    path: '/onebot'
+    # 校验上报请求的密钥；留空或 SECRET 表示不校验。
+    secret: ''
+  # 允许在 QQ 里使用的查询/提醒/绑定命令。
+  commands:
+    enabled: true
+    # 允许使用命令的群号；留空表示所有群都允许（私聊始终允许）。
+    group-whitelist: []
 
 sell-wands:
   enabled: true

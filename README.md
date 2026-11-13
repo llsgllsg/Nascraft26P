@@ -31,6 +31,7 @@
 | 借贷系统 | 以资产组合为抵押，利息、清算与违约处理 |
 | 跨服市场 | SQLite 单服 / MySQL 多服共享，Redis 实时同步 |
 | Discord 桥接 | 交易日志、账号绑定、价格提醒推送 |
+| QQ 桥接（OneBot v11） | 交易日志、行情查询、价格提醒、账号绑定；兼容个人 QQ 与 QQ 官方机器人 |
 | 自托管网页 | 行情、K 线图表、会话登录 |
 | 中文体验 | zh_CN 语言包、汉化配置注释、汉化的管理员编辑器 |
 
@@ -52,7 +53,7 @@
 - **Paper / Purpur 1.21.11、26.2 或 26.3**（Folia 亦已声明支持）
 - **Vault**（必装，作为默认货币）
 - 可选：**PlaceholderAPI**（占位符 / 多货币）、**AdvancedGUI**（游戏内图表）
-- 跨服：MySQL 8.0+ / MariaDB 10.2+ 与 Redis；Discord：JDA（随插件加载）
+- 跨服：MySQL 8.0+ / MariaDB 10.2+ 与 Redis；Discord：JDA（随插件加载）；QQ：OneBot v11 实现（NapCat / LLOneBot / Lagrange 等，可选）
 
 ### 步骤
 
@@ -82,6 +83,7 @@
 | `/setalert` | `/nsetalert` | 设置价格提醒 | `nascraft.alert` |
 | `/discord` | `/dis` | Discord 相关选项 | `nascraft.discord` |
 | `/link` | `/nlink` | 绑定 Discord 账号 | `nascraft.linkable` |
+| `/linkqq` | `/qq` | 绑定 / 解绑 QQ（OneBot） | `nascraft.qq.linkable` |
 | `/givesellwand` | `/givesw` | 给予出售魔杖（管理员） | `nascraft.admin` |
 | `/nascraft` | `/nas` | 管理员命令（编辑市场 / 重载等） | `nascraft.admin` |
 
@@ -89,6 +91,48 @@
 - `/market` 的子命令：`/market category <分类>`、`/market item <物品ID>`、`/market buy|sell <物品ID> <数量>`（控制台可用带玩家参数的形式）。
 - `/nascraft` 的子命令：`edit`（市场编辑器）、`reload`、`save`、`logs`、`info`、`stop` / `resume`（暂停 / 恢复交易）、`forgivedebt`、`migrate mysql`。
 - 当 `config.yml` 中 `market-permission: true` 时，打开市场会额外校验 `nascraft.market`；权限节点可在权限插件中自由分配。
+
+## QQ 机器人（OneBot v11）
+
+插件内置 OneBot v11 桥接，同一套配置即可接入个人 QQ 或 QQ 官方机器人渠道：
+
+| 渠道 | 推荐实现 | 说明 |
+|------|----------|------|
+| 个人 QQ | NapCat / LLOneBot / Lagrange / go-cqhttp | 以 OneBot v11 正向 HTTP API + 反向 HTTP 上报接入 |
+| QQ 官方机器人 | gensokyo / `@onebots/adapter-qq` | 把 QQ 开放平台机器人转换成 OneBot v11，插件侧配置完全相同 |
+
+启用步骤：
+
+1. 启动你的 OneBot v11 实现，记下 HTTP API 地址（默认 `http://127.0.0.1:3000`）和 access token。
+2. 在 `config.yml` 中开启并填写：
+
+   ```yaml
+   onebot:
+     enabled: true
+     api-url: 'http://127.0.0.1:3000'
+     access-token: ''
+     webhook:
+       enabled: true
+       host: 127.0.0.1
+       port: 8765
+       path: '/onebot'
+       secret: ''
+   ```
+
+3. 在 OneBot 实现里把「反向 HTTP 上报」指向 `http://<host>:<port>/onebot`（对应上面的 host / port / path），并设置相同的 secret。
+4. 重启服务器；玩家在游戏内执行 `/linkqq` 获取 6 位绑定码，再在 QQ 私聊或群里发送 `绑定 <绑定码>`。
+
+QQ 端命令：
+
+| 命令 | 说明 |
+|------|------|
+| `帮助` | 查看可用命令 |
+| `行情 <物品>` | 查询价格、库存与日涨跌 |
+| `提醒 <物品> <价格>` | 设置价格提醒（低于当前价记为跌到提醒，高于当前价记为涨到提醒） |
+| `提醒列表` / `取消提醒 <物品>` | 查看或删除自己的提醒 |
+| `绑定 <绑定码>` / `解绑` | 绑定或解绑游戏账号 |
+
+> 群聊默认允许所有群；可在 `onebot.commands.group-whitelist` 中填写群号限制。交易日志需开启 `onebot.log-trades.enabled` 并填写 `onebot.log-trades.group-ids`。游戏内可用 `/linkqq unlink` 解绑。
 
 ## 配置
 
@@ -166,6 +210,7 @@ build/libs/Nascraft-<version>-26.3.jar
 - 物品贴图未就绪时使用占位图标，物品始终可以加载；客户端 JAR 下载完成后重载即可显示真实贴图。
 - 修复 `/market` 在市场无物品时的空列表崩溃。
 - 替换已弃用的 `JavaPlugin.getPluginLoader()` 调用，为后续 Paper API 移除做准备。
+- 新增 OneBot v11 桥接：QQ 端交易日志、行情查询、价格提醒与账号绑定，兼容个人 QQ 与 QQ 官方机器人渠道。
 - 完整中文（zh_CN）语言包，配置注释与默认显示名称均已汉化。
 - CI 增加 Gradle 下载镜像回退（校验 SHA-256），GitHub 发布资源不可用时也能完成构建。
 
@@ -199,6 +244,12 @@ Paper 目前还没有发布 26.4 的 `paper-api` 与 26.4 构建，因此暂时�
 <summary><b>中文语言文件不生效或缺少新文本？</b></summary>
 
 删除 `plugins/Nascraft/langs/` 下的旧文件，重启让插件按当前版本重新生成。
+</details>
+
+<details>
+<summary><b>怎么接入 QQ 机器人 / QQ 官方机器人？</b></summary>
+
+见 [QQ 机器人（OneBot v11）](#qq-机器人onebot-v11)。个人 QQ 用 NapCat / LLOneBot / Lagrange / go-cqhttp；QQ 官方机器人用 gensokyo 或 `@onebots/adapter-qq` 转成 OneBot v11，插件侧配置完全相同。
 </details>
 
 <details>

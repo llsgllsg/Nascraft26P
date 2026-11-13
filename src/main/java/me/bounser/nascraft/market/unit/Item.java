@@ -13,6 +13,7 @@ import me.bounser.nascraft.api.events.BuyItemEvent;
 import me.bounser.nascraft.api.events.SellItemEvent;
 import me.bounser.nascraft.database.commands.resources.Trade;
 import me.bounser.nascraft.discord.DiscordLog;
+import me.bounser.nascraft.onebot.OneBotBridge;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.RoundUtils;
 import me.bounser.nascraft.managers.InventoryManager;
@@ -230,6 +231,9 @@ public class Item {
         if (Config.getInstance().getDiscordEnabled() && Config.getInstance().getLogChannelEnabled())
             DiscordLog.getInstance().sendTradeLog(trade);
 
+        if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
+            OneBotBridge.getInstance().sendTradeLog(trade);
+
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.BUY, worth);
@@ -276,6 +280,9 @@ public class Item {
 
         if (Config.getInstance().getDiscordEnabled() && Config.getInstance().getLogChannelEnabled())
             DiscordLog.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
+            OneBotBridge.getInstance().sendTradeLog(trade);
 
         MarketManager.getInstance().addOperation();
 
@@ -354,6 +361,9 @@ public class Item {
         DatabaseManager.get().getDatabase().saveTrade(trade);
         if (Config.getInstance().getDiscordEnabled() && Config.getInstance().getLogChannelEnabled())
             DiscordLog.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
+            OneBotBridge.getInstance().sendTradeLog(trade);
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.SELL, worth);
@@ -407,6 +417,9 @@ public class Item {
         DatabaseManager.get().getDatabase().saveTrade(trade);
         if (Config.getInstance().getDiscordEnabled() && Config.getInstance().getLogChannelEnabled())
             DiscordLog.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
+            OneBotBridge.getInstance().sendTradeLog(trade);
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.SELL, worth);

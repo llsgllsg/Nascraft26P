@@ -25,6 +25,8 @@ import me.bounser.nascraft.commands.sell.SellAllCommand;
 import me.bounser.nascraft.commands.sell.sellinv.SellInvListener;
 import me.bounser.nascraft.commands.sell.sellinv.SellInvCommand;
 import me.bounser.nascraft.commands.sellwand.GiveSellWandCommand;
+import me.bounser.nascraft.commands.onebot.LinkQQCommand;
+import me.bounser.nascraft.onebot.OneBotBridge;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.discord.DiscordBot;
 import me.bounser.nascraft.commands.discord.LinkCommand;
@@ -146,6 +148,13 @@ public class Nascraft extends JavaPlugin {
 
         Services.get().market();
 
+        if (config.getOneBotEnabled()) {
+            getLogger().info("Enabling OneBot extension...");
+            OneBotBridge.enable();
+            if (config.isCommandEnabled("linkqq")) new LinkQQCommand();
+            getLogger().info("OneBot extension loaded!");
+        }
+
         if (config.isCrossServerEnabled()) {
             if (!(DatabaseManager.get().getDatabase() instanceof MySQL))
                 getLogger().warning("cross-server.enabled is true but database.type is not MySQL — "
@@ -222,6 +231,8 @@ public class Nascraft extends JavaPlugin {
         PremiumLoader.disable();
 
         if (redisManager != null) redisManager.disconnect();
+
+        OneBotBridge.disable();
 
         getLogger().info("Saving and closing connection with database...");
         DatabaseManager.get().getDatabase().disconnect();

@@ -549,6 +549,66 @@ public class Config {
         return config.getString("discord-bot.admin-role-id");
     }
 
+    public boolean getOneBotEnabled() {
+        return config.getBoolean("onebot.enabled");
+    }
+
+    public String getOneBotApiUrl() {
+        String url = config.getString("onebot.api-url");
+        return url == null || url.isEmpty() ? "http://127.0.0.1:3000" : url;
+    }
+
+    public String getOneBotAccessToken() {
+        return config.getString("onebot.access-token", "");
+    }
+
+    public boolean getOneBotLogEnabled() {
+        return config.getBoolean("onebot.log-trades.enabled");
+    }
+
+    public List<Long> getOneBotLogGroups() {
+        return config.getLongList("onebot.log-trades.group-ids");
+    }
+
+    public boolean getOneBotAlertsEnabled() {
+        return config.getBoolean("onebot.alerts.enabled");
+    }
+
+    public int getOneBotAlertInterval() {
+        int interval = config.getInt("onebot.alerts.check-interval", 60);
+        return Math.max(10, interval);
+    }
+
+    public boolean getOneBotWebhookEnabled() {
+        return config.getBoolean("onebot.webhook.enabled");
+    }
+
+    public String getOneBotWebhookHost() {
+        String host = config.getString("onebot.webhook.host");
+        return host == null || host.isEmpty() ? "127.0.0.1" : host;
+    }
+
+    public int getOneBotWebhookPort() {
+        return config.getInt("onebot.webhook.port", 8765);
+    }
+
+    public String getOneBotWebhookPath() {
+        String path = config.getString("onebot.webhook.path");
+        return path == null || path.isEmpty() ? "/onebot" : path;
+    }
+
+    public String getOneBotWebhookSecret() {
+        return config.getString("onebot.webhook.secret", "");
+    }
+
+    public boolean getOneBotCommandsEnabled() {
+        return config.getBoolean("onebot.commands.enabled", true);
+    }
+
+    public List<Long> getOneBotGroupWhitelist() {
+        return config.getLongList("onebot.commands.group-whitelist");
+    }
+
     public int getDefaultSlots() {
         return config.getInt("portfolio.default-size");
     }

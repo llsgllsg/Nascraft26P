@@ -10,6 +10,7 @@ import me.bounser.nascraft.discord.DiscordLog;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.market.unit.Item;
+import me.bounser.nascraft.onebot.OneBotBridge;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
@@ -44,6 +45,7 @@ public class TasksManager {
         saveDataTask();
         noiseTask((int) timeRemaining.getSeconds());
         discordTask((int) timeRemaining.getSeconds());
+        onebotTask((int) timeRemaining.getSeconds());
         shortTermPricesTask((int) timeRemaining.getSeconds());
         hourlyTask();
         saveInstants();
@@ -99,6 +101,26 @@ public class TasksManager {
 
             }, (long) delay * ticksPerSecond, ((long) Config.getInstance().getUpdateTime() *  ticksPerSecond));
         }
+    }
+
+    private void onebotTask(int delay) {
+
+        if (!Config.getInstance().getOneBotEnabled()) return;
+
+        int interval = Math.max(10, Config.getInstance().getOneBotAlertInterval());
+
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
+
+            OneBotBridge bridge = OneBotBridge.getInstance();
+            if (bridge == null) return;
+
+            if (Config.getInstance().getOneBotLogEnabled())
+                bridge.flush();
+
+            if (Config.getInstance().getOneBotAlertsEnabled())
+                bridge.checkAlerts();
+
+        }, (long) delay * ticksPerSecond, (long) interval * ticksPerSecond);
     }
 
     private void noiseTask(int delay) {
