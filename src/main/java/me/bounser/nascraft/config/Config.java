@@ -609,6 +609,10 @@ public class Config {
         return config.getLongList("onebot.commands.group-whitelist");
     }
 
+    public boolean getUpdateCheckEnabled() {
+        return config.getBoolean("update-check.enabled", true);
+    }
+
     public int getDefaultSlots() {
         return config.getInt("portfolio.default-size");
     }

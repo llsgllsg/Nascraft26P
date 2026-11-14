@@ -39,6 +39,7 @@ import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.premium.PremiumLoader;
 import me.bounser.nascraft.sellwand.WandListener;
 import me.bounser.nascraft.updatechecker.UpdateChecker;
+import me.bounser.nascraft.updatechecker.UpdateNotifyListener;
 import me.leoko.advancedgui.AdvancedGUI;
 import me.leoko.advancedgui.manager.GuiItemManager;
 import me.leoko.advancedgui.manager.GuiWallManager;
@@ -92,10 +93,10 @@ public class Nascraft extends JavaPlugin {
 
         setupMetrics();
 
-        new UpdateChecker(this, 108216).getVersion(version -> {
-            if (!getDescription().getVersion().equals(version))
-                getLogger().info("There is a new version available! Download it here: https://www.spigotmc.org/resources/108216/");
-        });
+        if (config.getUpdateCheckEnabled()) {
+            UpdateChecker.check(this);
+            Bukkit.getPluginManager().registerEvents(new UpdateNotifyListener(), this);
+        }
 
         if (!setupEconomy())
             getLogger().warning("Vault is not installed! You'll have to provide another supplier.");

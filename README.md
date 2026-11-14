@@ -33,6 +33,7 @@
 | Discord 桥接 | 交易日志、账号绑定、价格提醒推送 |
 | QQ 桥接（OneBot v11） | 交易日志、行情查询、价格提醒、账号绑定；兼容个人 QQ 与 QQ 官方机器人 |
 | 自托管网页 | 行情、K 线图表、会话登录 |
+| 更新提示 | 启动时查询 GitHub Releases，发现新版本会在控制台和 OP 进服时提醒 |
 | 中文体验 | zh_CN 语言包、汉化配置注释、汉化的管理员编辑器 |
 
 ## 兼容性
@@ -211,6 +212,7 @@ build/libs/Nascraft-<version>-26.3.jar
 - 修复 `/market` 在市场无物品时的空列表崩溃。
 - 替换已弃用的 `JavaPlugin.getPluginLoader()` 调用，为后续 Paper API 移除做准备。
 - 新增 OneBot v11 桥接：QQ 端交易日志、行情查询、价格提醒与账号绑定，兼容个人 QQ 与 QQ 官方机器人渠道。
+- 更新检查改为查询 GitHub Releases（不再依赖 SpigotMC），发现新版本时在控制台提示，并给进服的 OP 发提醒；可在 `config.yml` 的 `update-check` 关闭。
 - 完整中文（zh_CN）语言包，配置注释与默认显示名称均已汉化。
 - CI 增加 Gradle 下载镜像回退（校验 SHA-256），GitHub 发布资源不可用时也能完成构建。
 

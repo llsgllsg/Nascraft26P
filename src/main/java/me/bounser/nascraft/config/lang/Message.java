@@ -635,4 +635,6 @@ public enum Message {
     ONEBOT_HELP,
     ONEBOT_TRADE_LINE,
 
+    UPDATE_AVAILABLE,
+
 }

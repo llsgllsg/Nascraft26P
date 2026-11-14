@@ -634,3 +634,4 @@ onebot_alert_triggered: "&6[ITEM]&r está a &e[PRICE]&r, alcanzando tu objetivo 
 onebot_alert_limit: "&cCada QQ puede tener como máximo 8 avisos de precio."
 onebot_help: "&6Comandos de Nascraft en QQ:\n&eprice <objeto>&r - ver precio\n&ealert <objeto> <precio>&r - crear aviso\n&ealerts&r - ver avisos\n&eunalert <objeto>&r - borrar aviso\n&ebind <código>&r - vincular cuenta\n&eunlink&r - desvincular"
 onebot_trade_line: "&7[TIME] [PLAYER] [ACTION] [AMOUNT] x [ITEM] = [WORTH]"
+update_available: "&8[&6Nascraft&8] &eHay una nueva versión &6[NEW]&e (actual &7[CURRENT]&e). Descarga: &b[URL]"

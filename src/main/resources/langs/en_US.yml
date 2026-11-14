@@ -634,3 +634,4 @@ onebot_alert_triggered: "&6[ITEM]&r is now &e[PRICE]&r, reaching your target &e[
 onebot_alert_limit: "&cEach QQ can have at most 8 price alerts."
 onebot_help: "&6Nascraft QQ commands:\n&eprice <item>&r - show price\n&ealert <item> <price>&r - set alert\n&ealerts&r - list alerts\n&eunalert <item>&r - remove alert\n&ebind <code>&r - link account\n&eunlink&r - unlink"
 onebot_trade_line: "&7[TIME] [PLAYER] [ACTION] [AMOUNT] x [ITEM] = [WORTH]"
+update_available: "&8[&6Nascraft&8] &eA new version &6[NEW]&e is available (current &7[CURRENT]&e). Download: &b[URL]"
