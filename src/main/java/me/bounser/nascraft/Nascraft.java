@@ -265,9 +265,10 @@ public class Nascraft extends JavaPlugin {
     }
 
     private void setupMetrics() {
-        Metrics metrics = new Metrics(this, 18404);
+        Metrics metrics = new Metrics(this, 35324);
 
         metrics.addCustomChart(new SimplePie("discord_bridge", () -> String.valueOf(Config.getInstance().getDiscordEnabled())));
+        metrics.addCustomChart(new SimplePie("onebot_bridge", () -> String.valueOf(Config.getInstance().getOneBotEnabled())));
 
         metrics.addCustomChart(new SimplePie("cross_server", () -> Config.getInstance().isCrossServerEnabled() ? "Enabled" : "Disabled"));
 
