@@ -10,9 +10,6 @@ import me.bounser.nascraft.inventorygui.MarketMenuManager;
 import me.bounser.nascraft.inventorygui.MenuPage;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapPalette;
 import xyz.xenondevs.invui.gui.Gui;
@@ -35,8 +32,6 @@ public class InfoMenu implements MenuPage {
 
     @Override
     public void open() {
-        Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_INFO_TITLE));
-
         StatsItem statsItem = new StatsItem(item, ChartType.DAY);
         TimeFrameItem timeFrameItem = new TimeFrameItem(item, statsItem);
 
@@ -49,7 +44,7 @@ public class InfoMenu implements MenuPage {
 
         CartographyWindow window = CartographyWindow.builder()
                 .setViewer(player)
-                .setTitle(LegacyComponentSerializer.legacySection().serialize(title))
+                .setTitle(Lang.get().message(Message.GUI_INFO_TITLE))
                 .setInputGui(gui)
                 .build();
 

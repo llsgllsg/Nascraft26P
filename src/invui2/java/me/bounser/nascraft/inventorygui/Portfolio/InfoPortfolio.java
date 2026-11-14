@@ -51,7 +51,7 @@ public class InfoPortfolio implements MenuPage {
 
         CartographyWindow window = CartographyWindow.builder()
                 .setViewer(player)
-                .setTitle(LegacyComponentSerializer.legacySection().serialize(title))
+                .setTitle(Lang.get().message(Message.PORTFOLIO_COMPOSITION_TITLE))
                 .setInputGui(gui)
                 .build();
 
