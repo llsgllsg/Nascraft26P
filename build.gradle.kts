@@ -45,8 +45,8 @@ val mcTarget: String = (findProperty("mcTarget") as String?) ?: "1.21.11"
 val paperApiVersion = when (mcTarget) {
     "1.21.11" -> "1.21.11-R0.1-SNAPSHOT"
     "26.2"    -> "26.2.build.135-stable"
-    // 26.3 已发布 stable（Paper 26.3 Build #245，2026-11-09）。
-    "26.3"    -> "26.3.build.245-stable"
+    // 26.3 已发布 stable（Paper 26.3 Build #251，2026-11-14 跟进）。
+    "26.3"    -> "26.3.build.251-stable"
     else -> throw GradleException("未知的 mcTarget：'$mcTarget'（可选：1.21.11 / 26.2 / 26.3）")
 }
 
