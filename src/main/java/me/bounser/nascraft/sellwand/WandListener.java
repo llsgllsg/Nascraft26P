@@ -45,6 +45,9 @@ public class WandListener implements Listener {
 
         if (event.isCancelled()) return;
 
+        // Hitting air with the wand leaves getClickedBlock() null; the checks below would NPE.
+        if (event.getClickedBlock() == null) return;
+
         event.useInteractedBlock();
 
         if (!event.getClickedBlock().getType().equals(Material.CHEST) &&

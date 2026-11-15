@@ -12,18 +12,18 @@ import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapPalette;
-import xyz.xenondevs.invui.gui.Gui;
-import xyz.xenondevs.invui.gui.Structure;
-import xyz.xenondevs.invui.window.CartographyWindow;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.gui.Gui;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.gui.Structure;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.window.CartographyWindow;
 
 import java.awt.image.BufferedImage;
 
-public class InfoMenu implements MenuPage {
+public class InfoMenuInvui2 implements MenuPage {
 
     private final Player player;
     private final Item item;
 
-    public InfoMenu(Player player, Item item) {
+    public InfoMenuInvui2(Player player, Item item) {
         this.player = player;
         this.item = item;
 
@@ -32,8 +32,8 @@ public class InfoMenu implements MenuPage {
 
     @Override
     public void open() {
-        StatsItem statsItem = new StatsItem(item, ChartType.DAY);
-        TimeFrameItem timeFrameItem = new TimeFrameItem(item, statsItem);
+        StatsItemInvui2 statsItem = new StatsItemInvui2(item, ChartType.DAY);
+        TimeFrameItemInvui2 timeFrameItem = new TimeFrameItemInvui2(item, statsItem);
 
         // Cartography input gui must be 1x2 -> one column, two rows.
         Structure structure = new Structure("I", "C")

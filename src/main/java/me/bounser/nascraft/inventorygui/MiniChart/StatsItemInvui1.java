@@ -20,12 +20,12 @@ import xyz.xenondevs.invui.item.impl.AbstractItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatsItem extends AbstractItem {
+public class StatsItemInvui1 extends AbstractItem {
 
     private Item item;
     private ChartType type;
 
-    public StatsItem(Item item, ChartType type) {
+    public StatsItemInvui1(Item item, ChartType type) {
         this.item = item;
         this.type = type;
     }

@@ -14,32 +14,32 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
-import xyz.xenondevs.invui.Click;
-import xyz.xenondevs.invui.item.AbstractItem;
-import xyz.xenondevs.invui.item.ItemBuilder;
 import xyz.xenondevs.invui.item.ItemProvider;
+import xyz.xenondevs.invui.item.builder.ItemBuilder;
+import xyz.xenondevs.invui.item.impl.AbstractItem;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class PortfolioStatsItem extends AbstractItem {
+public class PortfolioStatsItemInvui1 extends AbstractItem {
 
     private final Portfolio portfolio;
     private final Player player;
-    private final ModeItem modeItem;
+    private final ModeItemInvui1 modeItem;
 
-    public PortfolioStatsItem(Portfolio portfolio, Player player, ModeItem modeItem) {
+    public PortfolioStatsItemInvui1(Portfolio portfolio, Player player, ModeItemInvui1 modeItem) {
         this.portfolio = portfolio;
         this.player = player;
         this.modeItem = modeItem;
     }
 
     @Override
-    public ItemProvider getItemProvider(Player viewer) {
+    public ItemProvider getItemProvider() {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_COMPOSITION_STATS_NAME));
 
@@ -60,12 +60,12 @@ public class PortfolioStatsItem extends AbstractItem {
         }
 
         return new ItemBuilder(item)
-                .setLegacyName(LegacyComponentSerializer.legacySection().serialize(title))
+                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
                 .setLegacyLore(lore);
     }
 
     @Override
-    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull Click click) {
+    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
 
     }
 

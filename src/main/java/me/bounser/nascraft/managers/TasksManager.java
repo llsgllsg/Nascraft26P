@@ -11,6 +11,7 @@ import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.stats.Instant;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.onebot.OneBotBridge;
+import me.bounser.nascraft.qqofficial.QqOfficialBridge;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.portfolio.PortfoliosManager;
 import me.bounser.nascraft.scheduler.FoliaScheduler;
@@ -46,6 +47,7 @@ public class TasksManager {
         noiseTask((int) timeRemaining.getSeconds());
         discordTask((int) timeRemaining.getSeconds());
         onebotTask((int) timeRemaining.getSeconds());
+        qqOfficialTask((int) timeRemaining.getSeconds());
         shortTermPricesTask((int) timeRemaining.getSeconds());
         hourlyTask();
         saveInstants();
@@ -118,6 +120,26 @@ public class TasksManager {
                 bridge.flush();
 
             if (Config.getInstance().getOneBotAlertsEnabled())
+                bridge.checkAlerts();
+
+        }, (long) delay * ticksPerSecond, (long) interval * ticksPerSecond);
+    }
+
+    private void qqOfficialTask(int delay) {
+
+        if (!Config.getInstance().getQqOfficialEnabled()) return;
+
+        int interval = Math.max(10, Config.getInstance().getQqOfficialAlertInterval());
+
+        FoliaScheduler.runAsyncTimer(Nascraft.getInstance(), () -> {
+
+            QqOfficialBridge bridge = QqOfficialBridge.getInstance();
+            if (bridge == null) return;
+
+            if (Config.getInstance().getQqOfficialLogEnabled())
+                bridge.flush();
+
+            if (Config.getInstance().getQqOfficialAlertsEnabled())
                 bridge.checkAlerts();
 
         }, (long) delay * ticksPerSecond, (long) interval * ticksPerSecond);

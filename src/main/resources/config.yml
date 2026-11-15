@@ -1,5 +1,9 @@
 # Nascraft config.yml - ${project.version}
 
+# 配置文件结构版本，请勿手动修改。
+# 插件启动时会把旧版本的 config.yml 自动升级到当前版本（升级前会先备份）。
+config-version: 2
+
 # 要使用的语言文件。可用：en_US es_ES it_IT de_DE pt_BR zh_CN
 language: 'zh_CN'
 
@@ -383,6 +387,41 @@ onebot:
   commands:
     enabled: true
     # 允许使用命令的群号；留空表示所有群都允许（私聊始终允许）。
+    group-whitelist: []
+
+# 通过 QQ 开放平台官方机器人（官方 API v2 + WebSocket 网关）接入 QQ。
+# 不需要 NapCat 之类的第三方客户端，但需要先在 https://q.qq.com/ 创建机器人，
+# 并在「开发设置」里拿到 AppID 与 AppSecret。
+# 文档：https://bot.q.qq.com/wiki/develop/api-v2/
+qq-official:
+  enabled: false
+  # 机器人 AppID / AppSecret。
+  app-id: ''
+  client-secret: ''
+  # 机器人还在审核/开发阶段时使用沙箱环境。
+  sandbox: false
+  # 自定义 API 基地址；留空时按 sandbox 自动选择
+  # （正式：https://api.bot.qq.com，沙箱：https://sandbox.api.sgroup.qq.com）。
+  api-base: ''
+  # 自定义获取 access_token 的地址；留空使用官方地址（失败时会自动尝试备用域名）。
+  token-url: ''
+  # 订阅的事件类型位掩码。33554432 = 1<<25（群聊 @ 与私聊消息，官方名称 GROUP_AND_C2C_EVENT）。
+  # 只填写你在开放平台后台申请到的 intents，否则网关会直接断开连接。
+  intents: 33554432
+  # 将游戏内交易日志发送到 QQ 群（主动消息，受官方频率限制）。
+  log-trades:
+    enabled: false
+    # 接收交易日志的群 openid（不是群号）。
+    group-openids: []
+  # QQ 价格提醒（通过私聊主动消息推送）。
+  alerts:
+    enabled: false
+    # 检查价格提醒的间隔（秒）。
+    check-interval: 60
+  # 允许在 QQ 里使用的查询/提醒/绑定命令。
+  commands:
+    enabled: true
+    # 允许使用命令的群 openid；留空表示所有群都允许（私聊始终允许）。
     group-whitelist: []
 
 sell-wands:

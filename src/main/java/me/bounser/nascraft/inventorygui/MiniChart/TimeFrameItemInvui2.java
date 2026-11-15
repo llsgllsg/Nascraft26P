@@ -10,33 +10,39 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
-import xyz.xenondevs.invui.item.ItemProvider;
-import xyz.xenondevs.invui.item.builder.ItemBuilder;
-import xyz.xenondevs.invui.item.impl.AbstractItem;
-import xyz.xenondevs.invui.window.CartographyWindow;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.Click;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.AbstractItem;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.ItemBuilder;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.ItemProvider;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.window.CartographyWindow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeFrameItem extends AbstractItem {
+public class TimeFrameItemInvui2 extends AbstractItem {
 
     private final Item item;
-    private final StatsItem statsItem;
+    private final StatsItemInvui2 statsItem;
 
     private ChartType chartType;
 
     private int index = 0;
 
-    public TimeFrameItem(Item item, StatsItem statsItem) {
+    private CartographyWindow window;
+
+    public TimeFrameItemInvui2(Item item, StatsItemInvui2 statsItem) {
         chartType = ChartType.DAY;
         this.item = item;
         this.statsItem = statsItem;
     }
 
+    public void setWindow(CartographyWindow window) {
+        this.window = window;
+    }
+
     @Override
-    public ItemProvider getItemProvider() {
+    public ItemProvider getItemProvider(Player viewer) {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_INFO_TIMEFRAME_NAME));
 
@@ -72,12 +78,12 @@ public class TimeFrameItem extends AbstractItem {
         }
 
         return new ItemBuilder(Material.CLOCK)
-                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
+                .setLegacyName(LegacyComponentSerializer.legacySection().serialize(title))
                 .setLegacyLore(lore);
     }
 
     @Override
-    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
+    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull Click click) {
 
         index++;
 
@@ -85,9 +91,9 @@ public class TimeFrameItem extends AbstractItem {
 
         chartType = ChartType.values()[index];
 
-        CartographyWindow window = (CartographyWindow) getWindows().iterator().next();
-
-        window.updateMap(InfoMenu.getMapPatch(item, chartType));
+        if (window != null) {
+            window.applyPatch(InfoMenuInvui2.getMapPatch(item, chartType));
+        }
 
         statsItem.setChartType(chartType);
 

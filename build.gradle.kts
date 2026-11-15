@@ -28,52 +28,56 @@ group = "me.bounser"
 version = (findProperty("version") as String?) ?: "26.3"
 
 // ------------------------------------------------------------------------
-// Build target selection.
-//   gradle shadowJar -PmcTarget=1.21.11   -> MC 1.21.11 jar (invui 1.x, JDK 21)
-//   gradle shadowJar -PmcTarget=26.2      -> MC 26.2 jar   (invui 2.x, JDK 25)
-//   gradle shadowJar -PmcTarget=26.3      -> MC 26.3 jar   (invui 2.x, JDK 25)
+// 单一构建产物：一个 jar 通吃 1.21.11 和 Paper 26.1+
 //
-// 【PowerShell 用户注意】参数必须整体加引号：
-//     .\gradlew.bat shadowJar "-PmcTarget=1.21.11"
-// 不加引号时 PowerShell 会把 1.21.11 拆坏，Gradle 只收到 ".21.11"，直接报
-//     Task '.21.11' not found
-// 构建失败后 build/libs 里留着的是上一次构建的旧 jar；如果这时候把旧 jar 发出去，
-// 就会得到 issue #3 里那个「没打依赖、启动报 NoClassDefFoundError」的包。
+//   gradle shadowJar          -> build/libs/Nascraft-<version>.jar
+//
+// 运行时由 me.bounser.nascraft.util.ServerCompat 读取 Bukkit 版本自动选 GUI 后端：
+//   MC 1.21.x   （Java 21）-> invui 1.49，原生 xyz.xenondevs.invui 包（major 65）
+//   Paper 26.1+ （Java 25）-> invui 2.5.1，重定位到 me.bounser.libs.invui2.xyz.xenondevs.*
+//                             （major 69，只有 26.x 的 Java 25 会去加载它）
+// 两套 invui 同时打进同一个 jar，包名不冲突，各自的 GUI 实现类也分开命名
+// （InfoMenuInvui1 / InfoMenuInvui2 之类），由 *Invui1 / *Invui2 门面分发。
+//
+// 编译策略：
+//   - 统一对 paper-api 1.21.11 编译：最老的 API，26.x 上这些调用点都还在；
+//     同一份源码也验证过能对 26.3 的 API 编译通过，所以不必再分目标。
+//   - 用 JDK 25 的 javac + --release 21：产物是 Java 21 字节码（major 65），
+//     1.21.11 的 Java 21 能加载；JDK 25 的 javac 也能读 major 69 的 invui 2.5.1。
+//
+// -PmcTarget 现在只影响 runServer 冒烟测试跑哪个服务器版本，不影响产物：
+//     .\gradlew.bat runServer "-PmcTarget=26.3"
+// （PowerShell 里必须整体加引号，否则 26.3 会被拆成 .3，报 Task '.3' not found。）
 // ------------------------------------------------------------------------
 val mcTarget: String = (findProperty("mcTarget") as String?) ?: "1.21.11"
 
-val paperApiVersion = when (mcTarget) {
-    "1.21.11" -> "1.21.11-R0.1-SNAPSHOT"
-    "26.2"    -> "26.2.build.135-stable"
-    // 26.3 已发布 stable（Paper 26.3 Build #251，2026-11-14 跟进）。
-    "26.3"    -> "26.3.build.251-stable"
-    else -> throw GradleException("未知的 mcTarget：'$mcTarget'（可选：1.21.11 / 26.2 / 26.3）")
+// runServer 冒烟测试目标。26.1.1 只有 alpha 构建，stable 只有 26.1.2。
+val smokeTestServer: String = when (mcTarget) {
+    "1.21.11", "26.1.2", "26.2", "26.3" -> mcTarget
+    else -> throw GradleException(
+        "未知的 mcTarget：'$mcTarget'（可选：1.21.11 / 26.1.2 / 26.2 / 26.3）"
+    )
 }
 
-val useInvui2    = mcTarget != "1.21.11"
-val invuiVersion = when (mcTarget) {
-    "1.21.11" -> "1.49"
-    // 26.3 的 CraftBukkit 把 CraftItemStack.asCraftMirror 改成了 asBukkitMirror。
-    // invui 2.3.0 还是在调旧方法，打开地图/制图台窗口会抛 NoSuchMethodError，
-    // 所以 26.3 用 2.5.1；26.2 的 CraftBukkit 里仍然只有 asCraftMirror，保持在 2.3.0。
-    "26.3"    -> "2.5.1"
-    else      -> "2.3.0"
-}
-val toolchainJvm = if (useInvui2) 25 else 21   // paper-api 26.2/26.3 是 Java 25 编译的
+// 编译基线：最老的受支持 API。26.x 的 API 只增不改，所以这份代码也能在 26.x 上跑。
+val compilePaperApiVersion = "1.21.11-R0.1-SNAPSHOT"
 
 java {
-    // The 26.2 target runs on Java 25 (paper-api 26.2 + invui 2.3.0 are compiled for
-    // Java 25 only), so its bytecode and the JVM attribute Gradle uses to resolve the
-    // runtime classpath must be 25 as well. The 1.21.11 target stays on Java 21.
-    // The toolchain is set explicitly (was previously configured via the removed
-    // kotlin { jvmToolchain } block) so javac runs on the matching JDK. Note the
-    // Gradle daemon itself must stay on Java 21: Gradle 8.14.3's embedded Kotlin DSL
-    // compiler cannot parse Java 25's version string ("25.0.3").
+    // Gradle 守护进程必须留在 Java 21（Gradle 8.14.3 的 Kotlin DSL 解析不了 Java 25
+    // 的版本串），所以显式指定 toolchain 25 来拿 Java 25 的 javac。
+    // 字节码目标固定 Java 21：同一个 jar 要能在 1.21.11 的 Java 21 里加载。
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(toolchainJvm))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
-    sourceCompatibility = JavaVersion.toVersion(toolchainJvm)
-    targetCompatibility = JavaVersion.toVersion(toolchainJvm)
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    // --release 21 让 javac 按 Java 21 的 API/字节码版本编译（major 65），
+    // 即使 toolchain 是 JDK 25、classpath 上有 major 69 的 invui 2.5.1 也不受影响。
+    options.release.set(21)
+    options.encoding = "UTF-8"
 }
 
 repositories {
@@ -91,16 +95,16 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$paperApiVersion")
+    compileOnly("io.papermc.paper:paper-api:$compilePaperApiVersion")
 
-    if (useInvui2) {
-        // invui 2.x ships everything in a single jar.
-        implementation("xyz.xenondevs.invui:invui:$invuiVersion")
-    } else {
-        // invui 1.x is a POM aggregator; pull in its transitive modules
-        // (inventory-access, etc.). Must stay >= 1.49 for MC 1.21.11.
-        implementation("xyz.xenondevs.invui:invui:$invuiVersion@pom") { isTransitive = true }
-    }
+    // invui 1.x：POM 聚合体，把 inventory-access 等传递模块一起拉进来，
+    // 打包时留在原生 xyz.xenondevs.invui 包，供 MC 1.21.11 使用。
+    implementation("xyz.xenondevs.invui:invui:1.49@pom") { isTransitive = true }
+
+    // invui 2.x：已预打包为重定位 + 反射兼容的 jar（见 libs/README-invui2.md），
+    // 类名都在 me.bounser.libs.invui2.* 下，与上面的 1.x 包完全隔离。
+    // 该 jar 是 Java 25 字节码，只有在 Paper 26.x 上才会被加载。
+    implementation(files("libs/invui-2.5.1-relocated.jar"))
 
     compileOnly("jfree:jfreechart:1.0.13")
 
@@ -129,44 +133,7 @@ dependencies {
     testImplementation("org.objenesis:objenesis:3.3")
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
-    testImplementation("io.papermc.paper:paper-api:$paperApiVersion")
-}
-
-// The 26.2 / 26.3 builds use the invui 2.x GUI sources. They live in src/invui2/java
-// (same packages) and are staged into build/invui2-staged-src together with
-// the rest of src/main/java minus the invui 1.x GUI files.
-val stageInvui2 = tasks.register<Copy>("stageInvui2Source") {
-    enabled = useInvui2
-    into(layout.buildDirectory.dir("invui2-staged-src"))
-    from("src/main/java") {
-        // Only the six files that have invui 2.x counterparts in src/invui2 are
-        // replaced. Everything else in those packages (PortfolioInventory,
-        // PortfolioChartType, TopMenu, DebtMenu, ...) is kept as-is.
-        exclude("me/bounser/nascraft/inventorygui/MiniChart/InfoMenu.java")
-        exclude("me/bounser/nascraft/inventorygui/MiniChart/StatsItem.java")
-        exclude("me/bounser/nascraft/inventorygui/MiniChart/TimeFrameItem.java")
-        exclude("me/bounser/nascraft/inventorygui/Portfolio/InfoPortfolio.java")
-        exclude("me/bounser/nascraft/inventorygui/Portfolio/ModeItem.java")
-        exclude("me/bounser/nascraft/inventorygui/Portfolio/PortfolioStatsItem.java")
-        // invui 2.x anvil API differs from 1.x; src/invui2/java provides the
-        // version-specific AnvilPrompt for the 26.2 target.
-        exclude("me/bounser/nascraft/util/AnvilPrompt.java")
-    }
-    from("src/invui2/java")
-}
-
-if (useInvui2) {
-    sourceSets {
-        main {
-            java.setSrcDirs(listOf(layout.buildDirectory.dir("invui2-staged-src")))
-        }
-    }
-    tasks.named<JavaCompile>("compileJava") {
-        dependsOn(stageInvui2)
-    }
-    tasks.named<JavaCompile>("compileTestJava") {
-        dependsOn(stageInvui2)
-    }
+    testImplementation("io.papermc.paper:paper-api:$compilePaperApiVersion")
 }
 
 tasks {
@@ -181,7 +148,8 @@ tasks {
     shadowJar {
         archiveClassifier.set("")
         archiveBaseName.set("Nascraft")
-        archiveFileName.set("Nascraft-${project.version}-${mcTarget}.jar")
+        // 单产物：不再带 -1.21.11 / -26.2 / -26.3 后缀，运行时自己判断后端。
+        archiveFileName.set("Nascraft-${project.version}.jar")
 
         dependencies {
             exclude(dependency("org.xerial:sqlite-jdbc:.*"))
@@ -210,8 +178,11 @@ tasks {
             val required = listOf(
                 "me/bounser/bstats/charts/CustomChart.class", // bStats（已重定位）
                 "me/bounser/bstats/bukkit/Metrics.class",
-                "xyz/xenondevs/invui/gui/AbstractGui.class",  // invui 界面库
+                "xyz/xenondevs/invui/gui/AbstractGui.class",  // invui 1.x（1.21.11 用）
                 "me/bounser/nbtapi/NBTItem.class",            // item-nbt-api（已重定位）
+                // invui 2.x（26.x 用）必须真的进包，否则 26.x 上会 NoClassDefFoundError
+                "me/bounser/libs/invui2/xyz/xenondevs/invui/gui/AbstractGui.class",
+                "me/bounser/libs/invui2/xyz/xenondevs/invui/window/CartographyWindow.class",
             )
             // 注意：这里必须用 import 进来的 ZipFile。
             // 在 Kotlin DSL 里写全限定名 java.util.zip.ZipFile 会被解析成
@@ -234,6 +205,14 @@ tasks {
 
     test {
         useJUnitPlatform()
+        // Mockito 5.14 的 Byte Buddy 尚未支持 Java 25（会抛 "Java 25 (69) is not supported"），
+        // 测试 JVM 固定用 JDK 21 —— 插件字节码本身就是 Java 21 目标，这样也顺带验证了
+        // 「产出的 class 能被 Java 21 加载」。
+        javaLauncher.set(
+            project.extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService::class.java).launcherFor {
+                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+            }
+        )
         // 测试失败时把完整堆栈打进日志，否则只有一行摘要没法排查
         testLogging {
             events("failed", "skipped")
@@ -246,9 +225,9 @@ tasks {
     }
 
     runServer {
-        // 直接跑当前构建目标对应的版本，既能验对应的 jar，也不用再去查
-        // 「最新 Paper 版本」的接口（旧接口 api.papermc.io/v2 已经返回 410）。
-        minecraftVersion(mcTarget)
+        // 冒烟测试：同一个 jar 分别丢到各版本的 Paper 上跑，验证运行时后端选择。
+        // 26.1.1 只有 alpha 构建，stable 从 26.1.2 开始，所以这里不带 26.1.1。
+        minecraftVersion(smokeTestServer)
         jvmArgs("-Dcom.mojang.eula.agree=true")
         downloadPlugins {
             github("milkbowl", "Vault", "1.7.3", "Vault.jar")

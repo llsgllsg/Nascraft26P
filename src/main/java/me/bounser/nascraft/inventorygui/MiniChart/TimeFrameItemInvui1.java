@@ -10,39 +10,33 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
-import xyz.xenondevs.invui.Click;
-import xyz.xenondevs.invui.item.AbstractItem;
-import xyz.xenondevs.invui.item.ItemBuilder;
 import xyz.xenondevs.invui.item.ItemProvider;
+import xyz.xenondevs.invui.item.builder.ItemBuilder;
+import xyz.xenondevs.invui.item.impl.AbstractItem;
 import xyz.xenondevs.invui.window.CartographyWindow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeFrameItem extends AbstractItem {
+public class TimeFrameItemInvui1 extends AbstractItem {
 
     private final Item item;
-    private final StatsItem statsItem;
+    private final StatsItemInvui1 statsItem;
 
     private ChartType chartType;
 
     private int index = 0;
 
-    private CartographyWindow window;
-
-    public TimeFrameItem(Item item, StatsItem statsItem) {
+    public TimeFrameItemInvui1(Item item, StatsItemInvui1 statsItem) {
         chartType = ChartType.DAY;
         this.item = item;
         this.statsItem = statsItem;
     }
 
-    public void setWindow(CartographyWindow window) {
-        this.window = window;
-    }
-
     @Override
-    public ItemProvider getItemProvider(Player viewer) {
+    public ItemProvider getItemProvider() {
 
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.GUI_INFO_TIMEFRAME_NAME));
 
@@ -78,12 +72,12 @@ public class TimeFrameItem extends AbstractItem {
         }
 
         return new ItemBuilder(Material.CLOCK)
-                .setLegacyName(LegacyComponentSerializer.legacySection().serialize(title))
+                .setDisplayName(LegacyComponentSerializer.legacySection().serialize(title))
                 .setLegacyLore(lore);
     }
 
     @Override
-    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull Click click) {
+    public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent inventoryClickEvent) {
 
         index++;
 
@@ -91,9 +85,9 @@ public class TimeFrameItem extends AbstractItem {
 
         chartType = ChartType.values()[index];
 
-        if (window != null) {
-            window.applyPatch(InfoMenu.getMapPatch(item, chartType));
-        }
+        CartographyWindow window = (CartographyWindow) getWindows().iterator().next();
+
+        window.updateMap(InfoMenuInvui1.getMapPatch(item, chartType));
 
         statsItem.setChartType(chartType);
 

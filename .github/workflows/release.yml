@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0
 
       # 与构建工作流一致：先装 25 再装 21，保证 Gradle 跑在 JDK 21 上。
-      - name: 设置 JDK 25（26.2 / 26.3 的编译工具链）
+      - name: 设置 JDK 25（编译工具链 / 26.x 产物需要）
         uses: actions/setup-java@v4
         with:
           java-version: '25'
@@ -152,7 +152,7 @@ jobs:
           fi
           git push origin --tags
 
-      - name: 构建三个目标
+      - name: 构建单一产物（test + shadowJar）
         run: |
           set -e
 
@@ -180,33 +180,41 @@ jobs:
             exit 1
           fi
 
-          for target in 1.21.11 26.2 26.3; do
-            echo "::group::构建并测试 MC $target"
-            "$GRADLE_CMD" test shadowJar "-PmcTarget=$target" --console=plain
-            echo "::endgroup::"
-          done
+          # 单产物：只编译一次，一个 jar 通吃 1.21.11 与 Paper 26.1+，
+          # GUI 后端由插件运行时按 Bukkit 版本自动选择（invui 1.x / 重定位后的 invui 2.x）。
+          echo "::group::test + shadowJar（单产物）"
+          "$GRADLE_CMD" test shadowJar --console=plain
+          echo "::endgroup::"
 
       - name: 校验产物
         run: |
           set -e
           VERSION="${{ steps.version.outputs.version }}"
-          for target in 1.21.11 26.2 26.3; do
-            JAR="build/libs/Nascraft-${VERSION}-${target}.jar"
-            test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
+          JAR="build/libs/Nascraft-${VERSION}.jar"
+          test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
 
-            # issue #3 防回归：随包依赖必须真的在 jar 里，否则装上去就会
-            # NoClassDefFoundError: org/bstats/charts/CustomChart
-            for entry in \
-              me/bounser/bstats/charts/CustomChart.class \
-              me/bounser/bstats/bukkit/Metrics.class \
-              xyz/xenondevs/invui/gui/AbstractGui.class \
-              me/bounser/nbtapi/NBTItem.class
-            do
-              unzip -l "$JAR" | grep -q "$entry" \
-                || { echo "::error::$JAR 缺少随包依赖 $entry"; exit 1; }
-            done
-            ls -l "$JAR"
+          STALE=$(ls build/libs/Nascraft-*.jar 2>/dev/null | grep -v -F -x "$JAR" || true)
+          if [ -n "$STALE" ]; then
+            echo "::error::build/libs 里出现了多余（按目标打包的）jar，产物应当只有一个："
+            echo "$STALE"
+            exit 1
+          fi
+
+          # issue #3 防回归：随包依赖必须真的在 jar 里，否则装上去就会
+          # NoClassDefFoundError: org/bstats/charts/CustomChart
+          # 两套 GUI 后端都必须进包：invui 1.x（1.21.11）与重定位后的 invui 2.x（26.x）。
+          for entry in \
+            me/bounser/bstats/charts/CustomChart.class \
+            me/bounser/bstats/bukkit/Metrics.class \
+            xyz/xenondevs/invui/gui/AbstractGui.class \
+            me/bounser/nbtapi/NBTItem.class \
+            me/bounser/libs/invui2/xyz/xenondevs/invui/gui/AbstractGui.class \
+            me/bounser/libs/invui2/xyz/xenondevs/invui/window/CartographyWindow.class
+          do
+            unzip -l "$JAR" | grep -q "$entry" \
+              || { echo "::error::$JAR 缺少随包依赖 $entry"; exit 1; }
           done
+          ls -l "$JAR"
 
       - name: 生成 Release Notes
         id: notes
@@ -227,19 +235,20 @@ jobs:
             echo "### 产物说明"
             echo "| 文件 | 适用版本 | Java |"
             echo "|------|----------|------|"
-            echo "| Nascraft-${VERSION}-1.21.11.jar | Paper / Purpur 1.21.11 | JDK 21 |"
-            echo "| Nascraft-${VERSION}-26.2.jar | Paper / Purpur 26.2 | JDK 25 |"
-            echo "| Nascraft-${VERSION}-26.3.jar | Paper / Purpur 26.3 | JDK 25 |"
+            echo "| Nascraft-${VERSION}.jar | Paper / Purpur **1.21.11 ~ 26.3**（含 26.1.x / 26.2 / 26.3） | JDK 21 启动：1.21.11；JDK 25 启动：26.1+ |"
+            echo ""
+            echo "> 只需要下载这一个 jar。插件启动时会读取服务器版本，自动选择 invui 1.x 或 invui 2.x 作为 GUI 后端。"
             echo ""
             echo "### 本次变更"
             git log --pretty=format:'- %s' "${PREV_TAG}..${TAG}" 2>/dev/null || true
             echo ""
             echo ""
             echo "### 安装与更新"
-            echo "1. 下载与服务器版本对应的 jar，替换 plugins/ 里的旧 jar"
+            echo "1. 下载 Nascraft-${VERSION}.jar，替换 plugins/ 里的旧 jar（旧的多版本 jar 直接删掉，避免重复加载）"
             echo "2. 不要删除 plugins/Nascraft 数据文件夹（数据库和配置都在里面）"
-            echo "3. 若本次更新了语言文件，删除一次 plugins/Nascraft/langs/ 让插件重新生成"
-            echo "4. 重启服务器"
+            echo "3. config.yml 会被自动升级：旧版本配置会在启动时合并出新键，原文件备份为 config-backup-*.yml"
+            echo "4. 若本次更新了语言文件，删除一次 plugins/Nascraft/langs/ 让插件重新生成"
+            echo "5. 重启服务器"
           } > "$NOTES_FILE"
 
           echo "notes_file=${NOTES_FILE}" >> "$GITHUB_OUTPUT"
@@ -254,9 +263,7 @@ jobs:
           NOTES_FILE="${{ steps.notes.outputs.notes_file }}"
 
           ASSETS=(
-            "build/libs/Nascraft-${VERSION}-1.21.11.jar"
-            "build/libs/Nascraft-${VERSION}-26.2.jar"
-            "build/libs/Nascraft-${VERSION}-26.3.jar"
+            "build/libs/Nascraft-${VERSION}.jar"
           )
 
           if gh release create "${TAG}" "${ASSETS[@]}" \

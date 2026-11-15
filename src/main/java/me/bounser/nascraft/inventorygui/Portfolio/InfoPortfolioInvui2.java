@@ -16,19 +16,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.map.MapPalette;
 import org.bukkit.metadata.FixedMetadataValue;
-import xyz.xenondevs.invui.gui.Gui;
-import xyz.xenondevs.invui.gui.Structure;
-import xyz.xenondevs.invui.window.CartographyWindow;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.gui.Gui;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.gui.Structure;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.window.CartographyWindow;
 
 import java.awt.image.BufferedImage;
 
-public class InfoPortfolio implements MenuPage {
+public class InfoPortfolioInvui2 implements MenuPage {
 
     private Player player;
     private Portfolio portfolio;
-    private ModeItem modeItem;
+    private ModeItemInvui2 modeItem;
 
-    public InfoPortfolio(Portfolio portfolio, Player player) {
+    public InfoPortfolioInvui2(Portfolio portfolio, Player player) {
         this.portfolio = portfolio;
         this.player = player;
 
@@ -39,8 +39,8 @@ public class InfoPortfolio implements MenuPage {
     public void open() {
         Component title = MiniMessage.miniMessage().deserialize(Lang.get().message(Message.PORTFOLIO_COMPOSITION_TITLE));
 
-        this.modeItem = new ModeItem(portfolio);
-        PortfolioStatsItem stats = new PortfolioStatsItem(portfolio, player, modeItem);
+        this.modeItem = new ModeItemInvui2(portfolio);
+        PortfolioStatsItemInvui2 stats = new PortfolioStatsItemInvui2(portfolio, player, modeItem);
 
         // Cartography input gui must be 1x2 -> one column, two rows.
         Structure structure = new Structure("I", "C")

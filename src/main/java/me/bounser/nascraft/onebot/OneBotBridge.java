@@ -104,6 +104,12 @@ public class OneBotBridge {
         return pending.uuid();
     }
 
+    /** Registers a code generated elsewhere, so both QQ bridges can share a single code. */
+    public void registerLinkCode(String code, UUID uuid) {
+        if (code == null || uuid == null) return;
+        pendingLinks.put(code, new PendingLink(uuid, System.currentTimeMillis() + 10L * 60L * 1000L));
+    }
+
     public void sendTradeLog(Trade trade) {
         if (!Config.getInstance().getOneBotLogEnabled()) return;
         if (Config.getInstance().getOneBotLogGroups().isEmpty()) return;

@@ -14,13 +14,21 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置 JDK 25（26.2 / 26.3 的编译工具链）
+      # 单一产物：只编译一次，产物固定为 build/libs/Nascraft-<version>.jar。
+      # 一个 jar 通吃 1.21.11 与 Paper 26.1+，GUI 后端由插件运行时按 Bukkit 版本自动选择。
+      #
+      # 两个 JDK 都必须就位：
+      #   - JDK 21 启动 Gradle 守护进程（Gradle 8.14.3 的 Kotlin DSL 解析不了 Java 25 的版本串）；
+      #   - JDK 25 作编译 toolchain（build.gradle.kts 里 toolchain = 25 + options.release = 21，
+      #     即用 JDK 25 的 javac 产出 Java 21 字节码）。
+      # 先装 25 再装 21：setup-java 每次都会覆盖 JAVA_HOME，最后装的那个就是默认运行时。
+      - name: 设置 JDK 25（编译工具链）
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
 
-      - name: 设置 JDK 21（Gradle 运行环境）
+      - name: 设置 JDK 21（Gradle 运行环境，最后安装即默认 JAVA_HOME）
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -38,8 +46,11 @@ jobs:
 
       - name: 准备构建配置
         run: |
+          set -e
+
           chmod +x gradlew
 
+          # 本机专用的代理 / toolchain 路径在 Actions 上不存在，先清掉再写入实际路径。
           sed -i '/^systemProp\..*roxy/d' gradle.properties
           sed -i '/^org\.gradle\.java\.installations\.paths/d' gradle.properties
 
@@ -49,12 +60,25 @@ jobs:
             echo "::error::找不到 JDK 路径（JDK25='$JDK25' JDK21='$JDK21'）"
             exit 1
           fi
+
+          # 两套 toolchain 都登记给 Gradle：守护进程用 21，编译 toolchain 用 25。
           echo "org.gradle.java.installations.paths=${JDK25},${JDK21}" >> gradle.properties
 
-          echo "Gradle 运行在：$JAVA_HOME"
+          # 显式把 Gradle 守护进程固定在 JDK 21 上（后续步骤也继承这个 JAVA_HOME）。
+          echo "JAVA_HOME=${JDK21}" >> "$GITHUB_ENV"
+          export JAVA_HOME="${JDK21}"
+          echo "Gradle 运行在：$JAVA_HOME（$("$JAVA_HOME/bin/java" -version 2>&1 | head -1)）"
+          echo "编译 toolchain：$JDK25（$("$JDK25/bin/java" -version 2>&1 | head -1)）"
+
+          # 单产物依赖仓库里预打包好的 invui 2.x（重定位 + 反射兼容），见 libs/README-invui2.md。
+          if [ ! -f libs/invui-2.5.1-relocated.jar ]; then
+            echo "::error::缺少 libs/invui-2.5.1-relocated.jar（单产物 jar 需要它，请确认它已提交进仓库）"
+            exit 1
+          fi
+
           cat gradle.properties
 
-      - name: 构建三个目标
+      - name: 构建单 jar（测试 + shadowJar）
         run: |
           set -e
 
@@ -80,11 +104,10 @@ jobs:
             exit 1
           fi
 
-          for target in 1.21.11 26.2 26.3; do
-            echo "::group::构建并测试 MC $target"
-            "$GRADLE_CMD" test shadowJar "-PmcTarget=$target" --console=plain
-            echo "::endgroup::"
-          done
+          # 只构建一次，不传 -PmcTarget（它现在只影响 runServer 冒烟测试，不影响产物）。
+          echo "::group::test + shadowJar（单产物）"
+          "$GRADLE_CMD" test shadowJar --console=plain
+          echo "::endgroup::"
 
       - name: 校验产物
         run: |
@@ -92,32 +115,38 @@ jobs:
           VERSION=$(grep -m1 '^version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
           echo "版本号：$VERSION"
           echo "NASCRAFT_VERSION=$VERSION" >> "$GITHUB_ENV"
-          for target in 1.21.11 26.2 26.3; do
-            JAR="build/libs/Nascraft-${VERSION}-${target}.jar"
-            test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
 
-            # issue #3 防回归：确认随包依赖真的被 shade 进 jar 了。
-            # NoClassDefFoundError: org/bstats/charts/CustomChart。
-            for entry in \
-              me/bounser/bstats/charts/CustomChart.class \
-              me/bounser/bstats/bukkit/Metrics.class \
-              xyz/xenondevs/invui/gui/AbstractGui.class \
-              me/bounser/nbtapi/NBTItem.class
-            do
-              unzip -l "$JAR" | grep -q "$entry" \
-                || { echo "::error::$JAR 缺少随包依赖 $entry"; exit 1; }
-            done
-            ls -l "$JAR"
+          JAR="build/libs/Nascraft-${VERSION}.jar"
+          test -f "$JAR" || { echo "::error::缺少产物 $JAR"; exit 1; }
+
+          # 单产物：build/libs 里不允许再出现按目标打包的旧 jar（-1.21.11 / -26.2 / -26.3）。
+          STALE=$(ls build/libs/Nascraft-*.jar 2>/dev/null | grep -v -F -x "$JAR" || true)
+          if [ -n "$STALE" ]; then
+            echo "::error::发现多余的（按目标打包的）jar，产物应当只有一个："
+            echo "$STALE"
+            exit 1
+          fi
+
+          # issue #3 防回归：确认随包依赖真的被 shade 进 jar 了。
+          # NoClassDefFoundError: org/bstats/charts/CustomChart。
+          # invui 1.x（1.21.11 用）与重定位后的 invui 2.x（26.x 用）都必须进包。
+          for entry in \
+            me/bounser/bstats/charts/CustomChart.class \
+            me/bounser/bstats/bukkit/Metrics.class \
+            xyz/xenondevs/invui/gui/AbstractGui.class \
+            me/bounser/nbtapi/NBTItem.class \
+            me/bounser/libs/invui2/xyz/xenondevs/invui/gui/AbstractGui.class \
+            me/bounser/libs/invui2/xyz/xenondevs/invui/window/CartographyWindow.class
+          do
+            unzip -l "$JAR" | grep -q "$entry" \
+              || { echo "::error::$JAR 缺少随包依赖 $entry"; exit 1; }
           done
-          echo "三个目标的 jar 都已生成，且随包依赖完整。"
+          ls -l "$JAR"
+          echo "单产物 jar 已生成（含 invui 1.x + invui 2.x 两套后端），随包依赖完整。"
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: Nascraft-build
-
-          path: |
-            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-1.21.11.jar
-            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-26.2.jar
-            build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}-26.3.jar
+          path: build/libs/Nascraft-${{ env.NASCRAFT_VERSION }}.jar
           if-no-files-found: error

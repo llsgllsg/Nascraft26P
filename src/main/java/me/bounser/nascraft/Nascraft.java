@@ -27,6 +27,7 @@ import me.bounser.nascraft.commands.sell.sellinv.SellInvCommand;
 import me.bounser.nascraft.commands.sellwand.GiveSellWandCommand;
 import me.bounser.nascraft.commands.onebot.LinkQQCommand;
 import me.bounser.nascraft.onebot.OneBotBridge;
+import me.bounser.nascraft.qqofficial.QqOfficialBridge;
 import me.bounser.nascraft.database.DatabaseManager;
 import me.bounser.nascraft.discord.DiscordBot;
 import me.bounser.nascraft.commands.discord.LinkCommand;
@@ -147,6 +148,11 @@ public class Nascraft extends JavaPlugin {
 
         createImagesFolder();
 
+        // 单 jar 同时内置两套 GUI 后端，这里把最终选择打出来，方便用户排查
+        getLogger().info("GUI backend: " + me.bounser.nascraft.util.ServerCompat.describeBackend()
+                + " (Bukkit " + Bukkit.getBukkitVersion() + ", Java "
+                + System.getProperty("java.version") + ")");
+
         Services.get().market();
 
         if (config.getOneBotEnabled()) {
@@ -154,6 +160,13 @@ public class Nascraft extends JavaPlugin {
             OneBotBridge.enable();
             if (config.isCommandEnabled("linkqq")) new LinkQQCommand();
             getLogger().info("OneBot extension loaded!");
+        }
+
+        if (config.getQqOfficialEnabled()) {
+            getLogger().info("Enabling QQ official bot extension...");
+            QqOfficialBridge.enable();
+            if (config.isCommandEnabled("linkqq") && !config.getOneBotEnabled()) new LinkQQCommand();
+            getLogger().info("QQ official bot extension loaded!");
         }
 
         if (config.isCrossServerEnabled()) {
@@ -235,6 +248,8 @@ public class Nascraft extends JavaPlugin {
 
         OneBotBridge.disable();
 
+        QqOfficialBridge.disable();
+
         getLogger().info("Saving and closing connection with database...");
         DatabaseManager.get().getDatabase().disconnect();
         getLogger().info("Done!");
@@ -270,6 +285,8 @@ public class Nascraft extends JavaPlugin {
 
         metrics.addCustomChart(new SimplePie("discord_bridge", () -> String.valueOf(Config.getInstance().getDiscordEnabled())));
         metrics.addCustomChart(new SimplePie("onebot_bridge", () -> String.valueOf(Config.getInstance().getOneBotEnabled())));
+        metrics.addCustomChart(new SimplePie("qq_official_bridge", () -> String.valueOf(Config.getInstance().getQqOfficialEnabled())));
+        metrics.addCustomChart(new SimplePie("invui_backend", me.bounser.nascraft.util.ServerCompat::describeBackend));
 
         metrics.addCustomChart(new SimplePie("cross_server", () -> Config.getInstance().isCrossServerEnabled() ? "Enabled" : "Disabled"));
 

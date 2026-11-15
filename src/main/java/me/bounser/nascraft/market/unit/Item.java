@@ -14,6 +14,7 @@ import me.bounser.nascraft.api.events.SellItemEvent;
 import me.bounser.nascraft.database.commands.resources.Trade;
 import me.bounser.nascraft.discord.DiscordLog;
 import me.bounser.nascraft.onebot.OneBotBridge;
+import me.bounser.nascraft.qqofficial.QqOfficialBridge;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.RoundUtils;
 import me.bounser.nascraft.managers.InventoryManager;
@@ -234,6 +235,9 @@ public class Item {
         if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
             OneBotBridge.getInstance().sendTradeLog(trade);
 
+        if (Config.getInstance().getQqOfficialEnabled() && Config.getInstance().getQqOfficialLogEnabled())
+            QqOfficialBridge.getInstance().sendTradeLog(trade);
+
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.BUY, worth);
@@ -283,6 +287,9 @@ public class Item {
 
         if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
             OneBotBridge.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getQqOfficialEnabled() && Config.getInstance().getQqOfficialLogEnabled())
+            QqOfficialBridge.getInstance().sendTradeLog(trade);
 
         MarketManager.getInstance().addOperation();
 
@@ -364,6 +371,9 @@ public class Item {
 
         if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
             OneBotBridge.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getQqOfficialEnabled() && Config.getInstance().getQqOfficialLogEnabled())
+            QqOfficialBridge.getInstance().sendTradeLog(trade);
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.SELL, worth);
@@ -420,6 +430,9 @@ public class Item {
 
         if (Config.getInstance().getOneBotEnabled() && Config.getInstance().getOneBotLogEnabled())
             OneBotBridge.getInstance().sendTradeLog(trade);
+
+        if (Config.getInstance().getQqOfficialEnabled() && Config.getInstance().getQqOfficialLogEnabled())
+            QqOfficialBridge.getInstance().sendTradeLog(trade);
         MarketManager.getInstance().addOperation();
 
         TransactionCompletedEvent transactionEvent = new TransactionCompletedEvent(player, this, amount, Action.SELL, worth);

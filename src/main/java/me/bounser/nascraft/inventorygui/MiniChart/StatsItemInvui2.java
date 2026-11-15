@@ -12,20 +12,20 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.jetbrains.annotations.NotNull;
-import xyz.xenondevs.invui.Click;
-import xyz.xenondevs.invui.item.AbstractItem;
-import xyz.xenondevs.invui.item.ItemBuilder;
-import xyz.xenondevs.invui.item.ItemProvider;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.Click;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.AbstractItem;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.ItemBuilder;
+import me.bounser.libs.invui2.xyz.xenondevs.invui.item.ItemProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatsItem extends AbstractItem {
+public class StatsItemInvui2 extends AbstractItem {
 
     private Item item;
     private ChartType type;
 
-    public StatsItem(Item item, ChartType type) {
+    public StatsItemInvui2(Item item, ChartType type) {
         this.item = item;
         this.type = type;
     }

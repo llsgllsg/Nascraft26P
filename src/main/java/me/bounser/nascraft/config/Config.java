@@ -43,7 +43,11 @@ public class Config {
 
     private Config() {
         main = Nascraft.getInstance();
+        // Only an already existing config.yml can be outdated: when the file is generated for
+        // the first time saveDefaultConfig() writes the bundled (current) version.
+        boolean configExisted = new File(main.getDataFolder(), "config.yml").isFile();
         main.saveDefaultConfig();
+        if (configExisted) ConfigUpdater.upgradeConfig(main);
         this.config = Nascraft.getInstance().getConfig();
 
         items = setupFile("items.yml");
@@ -63,6 +67,9 @@ public class Config {
 
     public void reload() {
 
+        // Bring an old config.yml up to date before loading it, so /nascraft reload also
+        // picks up keys introduced by a plugin update.
+        ConfigUpdater.upgradeConfig(main);
         config = YamlConfiguration.loadConfiguration(new File(main.getDataFolder(), "config.yml"));
 
         DatabaseManager.get().getDatabase().saveEverything();
@@ -607,6 +614,60 @@ public class Config {
 
     public List<Long> getOneBotGroupWhitelist() {
         return config.getLongList("onebot.commands.group-whitelist");
+    }
+
+    public boolean getQqOfficialEnabled() {
+        return config.getBoolean("qq-official.enabled");
+    }
+
+    public String getQqOfficialAppId() {
+        return config.getString("qq-official.app-id", "");
+    }
+
+    public String getQqOfficialClientSecret() {
+        return config.getString("qq-official.client-secret", "");
+    }
+
+    public boolean getQqOfficialSandbox() {
+        return config.getBoolean("qq-official.sandbox", false);
+    }
+
+    public String getQqOfficialApiBase() {
+        return config.getString("qq-official.api-base", "");
+    }
+
+    public String getQqOfficialTokenUrl() {
+        return config.getString("qq-official.token-url", "");
+    }
+
+    public int getQqOfficialIntents() {
+        int intents = config.getInt("qq-official.intents", 1 << 25);
+        return intents <= 0 ? 1 << 25 : intents;
+    }
+
+    public boolean getQqOfficialLogEnabled() {
+        return config.getBoolean("qq-official.log-trades.enabled");
+    }
+
+    public List<String> getQqOfficialLogGroups() {
+        return config.getStringList("qq-official.log-trades.group-openids");
+    }
+
+    public boolean getQqOfficialAlertsEnabled() {
+        return config.getBoolean("qq-official.alerts.enabled");
+    }
+
+    public int getQqOfficialAlertInterval() {
+        int interval = config.getInt("qq-official.alerts.check-interval", 60);
+        return Math.max(10, interval);
+    }
+
+    public boolean getQqOfficialCommandsEnabled() {
+        return config.getBoolean("qq-official.commands.enabled", true);
+    }
+
+    public List<String> getQqOfficialGroupWhitelist() {
+        return config.getStringList("qq-official.commands.group-whitelist");
     }
 
     public boolean getUpdateCheckEnabled() {

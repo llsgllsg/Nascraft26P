@@ -1,26 +1,17 @@
 package me.bounser.nascraft.util;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import xyz.xenondevs.invui.gui.Gui;
-import xyz.xenondevs.invui.item.impl.SimpleItem;
-import xyz.xenondevs.invui.window.AnvilWindow;
 
 import java.util.function.Function;
 
 /**
- * Anvil text-input prompt backed by invui's {@link AnvilWindow}.
+ * Anvil text-input prompt with a version independent API.
  *
- * <p>Replaces the bundled anvilgui library, whose NMS version wrappers only go up to
- * 1.21.10 and hard-reference {@code org.bukkit.craftbukkit.v1_21_Rx.*} classes, so on
- * 1.21.11 they throw {@code NoClassDefFoundError}. invui's AnvilWindow uses the bundled
- * inventory-access (r26) which supports 1.21.11.</p>
- *
- * <p>A placeholder item is placed in the anvil's left slot: without it the rename field
- * is not editable in vanilla, and its display name doubles as the pre-filled input text
- * (the old anvilgui {@code .text(...)} behaviour).</p>
+ * <p>The implementation is chosen at {@link Builder#open(Player)} time: MC 1.21.11
+ * uses {@link AnvilPromptInvui1} (invui 1.x {@code AnvilWindow.single()}), Paper
+ * 26.x uses {@link AnvilPromptInvui2} (invui 2.x {@code AnvilWindow.builder()}).
+ * Both backends present the same {@link Result} contract, so every existing call
+ * site keeps working unchanged.</p>
  */
 public final class AnvilPrompt {
 
@@ -30,9 +21,9 @@ public final class AnvilPrompt {
 
     /** Outcome of a submitted input. */
     public static final class Result {
-        private final boolean accepted;
-        private final Runnable afterClose;
-        private final String errorMessage;
+        final boolean accepted;
+        final Runnable afterClose;
+        final String errorMessage;
 
         private Result(boolean accepted, Runnable afterClose, String errorMessage) {
             this.accepted = accepted;
@@ -55,49 +46,22 @@ public final class AnvilPrompt {
 
         public Builder title(String title) { this.title = title == null ? "" : title; return this; }
 
-        /** Pre-filled input text (also shown on the left-slot placeholder item). */
+        /**
+         * Pre-filled input text. Supported by the invui 1.x backend through a
+         * placeholder item in the anvil's left slot; invui 2.x has no pre-fill
+         * support, so the text is ignored there (the field is always editable).
+         */
         public Builder text(String text) { this.text = text == null ? "" : text; return this; }
 
         /** Called on submit with the input text. */
         public Builder onSubmit(Function<String, Result> onSubmit) { this.onSubmit = onSubmit; return this; }
 
         public void open(Player player) {
-            // The anvil's rename field is only editable when something is in the left
-            // slot; using the pre-filled text as its display name both enables typing
-            // and preserves the old ".text(...)" placeholder behaviour.
-            ItemStack placeholder = new ItemStack(Material.PAPER);
-            ItemMeta meta = placeholder.getItemMeta();
-            meta.setDisplayName(text.isEmpty() ? " " : text);
-            placeholder.setItemMeta(meta);
-
-            // Anvil has 4 slots: left(0), right(1), middle(2), output(3).
-            // GUI must have exactly 4 columns (1 row × 4 cols) to avoid
-            // ArrayIndexOutOfBoundsException when the player clicks slot 2.
-            Gui gui = Gui.empty(1, 4);
-            gui.setItem(0, new SimpleItem(placeholder));
-
-            AnvilWindow[] holder = new AnvilWindow[1];
-
-            AnvilWindow window = AnvilWindow.single()
-                    .setTitle(title)
-                    .setGui(gui)
-                    .setCloseable(false)
-                    .addRenameHandler(input -> {
-                        if (onSubmit == null) return;
-                        Result result = onSubmit.apply(input);
-                        if (result == null) return;
-                        if (result.accepted) {
-                            AnvilWindow open = holder[0];
-                            if (open != null) open.close();
-                            if (result.afterClose != null) result.afterClose.run();
-                        } else if (result.errorMessage != null && !result.errorMessage.isEmpty()) {
-                            player.sendMessage(result.errorMessage);
-                        }
-                    })
-                    .build(player);
-
-            holder[0] = window;
-            window.open();
+            if (ServerCompat.isInvui2()) {
+                AnvilPromptInvui2.open(player, title, text, onSubmit);
+            } else {
+                AnvilPromptInvui1.open(player, title, text, onSubmit);
+            }
         }
     }
 }

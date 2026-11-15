@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # Nascraft26P
 
@@ -10,7 +10,7 @@
 [![Build](https://github.com/llsgllsg/Nascraft26P/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/llsgllsg/Nascraft26P/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/llsgllsg/Nascraft26P?style=flat-square&color=3b82f6)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21%20%7C%2025-f89820?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net)
-[![Paper](https://img.shields.io/badge/Paper-1.21.11%20%7C%2026.2%20%7C%2026.3-30a2ff?style=flat-square)](https://papermc.io)
+[![Paper](https://img.shields.io/badge/Paper-1.21.11%20%7C%2026.1.x%20%7C%2026.2%20%7C%2026.3-30a2ff?style=flat-square)](https://papermc.io)
 
 [文档](https://llsgllsg.github.io/Nascraft26P/wiki/) · [安装](#安装) · [功能](#功能) · [命令](#命令与权限) · [构建](#从源码构建) · [常见问题](#常见问题)
 
@@ -18,7 +18,7 @@
 
 ---
 
-> **Nascraft26P** 是基于 [Nascraft](https://www.spigotmc.org/resources/108216/) 的汉化 + 兼容性维护版本，跟随 Paper 最新稳定版更新，当前支持 **1.21.11 / 26.2 / 26.3**，内置完整中文语言包。
+> **Nascraft26P** 是基于 [Nascraft](https://www.spigotmc.org/resources/108216/) 的汉化 + 兼容性维护版本，跟随 Paper 最新稳定版更新，当前支持 **1.21.11 / 26.1.x / 26.2 / 26.3**，一个 jar 通吃所有版本（启动时自动选择 GUI 后端），内置完整中文语言包。
 >
 > **中文文档**：<https://llsgllsg.github.io/Nascraft26P/wiki/>（由原版 [Nascraft Wiki](https://bounser.gitbook.io/nascraft/) 迁移，共 21 页）
 
@@ -33,19 +33,24 @@
 | 借贷系统 | 以资产组合为抵押，利息、清算与违约处理 |
 | 跨服市场 | SQLite 单服 / MySQL 多服共享，Redis 实时同步 |
 | Discord 桥接 | 交易日志、账号绑定、价格提醒推送 |
-| QQ 桥接（OneBot v11） | 交易日志、行情查询、价格提醒、账号绑定；兼容个人 QQ 与 QQ 官方机器人 |
+| QQ 桥接 | 交易日志、行情查询、价格提醒、账号绑定；支持 OneBot v11（NapCat 等）与 QQ 官方机器人（官方 API v2，插件直连腾讯网关） |
 | 自托管网页 | 行情、K 线图表、会话登录 |
 | 更新提示 | 启动时查询 GitHub Releases，发现新版本会在控制台和 OP 进服时提醒 |
 | 中文体验 | zh_CN 语言包、汉化配置注释、汉化的管理员编辑器 |
 
 ## 兼容性
 
-| 构建目标 | 服务端 | Java | 界面库 | 状态 |
-|----------|--------|------|--------|------|
-| `1.21.11` | Paper / Purpur 1.21.11 | 21 | invui 1.x | √ 支持 |
-| `26.2` | Paper / Purpur 26.2 | 25 | invui 2.3.0 | √ 支持 |
-| `26.3` | Paper / Purpur 26.3 | 25 | invui 2.5.1 | √ 支持（推荐） |
-| `26.4` | — | — | — | × 等待 Paper 发布 26.4 API |
+同一个 jar 支持下列全部服务端，插件启动时读取 `Bukkit.getBukkitVersion()` 自动选择 GUI 后端，无需再挑文件：
+
+| 服务端 | Java | 界面后端 | 状态 |
+|--------|------|----------|------|
+| Paper / Purpur 1.21.11 | 21 | invui 1.49 | √ 支持 |
+| Paper / Purpur 26.1.1 / 26.1.2 | 25 | invui 2.5.1（重定位） | √ 支持 |
+| Paper / Purpur 26.2 | 25 | invui 2.5.1（重定位） | √ 支持 |
+| Paper / Purpur 26.3 | 25 | invui 2.5.1（重定位） | √ 支持（推荐） |
+| Paper 26.4+ | 25 | invui 2.5.1（重定位） | — 等待 Paper 发布 26.4 API |
+
+> 26.1 只有 26.1.1 / 26.1.2 两条补丁线对外发布（26.1.1 为 alpha 构建），它们与 26.2 / 26.3 共用同一套后端。
 
 [常见问题](#常见问题)。
 
@@ -53,14 +58,14 @@
 
 ### 环境要求
 
-- **Paper / Purpur 1.21.11、26.2 或 26.3**（Folia 亦已声明支持）
+- **Paper / Purpur 1.21.11、26.1.2、26.2 或 26.3**（Folia 亦已声明支持）
 - **Vault**（必装，作为默认货币）
 - 可选：**PlaceholderAPI**（占位符 / 多货币）、**AdvancedGUI**（游戏内图表）
-- 跨服：MySQL 8.0+ / MariaDB 10.2+ 与 Redis；Discord：JDA（随插件加载）；QQ：OneBot v11 实现（NapCat / LLOneBot / Lagrange 等，可选）
+- 跨服：MySQL 8.0+ / MariaDB 10.2+ 与 Redis；Discord：JDA（随插件加载）；QQ：二选一——OneBot v11 实现（NapCat / LLOneBot / Lagrange 等）或 QQ 官方机器人（AppID/AppSecret，可选）
 
 ### 步骤
 
-1. 从 [Releases](https://github.com/llsgllsg/Nascraft26P/releases) 下载与你服务端版本对应的 jar（文件名中的 `1.21.11` / `26.2` / `26.3` 即目标版本）。
+1. 从 [Releases](https://github.com/llsgllsg/Nascraft26P/releases) 下载 `Nascraft-<version>.jar`（只有一个文件，不再按版本区分）。
 2. 把 jar 放进服务器的 `plugins/` 目录。
 3. 启动一次服务器，让插件生成 `plugins/Nascraft/` 配置与数据目录。
 4. 在 `plugins/Nascraft/config.yml` 中确认语言（本仓库默认即为中文）：
@@ -165,40 +170,44 @@ QQ 端命令：
 ### 构建命令
 
 ```bash
-./gradlew shadowJar "-PmcTarget=1.21.11"   # 1.21.11（默认）
-./gradlew shadowJar "-PmcTarget=26.2"      # 26.2
-./gradlew shadowJar "-PmcTarget=26.3"      # 26.3
+./gradlew build      # 跑测试 + 打包（推荐）
+./gradlew shadowJar  # 只打包
 ```
 
-> **PowerShell 用户注意**：`-PmcTarget=1.21.11` 必须整体加引号。不加引号时 PowerShell 会把参数拆坏，Gradle 只收到 `.21.11`，直接报 `Task '.21.11' not found` 并构建失败；此时 `build/libs` 里留着的是上一次构建的旧 jar，发出去会得到「没打依赖、启动报 `NoClassDefFoundError`」的坏包。CMD 或 Linux / macOS 的 shell 不需要加引号。
+> 自 v26.4.5.2 起不再需要 `-PmcTarget`：只有**一个**构建产物，运行时按服务器版本自动选后端。`-PmcTarget` 现在只用于 `runServer` 冒烟测试（填 `1.21.11` / `26.1.2` / `26.2` / `26.3`）。
 
 构建产物（版本号取自 `gradle.properties`）：
 
 ```
-build/libs/Nascraft-<version>-1.21.11.jar
-build/libs/Nascraft-<version>-26.2.jar
-build/libs/Nascraft-<version>-26.3.jar
+build/libs/Nascraft-<version>.jar
 ```
+
+这一个 jar 同时内置两套 GUI 后端：
+
+- `xyz.xenondevs.invui:invui:1.49`（原始包名，1.21.11 用）
+- 重定位到 `me.bounser.libs.invui2.*` 的 invui 2.5.1（26.x 用；已用 ASM 把 `CraftItemStack.asBukkitMirror/asCraftMirror` 调用改成反射，兼容 26.1 ~ 26.3）
+
+`ServerCompat.isInvui2()` 在启动时解析 `Bukkit.getBukkitVersion()`，主版本号 ≥ 26 走 invui 2，否则走 invui 1。
 
 ### 测试
 
 ```bash
-./gradlew test "-PmcTarget=26.3"
+./gradlew test
 ```
 
 `src/test` 下的 `ConnectionReuseTest` 是 SQLite 连接复用的回归测试：历史上「查库过程中又查一次库」会把自己锁死，并连带卡住服务器主线程 30 秒（打开资产榜单时的 `SQLTransientConnectionException`），这些测试用来防止它再次出现。
 
 ### 构建细节
 
-- **Gradle daemon 必须运行在 JDK 21 上**（即使构建 26.2 / 26.3），因为 Gradle 8.14.3 内嵌的 Kotlin DSL 编译器无法解析 Java 25 的版本号；`javac` 会通过 Java 工具链自动切换到目标 JDK。
+- **Gradle daemon 必须运行在 JDK 21 上**，因为 Gradle 8.14.3 内嵌的 Kotlin DSL 编译器无法解析 Java 25 的版本号；编译工具链用 JDK 25，但通过 `options.release = 21` 产出 Java 21 字节码，因此同一个 jar 在 JDK 21（1.21.11）和 JDK 25（26.1+）上都能加载。
 - `shadowJar` 结束后会自动做一次**打包自检**：确认 bStats、invui、item-nbt-api 等随包依赖确实被 shade 进 jar，缺任何一个都会让构建失败，避免再发出缺依赖的包。
 
 ## 自动构建与发布
 
 | 工作流 | 触发方式 | 作用 |
 |--------|----------|------|
-| `.github/workflows/build.yml` | push、Pull Request、手动 | 跑测试 + 构建三个目标并上传产物（Actions 页面的 Artifacts 可下载） |
-| `.github/workflows/release.yml` | 推 `v*` tag，或手动触发 | 递增 / 指定版本号 → 提交 → 打 tag → 跑测试 → 构建 → 发布 Release |
+| `.github/workflows/build.yml` | push、Pull Request、手动 | 跑测试 + 构建单产物并上传（Actions 页面的 Artifacts 可下载） |
+| `.github/workflows/release.yml` | 推 `v*` tag，或手动触发 | 递增 / 指定版本号 → 提交 → 打 tag → 跑测试 → 构建单产物 → 发布 Release |
 
 手动发布：Actions → 发布 Release → Run workflow，填版本号（例如 `26.4.2`）或选择递增方式即可。
 
@@ -206,6 +215,7 @@ build/libs/Nascraft-<version>-26.3.jar
 
 ## 本仓库相对原版的改动
 
+- **v26.4.5.2**：三版本合一为单 jar（运行时自动选择 invui 1.x / 2.x 后端），新增 Paper 26.1.1 / 26.1.2 支持；接入 QQ 官方机器人（官方 API v2，WebSocket 直连，支持群聊 @ 与私聊，复用行情 / 提醒 / 绑定命令）；`config.yml` 增加 `config-version` 并在启动时自动升级合并（备份为 `config-backup-*.yml`）；修复卖棒对着空气点击时的 `NullPointerException`。
 - 适配 1.21.11、26.2 与 26.3（invui 1.x / 2.x）；26.3 使用 invui 2.5.1 修复地图 / 制图台窗口的 `NoSuchMethodError`。
 - 版本号自 26.3 起与 MC 版本对齐，统一由 `gradle.properties` 的 `version` 控制。
 - 修复随包依赖没有被打进 jar 的问题（bStats / invui / item-nbt-api 缺失时，服务器加载会报 `NoClassDefFoundError: org/bstats/charts/CustomChart`）；`shadowJar` 现在带打包自检。
