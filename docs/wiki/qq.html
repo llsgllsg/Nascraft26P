@@ -53,10 +53,33 @@
     </ul>
   </aside>
   <main class="doc">
-<h1 id="qq-onebot-v11">QQ 机器人（OneBot v11）</h1>
+<h1 id="qq">QQ 机器人</h1>
 <blockquote>
 <p>这是 <strong>Nascraft26P 新增</strong> 的功能，上游 Nascraft 没有。它让玩家在 QQ 群里查价、设提醒、绑定账号，也能把成交直接播报到群里。</p>
 </blockquote>
+<p>支持两种接入方式，按你的 QQ 形态二选一（也可以同时开，下文分别说明）：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>适合场景</th>
+<th>需要的东西</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OneBot v11（个人 QQ）</td>
+<td>个人 QQ、自建机器人框架</td>
+<td>一个 OneBot v11 实现（NapCat / LLOneBot / Lagrange / go-cqhttp 等）</td>
+</tr>
+<tr>
+<td>QQ 官方机器人（官方 API v2）</td>
+<td>官方渠道、需要长期稳定运行</td>
+<td><a href="https://q.qq.com/">QQ 开放平台</a> 的 AppID 与 AppSecret</td>
+</tr>
+</tbody>
+</table>
+<p>两种方式共用同一套 QQ 命令和账号绑定，<code>/linkqq</code> 生成的绑定码在两边都有效。</p>
 <h2 id="_1">它能做什么</h2>
 <table>
 <thead>
@@ -84,7 +107,8 @@
 </tr>
 </tbody>
 </table>
-<h2 id="onebot">支持的 OneBot 实现</h2>
+<h2 id="onebot-v11-qq">方式一：OneBot v11（个人 QQ）</h2>
+<h3 id="onebot">支持的 OneBot 实现</h3>
 <p>协议是标准的 <strong>OneBot v11</strong>，原则上任何实现都能接：</p>
 <ul>
 <li>个人 QQ：<strong>NapCat</strong>、<strong>LLOneBot</strong>、<strong>Lagrange</strong>、<strong>go-cqhttp</strong></li>
@@ -92,7 +116,7 @@
 </ul>
 <p>机器人本身不随插件分发，需要你自己部署一个，并开启它的 <strong>HTTP API</strong> 与 <strong>HTTP 上报</strong>。</p>
 <hr />
-<h2 id="_2">配置</h2>
+<h3 id="_2">配置</h3>
 <p>在 <code>config.yml</code> 末尾的 <code>onebot</code> 段：</p>
 <pre><code class="language-yaml">onebot:
   enabled: false
@@ -131,7 +155,7 @@
 <blockquote>
 <p><code>port</code> 注意别和其他插件（例如网页地图、面板）冲突；这是<strong>插件自己监听</strong>的端口。</p>
 </blockquote>
-<h2 id="_3">连接步骤</h2>
+<h3 id="_3">连接步骤</h3>
 <ol>
 <li><strong>部署机器人</strong>（以 NapCat / LLOneBot 为例），登录你的 QQ 小号。</li>
 <li>在机器人后台打开 <strong>HTTP 服务</strong>（HTTP API），记下地址和端口，建议设置 access token。</li>
@@ -143,7 +167,7 @@
 <li>回到 <code>config.yml</code>，把 <code>onebot.enabled</code>、<code>webhook.enabled</code> 打开，<code>api-url</code> 填机器人地址，重启服务器。</li>
 <li>控制台出现 <code>[OneBot] Webhook 监听 http://…:8765/onebot</code> 就算通了。</li>
 </ol>
-<h2 id="_4">绑定账号</h2>
+<h3 id="_4">绑定账号</h3>
 <ol>
 <li>玩家在游戏里执行 <strong><code>/linkqq</code></strong>（别名 <strong><code>/qq</code></strong>，权限 <code>nascraft.qq.linkable</code>）。</li>
 <li>插件返回一串 <strong>6 位绑定码</strong>，10 分钟内有效。</li>
@@ -155,7 +179,7 @@
 <li>游戏内：<code>/linkqq unlink</code></li>
 <li>QQ 里：<code>解绑</code></li>
 </ul>
-<h2 id="qq">QQ 命令</h2>
+<h3 id="qq_1">QQ 命令</h3>
 <p>私聊直接发；群里需要机器人能被叫到（或在白名单群里直接发）。</p>
 <table>
 <thead>
@@ -200,12 +224,12 @@
 提醒 钻石 120
 提醒列表
 </code></pre>
-<h2 id="_5">交易播报</h2>
+<h3 id="_5">交易播报</h3>
 <p>打开 <code>onebot.log-trades.enabled</code> 并填好 <code>group-ids</code> 后，每笔成交会按下面的格式发到群里：</p>
 <pre><code>[TIME] [PLAYER] [ACTION] [AMOUNT] x [ITEM] = [WORTH]
 </code></pre>
 <p>可以改 <code>langs/zh_CN.yml</code> 里的 <code>onebot_trade_line</code> 自定义文案，<code>[ACTION]</code> 等占位符会被替换。</p>
-<h2 id="_6">排错</h2>
+<h3 id="_6">排错</h3>
 <table>
 <thead>
 <tr>

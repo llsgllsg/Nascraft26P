@@ -56,10 +56,19 @@
 <h1 id="_1">配置</h1>
 <h2 id="configyml">基础配置：config.yml</h2>
 <p><code>config.yml</code> 里有几个重要字段：语言、默认值、Discord 扩展、出售魔杖的行为等等。</p>
-<h3 id="_2">怎么往市场里加物品？</h3>
+<h3 id="_2">配置文件版本与自动升级</h3>
+<p><code>config.yml</code> 顶部有一个 <code>config-version</code> 字段，用于标记这份配置的结构版本（<strong>请勿手动修改</strong>）。</p>
+<ul>
+<li>插件启动时会比较磁盘上的 <code>config.yml</code> 与 jar 内置的默认配置。</li>
+<li>如果磁盘版本更旧：先把旧文件备份为 <code>config-backup-&lt;旧版本&gt;-&lt;时间&gt;.yml</code>，再把新版本新增的配置项（含中文注释）合并进去；你改过的值一律保留。</li>
+<li>如果版本相同：完全不写盘，不会动你的文件。</li>
+<li>如果磁盘版本比插件内置的还新（比如你降级了插件）：只在控制台告警，不覆盖文件。</li>
+</ul>
+<p>所以升级插件后不需要手动对比配置，直接重启即可；想确认合并了哪些键，diff 一下 <code>config-backup-*.yml</code> 和新文件就行。</p>
+<h3 id="_3">怎么往市场里加物品？</h3>
 <p>市场内容分成两个文件：<strong>items.yml</strong> 和 <strong>categories.yml</strong>。</p>
 <p>要新增物品，可以手动改这两个文件（两个都要改：既写进 <code>items.yml</code>，也要挂到 <code>categories.yml</code> 的某个分类下），也可以直接用游戏内菜单：<strong><code>/nascraft edit</code></strong>。</p>
-<h3 id="_3">怎么改物品属性？</h3>
+<h3 id="_4">怎么改物品属性？</h3>
 <p>同样两种方式：手动编辑 <code>items.yml</code>，或者用 <code>/nascraft edit</code>。</p>
 <p>各功能的说明和配置示例：</p>
 <ul>
@@ -68,13 +77,14 @@
 <li><a href="taxation.html">税收</a></li>
 <li><a href="sell-wands.html">出售魔杖</a></li>
 </ul>
-<h3 id="_4">扩展</h3>
+<h3 id="_5">扩展</h3>
 <p>扩展的配置见：</p>
 <ul>
 <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
 <li><a href="discord.html">Discord 扩展</a></li>
+<li><a href="qq.html">QQ 机器人（OneBot v11 / QQ 官方机器人）</a>：<code>onebot</code> 与 <code>qq-official</code> 两个配置段</li>
 </ul>
-<h2 id="_5">多语言</h2>
+<h2 id="_6">多语言</h2>
 <p>插件自带 <code>zh_CN</code> 语言文件（本版本已完整汉化），在 <code>config.yml</code> 的 <code>language</code> 字段里切换即可。修改文案直接改 <code>plugins/Nascraft/lang/zh_CN.yml</code>，改完 <code>/nascraft reload</code> 生效。</p>
     <footer class="foot">
       本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
