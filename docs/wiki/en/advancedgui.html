@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdvancedGUI extension · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../advancedgui.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html" class="on">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="advancedgui-extension">AdvancedGUI extension</h1>
+<p>Place an interactive "market board" in your world that shows price charts.</p>
+<p>Nascraft ships a layout extension for <a href="https://www.spigotmc.org/resources/83636/">AdvancedGUI</a>. AdvancedGUI is a paid plugin by Leoko that creates touch screen interfaces in your server — highly recommended even without Nascraft.</p>
+<p>The screen roughly looks like this: items and the "sell" action on the left, a price chart in the middle, the inventory interface at the bottom.</p>
+<h2 id="placing-the-screen">Placing the screen</h2>
+<ol>
+<li>Install AdvancedGUI (<a href="https://www.spigotmc.org/resources/83636/">purchase</a>, then drop the jar into <code>plugins/</code> like any other plugin).</li>
+<li>Make sure its dependencies are present (<a href="https://www.spigotmc.org/resources/1997/">ProtocolLib</a>).</li>
+<li>With both AdvancedGUI and Nascraft installed, restart the server and check this option in <code>config.yml</code>:</li>
+</ol>
+<p><code>yaml
+   auto-resources-injection: true</code></p>
+<p>Note: the upstream docs misspell this key (<code>auto-resources-injectio</code>); go with whatever <code>config.yml</code> actually generates.</p>
+<ol start="4">
+<li>Place the interface with <strong><code>/ag place Nascraft</code></strong>.</li>
+</ol>
+<blockquote>
+<p>Without AdvancedGUI installed, the startup log shows <code>AdvancedGUI is not installed</code>. That is expected and does not affect any other feature.</p>
+</blockquote>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

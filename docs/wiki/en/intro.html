@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Market · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../intro.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html" class="on">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="the-market">The Market</h1>
+<h2 id="the-market-in-nascraft">The market in Nascraft</h2>
+<p>The market is the core of the whole plugin, so <strong>understanding how it works matters</strong>.</p>
+<p>In the real world everything has a value: wood, gold, even air. Those values are decided by the market — in other words, by <strong>supply, demand and how easy something is to get</strong>.</p>
+<p>A few examples:</p>
+<ul>
+<li><strong>Wood</strong>: high demand, but supply is just as high, so it stays cheap.</li>
+<li><strong>Gold</strong>: high demand, low output, so it is expensive.</li>
+<li><strong>Air</strong>: everywhere, nearly worthless.</li>
+</ul>
+<p><img alt="Supply and demand: the supply and demand curves meet at the equilibrium price P* and quantity Q*" src="../img/supplydemand.png" /></p>
+<p>To imitate this in Minecraft the plugin uses a <strong>linear quote</strong>: each trade only moves the price a little, so <strong>many trades</strong> are needed before prices visibly move. That differs from the real world, where a price can jump at once without a lot of volume.</p>
+<p>Why linear? A Minecraft server has no army of market makers, and running a full order book for every trade would be overkill; a linear quote also keeps price curves smooth instead of jumping around.</p>
+<hr />
+<h2 id="how-players-reach-the-market">How players reach the market</h2>
+<p>Nascraft offers several channels:</p>
+<ul>
+<li><strong>Commands</strong><ol>
+<li><code>/sell</code></li>
+<li><code>/sellhand</code></li>
+<li><code>/sellall</code></li>
+</ol>
+</li>
+<li><strong>The AdvancedGUI touch screen</strong></li>
+<li><strong>The Discord extension</strong></li>
+<li>The <code>/market</code> command</li>
+<li>Anything you build on our <a href="../commands.html">commands</a> and <a href="../placeholders.html">placeholders</a></li>
+</ul>
+<p><img alt="A price chart produced by the Discord extension" src="../img/discord-graph.png" /></p>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

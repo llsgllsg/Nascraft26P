@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sell wands · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../sell-wands.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html" class="on">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="sell-wands">Sell wands</h1>
+<p>A convenient way to sell items straight to the market.</p>
+<p>Nascraft has a built-in sell wand system. Enable it first:</p>
+<pre><code class="language-yaml"># ...
+sell-wands:
+  enabled: true
+</code></pre>
+<p>Then you can configure your own wands. A wand has the following properties:</p>
+<ul>
+<li><strong>material</strong>: the physical item material.</li>
+<li><strong>display-material</strong> and <strong>lore</strong>: the displayed material and description text. <code>[USES]</code> and <code>[PROFIT]</code> can be used as placeholders (for wands with a use or profit limit).</li>
+<li><strong>enchanted</strong>: <code>true</code> / <code>false</code>, whether it gets the enchantment glint.</li>
+<li><strong>multiplier</strong>: the multiplier applied when selling.</li>
+<li><strong>cooldown</strong>: seconds between two uses, 3 by default.</li>
+<li><strong>uses</strong>: limit the number of uses.</li>
+<li><strong>max-profit</strong>: limit the total money the wand can generate (multiplied by <code>multiplier</code>).</li>
+<li><strong>permission</strong>: permission required to use the wand (optional).</li>
+<li><strong>currencies</strong>: restrict which currencies the wand works with.</li>
+</ul>
+<p>Once configured, hand them out with <strong><code>/givesellwand [ID]</code></strong> or <strong><code>/givesellwand [player] [ID]</code></strong>.</p>
+<hr />
+<p>Here are the three wands that ship by default (edit, delete or add your own):</p>
+<blockquote>
+<p><strong>Tip</strong>: these are examples only, change them however you like.</p>
+</blockquote>
+<ul>
+<li><strong>BASIC WAND</strong>: 10 uses, requires <code>nascraft.wand.basic</code>.</li>
+<li><strong>PERMANENT WAND</strong>: unlimited uses and no profit cap, at the cost of a 0.5 multiplier (half the money), 300 second (5 minute) cooldown, requires <code>nascraft.wand.advanced</code>.</li>
+<li><strong>MILLONAIRE WAND</strong>: total profit of 1,000,000, 1.5 multiplier (+50%), requires <code>nascraft.wand.millonaire</code>.</li>
+</ul>
+<pre><code class="language-yaml"># ...
+sell-wands:
+  enabled: true
+  wands:
+    # ID: just an identifier
+    basic:
+      material: 'stick'
+      # recommended MiniMessage editor: https://webui.advntr.dev/
+      display-name: '&lt;b&gt;&lt;gradient:#19e312:#a3e300&gt;BASIC WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#517d58&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#517d58&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#517d58&gt;sell all its content to the market!&lt;/color&gt;'
+        - ' '
+        - '&lt;color:#517d58&gt;Uses left:&lt;/color&gt; &lt;b&gt;&lt;color:#a3e300&gt;[USES]&lt;/color&gt;&lt;/b&gt;'
+      # Maximum number of uses. A profit cap is also possible, see MILLONAIRE WAND.
+      # With neither set the wand is unlimited, see PERMANENT WAND.
+      uses: 10
+      # Permission required to use the wand; leave empty to skip the check.
+      permission: 'nascraft.wand.basic'
+
+    permanent:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '&lt;b&gt;&lt;gradient:#e74cf5:#f51d41&gt;PERMANENT WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#8077ba&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#8077ba&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#8077ba&gt;sell all its content to the market&lt;/color&gt;'
+        - '&lt;color:#8077ba&gt;for &lt;b&gt;&lt;color:#ff2403&gt;50%&lt;/color&gt;&lt;/b&gt; of its value.&lt;/color&gt;'
+        - '&lt;i&gt;&lt;color:#343d66&gt;⌛ 5 minutes of cooldown between uses.&lt;/color&gt;&lt;/i&gt;'
+        - ' '
+        - '&lt;b&gt;&lt;gradient:#f51d41:#e74cf5&gt;UNLIMITED USES&lt;/gradient&gt;&lt;b&gt;'
+      multiplier: 0.5
+      # currencies this wand can use
+      currencies:
+        - 'vault'
+      # minimum cooldown between uses (seconds)
+      cooldown: 300 # 300/60 = 5 minutes
+      permission: 'nascraft.wand.advanced'
+
+    millionaire:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '&lt;b&gt;&lt;gradient:#F57E00:#EFF551&gt;MILLIONARIE WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#85784D&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#85784D&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#85784d&gt;sell all its content to the market&lt;/color&gt;'
+        - '&lt;color:#85784d&gt;for &lt;color:#EFF551&gt;150%&lt;/color&gt; its value.&lt;/color&gt;'
+        - ' '
+        - '&lt;color:#85784d&gt;Left to sell:&lt;/color&gt; &lt;b&gt;[PROFIT-LEFT]&lt;/b&gt;'
+      currencies:
+        - 'vault'
+      # the wand can generate at most 1,000,000$ in total (multiplier included)
+      max-profit: 1000000
+      multiplier: 1.5
+      permission: 'nascraft.wand.millonaire'
+      # remap the left / right clicks, 'none' disables one.
+      # default: left click sells, right click estimates
+      sell: 'right'
+      estimate: 'left'
+</code></pre>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

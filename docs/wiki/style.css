@@ -159,3 +159,15 @@ a:hover { text-decoration: underline; }
 .side::-webkit-scrollbar-thumb { background: #d7deea; border-radius: 3px; }
 .side::-webkit-scrollbar-track { background: transparent; }
 
+
+/* --- language switcher --- */
+.topnav .lang {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border: 1px solid var(--line-strong); border-radius: 999px;
+  font-weight: 700; color: var(--acc); background: var(--acc-soft);
+}
+.topnav .lang:hover { background: #dbe8ff; text-decoration: none; }
+@media (max-width: 640px) {
+  .topnav { gap: 12px; }
+  .topnav .lang { padding: 4px 9px; font-size: 13px; }
+}

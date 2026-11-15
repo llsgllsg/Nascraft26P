@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multi-currency · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../multi-currency.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html" class="on">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="multi-currency">Multi-currency</h1>
+<p>Nascraft has a built-in multi-currency system. In theory any number of currencies is supported, as long as the currency can expose a PlaceholderAPI placeholder and deposit / withdraw commands.</p>
+<blockquote>
+<p><strong>Note</strong>: if you plan to use the Discord extension, those commands and placeholders must <strong>work while the player is offline</strong>.</p>
+</blockquote>
+<p>The default currency is Vault and can be changed in the configuration. Example:</p>
+<pre><code class="language-yaml"># ...
+currencies:
+  # the currency every item uses by default.
+  # also the default currency for features such as Discord inventory upgrades.
+  default-currency: 'vault'
+
+  suppliers:
+
+    # Vault is required! This is the default currency.
+    vault:
+      format: &quot;&lt;gradient:#f09947:#feed81&gt;[AMOUNT]$&lt;/gradient&gt;&quot;
+      not-enough: &quot;&lt;gradient:#FB6363:#C4B3FD&gt;✘ You don't have enough money to buy that!&lt;/gradient&gt;&quot;
+      decimal-positions: 3
+      top-limit: 9999999
+      low-limit: 0.005
+
+    #################################################################
+
+    # an example of another currency:
+    player-points:
+      deposit-cmd: 'playerpoints:p give [USER-NAME] [AMOUNT]'
+      withdraw-cmd: 'playerpoints:p take [USER-NAME] [AMOUNT]'
+      balance-placeholder: '%playerpoints_points%'
+      not-enough: &quot;&lt;gradient:#FB6363:#C4B3FD&gt;✘ You don't have enough points to buy that!&lt;/gradient&gt;&quot;
+      format: &quot;&lt;gradient:#ba24ff:#e8d1ff&gt;[AMOUNT]p&lt;/gradient&gt;&quot;
+      decimal-positions: 0
+      top-limit: 9999
+      low-limit: 10
+</code></pre>
+<p>As in the example, every currency other than Vault needs a unique identifier (<code>player-points</code> above) and these properties:</p>
+<ul>
+<li><strong>deposit-cmd</strong>: the command that adds money to a player's account; supports the <code>[USER-NAME]</code> and <code>[AMOUNT]</code> placeholders.</li>
+<li><strong>withdraw-cmd</strong>: the command that takes money from a player's account; same placeholders.</li>
+<li><strong>balance-placeholder</strong>: the PlaceholderAPI placeholder returning the player's balance; must be a bare number without formatting.</li>
+<li><strong>not-enough</strong>: the message shown when the balance is too low.</li>
+<li><strong>format</strong>: how amounts are displayed, with the <code>[AMOUNT]</code> placeholder.</li>
+<li><strong>decimal-positions</strong>: how many decimals prices in this currency keep. PlayerPoints only supports integers, hence 0.</li>
+<li><strong>top-limit</strong>: hard upper limit for prices in this currency.</li>
+<li><strong>low-limit</strong>: hard lower limit for prices in this currency.</li>
+</ul>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

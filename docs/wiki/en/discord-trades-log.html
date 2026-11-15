@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configuring: trade log · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../discord-trades-log.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html" class="on">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="configuring-trade-log">Configuring: trade log</h1>
+<p>Once the <a href="../discord-setup.html">bot is set up</a>:</p>
+<ol>
+<li><strong>Enable developer mode</strong> (if not already): User Settings → "Advanced" → turn on "Developer Mode".</li>
+</ol>
+<p><img alt="User settings" src="../img/dc-log-settings.png" /></p>
+<p><img alt="Advanced → Developer Mode" src="../img/dc-log-advanced.png" /></p>
+<ol start="2">
+<li><strong>Copy the channel ID</strong>: right click the channel that should record trades → "Copy Channel ID".</li>
+</ol>
+<p><img alt="Copying the channel ID" src="../img/dc-log-channel.png" /></p>
+<ol start="3">
+<li>In <code>config.yml</code> find <code>discord-bot → log-trades → channel</code>, paste the ID and set <code>enabled</code> to <code>true</code>. <strong>Restart the server</strong> and logging starts.</li>
+</ol>
+<pre><code class="language-yaml">discord-bot:
+  # ...
+  log-trades:
+    enabled: true
+    # channel ID for the trade log
+    channel: '123456789012345678'
+</code></pre>
+<blockquote>
+<p>The trade log channel should also be read-only (only the bot posts), otherwise chat scrolls it away.</p>
+</blockquote>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

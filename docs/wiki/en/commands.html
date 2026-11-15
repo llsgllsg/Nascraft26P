@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Commands · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../commands.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html" class="on">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="commands">Commands</h1>
+<h2 id="admin-commands">Admin commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nascraft edit</code></td>
+<td>nascraft.admin</td>
+<td>Open the market editor menu</td>
+</tr>
+<tr>
+<td><code>/nascraft reload</code></td>
+<td>nascraft.admin</td>
+<td>Reload <code>items.yml</code> and <code>categories.yml</code></td>
+</tr>
+<tr>
+<td><code>/nascraft logs global</code></td>
+<td>nascraft.admin</td>
+<td>Browse every trade on the server in a GUI</td>
+</tr>
+<tr>
+<td><code>/nascraft logs &lt;player name or UUID&gt;</code></td>
+<td>nascraft.admin</td>
+<td>View all trades of a player</td>
+</tr>
+<tr>
+<td><code>/nascraft logs &lt;item identifier&gt;</code></td>
+<td>nascraft.admin</td>
+<td>View all trades of an item</td>
+</tr>
+<tr>
+<td><code>/nascraft cpi</code></td>
+<td>nascraft.admin</td>
+<td>Query the consumer price index (CPI)</td>
+</tr>
+<tr>
+<td><code>/nascraft stop</code></td>
+<td>nascraft.admin</td>
+<td>Pause the market (no trading while paused)</td>
+</tr>
+<tr>
+<td><code>/nascraft resume</code></td>
+<td>nascraft.admin</td>
+<td>Resume the market</td>
+</tr>
+<tr>
+<td><code>/nascraft save</code></td>
+<td>nascraft.admin</td>
+<td>Force a save</td>
+</tr>
+<tr>
+<td><code>/nascraft info</code></td>
+<td>nascraft.admin</td>
+<td>Show a summary: CPI, tax rates and so on</td>
+</tr>
+<tr>
+<td><code>/givesellwand [wand ID]</code></td>
+<td>nascraft.admin</td>
+<td>Give yourself a sell wand</td>
+</tr>
+</tbody>
+</table>
+<h2 id="player-commands">Player commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/market</code></td>
+<td>nascraft.market and nascraft.market.gui</td>
+<td>Open the market GUI</td>
+</tr>
+<tr>
+<td><code>/market [buy/sell] [material] [amount]</code></td>
+<td>nascraft.market</td>
+<td>Buy or sell directly from a command</td>
+</tr>
+<tr>
+<td><code>/sell</code></td>
+<td>nascraft.sellinv</td>
+<td>Open the selling menu</td>
+</tr>
+<tr>
+<td><code>/sellhand</code></td>
+<td>nascraft.sellhand</td>
+<td>Sell the item in your hand</td>
+</tr>
+<tr>
+<td><code>/sellall [material/everything]</code></td>
+<td>nascraft.sellall</td>
+<td>Sell every item of that material, or everything sellable</td>
+</tr>
+<tr>
+<td><code>/link [code]</code></td>
+<td>nascraft.linkable</td>
+<td>Link your account with the built-in system</td>
+</tr>
+<tr>
+<td><code>/worth</code></td>
+<td>nascraft.worth</td>
+<td>See how much the item in your hand is worth</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>/web register [password]</code> belongs to the unfinished web extension; ignore it for now.</p>
+</blockquote>
+<h2 id="console-commands">Console commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>market [buy/sell] [material] [amount] [player]</code></td>
+<td>Force a player to buy / sell</td>
+</tr>
+<tr>
+<td><code>sellmenu [player]</code></td>
+<td>Open the selling menu for a player</td>
+</tr>
+<tr>
+<td><code>givesellwand [wand ID] [player]</code></td>
+<td>Give a wand to a player</td>
+</tr>
+<tr>
+<td><code>market category [category identifier] [player]</code></td>
+<td>Open a category menu for a player</td>
+</tr>
+</tbody>
+</table>
+<h2 id="discord-commands">Discord commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Required role</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/balance</code></td>
+<td>none</td>
+<td>Show your balance</td>
+</tr>
+<tr>
+<td><code>/inventory</code></td>
+<td>none</td>
+<td>Show your Discord virtual inventory</td>
+</tr>
+<tr>
+<td><code>/link</code></td>
+<td>none</td>
+<td>Start the linking flow</td>
+</tr>
+<tr>
+<td><code>/alert [identifier] [price]</code></td>
+<td>none</td>
+<td>Set a price alert</td>
+</tr>
+<tr>
+<td><code>/alerts</code></td>
+<td>none</td>
+<td>List your alerts</td>
+</tr>
+<tr>
+<td><code>/remove-alert</code></td>
+<td>none</td>
+<td>Pick and remove an alert</td>
+</tr>
+<tr>
+<td><code>/seeinv [user ID]</code></td>
+<td>admin role</td>
+<td>View someone else's inventory</td>
+</tr>
+<tr>
+<td><code>/seebal [user ID]</code></td>
+<td>admin role</td>
+<td>View someone else's balance</td>
+</tr>
+<tr>
+<td><code>/stop</code> and <code>/resume</code></td>
+<td>admin role</td>
+<td>Pause / resume the whole market</td>
+</tr>
+</tbody>
+</table>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

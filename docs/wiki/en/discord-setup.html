@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setting up the bot · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../discord-setup.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html" class="on">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="setting-up-the-discord-bot">Setting up the Discord bot</h1>
+<h2 id="creating-the-bot">Creating the bot</h2>
+<ol>
+<li>Open <a href="https://discord.com/developers/applications/">https://discord.com/developers/applications/</a> and click "New application" to create one.</li>
+<li><strong>Invite the bot to your server</strong>: replace <code>REPLACE-HERE-THE-ID</code> below with the bot ID and open the URL in a browser:</li>
+</ol>
+<p><code>https://discordapp.com/oauth2/authorize?client_id=REPLACE-HERE-THE-ID&amp;scope=bot</code></p>
+<p>The bot ID is shown under "General Information".</p>
+<p><img alt="Copy the Bot ID from General Information" src="../img/discord-bot-id.png" /></p>
+<ol start="3">
+<li><strong>Get the token</strong>: go to the "Bot" page, click "Reset Token" and save the token somewhere safe (it is shown only once).</li>
+</ol>
+<p><img alt="The Reset Token button" src="../img/discord-token.png" /></p>
+<ol start="4">
+<li>Put the token into <code>config.yml</code> under <code>discord-bot → token</code> and set <code>enabled</code> to <code>true</code>.</li>
+</ol>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../discord-main-menu.html">Configuring the main menu</a></li>
+<li><a href="../discord-trades-log.html">Configuring the trade log</a></li>
+</ul>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

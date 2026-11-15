@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Installation · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../install.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html" class="on">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="installation">Installation</h1>
+<h2 id="requirements">Requirements</h2>
+<p>You only need <strong>one</strong> jar: <code>Nascraft-&lt;version&gt;.jar</code>. At startup the plugin reads the server version and picks the matching GUI backend (InvUI 1.x or 2.x) by itself — no more per-version jars.</p>
+<table>
+<thead>
+<tr>
+<th>Server version</th>
+<th>Java</th>
+<th>GUI backend (auto-selected)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Paper / Purpur 1.21.11</td>
+<td>21</td>
+<td>InvUI 1.x</td>
+</tr>
+<tr>
+<td>Paper / Purpur 26.1.1 / 26.1.2</td>
+<td>25</td>
+<td>InvUI 2.x</td>
+</tr>
+<tr>
+<td>Paper / Purpur 26.2</td>
+<td>25</td>
+<td>InvUI 2.x</td>
+</tr>
+<tr>
+<td>Paper / Purpur 26.3</td>
+<td>25</td>
+<td>InvUI 2.x</td>
+</tr>
+<tr>
+<td>Paper / Purpur 26.4+</td>
+<td>25</td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul>
+<li>Every library (bStats, InvUI 1.x / 2.x, item-nbt-api) is bundled in the jar, so it runs on a clean server dropped into <code>plugins/</code>.</li>
+<li>Only Spigot / Paper / Purpur are supported; other forks such as Mohist are not guaranteed.</li>
+<li>Since 26.4.5.2 there are no per-version jars anymore. Delete the old ones and keep a single jar.</li>
+<li>The 26.1 series ships only 26.1.1 (alpha) and 26.1.2 (stable); there is no plain "26.1" build.</li>
+<li>The startup log prints the backend in use, e.g. <code>GUI backend: invui 2.x (Bukkit 26.1.2-..., Java 25...)</code>, which is how you can confirm detection worked.</li>
+</ul>
+<hr />
+<h2 id="installation-steps">Installation steps</h2>
+<h3 id="step-1-check-dependencies">Step 1: check dependencies</h3>
+<p>Make sure <strong>Vault</strong> and an economy plugin (EssentialsX, for example) are installed; you can get Vault <a href="https://www.spigotmc.org/resources/34315/">here</a> (without Vault the plugin still starts, but economy features stay disabled).</p>
+<h3 id="step-2-download-the-jar">Step 2: download the jar</h3>
+<p>Grab the latest <code>Nascraft-&lt;version&gt;.jar</code> from the <a href="https://github.com/llsgllsg/Nascraft26P/releases">Releases</a> page and put it into your server's <code>plugins/</code> folder.</p>
+<h3 id="step-3-restart-the-server">Step 3: restart the server</h3>
+<p>The plugin generates its configuration on first start; continue with <a href="../configure.html">Configuration</a>.</p>
+<blockquote>
+<p>When you upgrade, <code>config.yml</code> is merged automatically using its <code>config-version</code>: the old file is backed up as <code>config-backup-*.yml</code> first, your own values and the existing comments are preserved, so there is no need to diff anything by hand.</p>
+</blockquote>
+<h3 id="step-4-optional-extensions">Step 4 (optional): extensions</h3>
+<ul>
+<li><strong>AdvancedGUI</strong>: place an in-game touch screen market, see the <a href="../advancedgui.html">AdvancedGUI extension</a>.</li>
+<li><strong>Discord extension</strong>: bring the market into Discord, see the <a href="../discord.html">Discord extension</a>.</li>
+<li><strong>QQ bot</strong>: two ways in — a personal QQ account through the OneBot v11 bridge, or an official QQ bot through the open-platform API v2. Both can quote prices, show holdings and announce trades in QQ groups or private chats, see <a href="../qq.html">QQ bot</a>.</li>
+</ul>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

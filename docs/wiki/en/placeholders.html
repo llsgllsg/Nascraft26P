@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Placeholders · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../placeholders.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html" class="on">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="placeholders-placeholderapi">Placeholders (PlaceholderAPI)</h1>
+<blockquote>
+<p>Install <a href="https://www.spigotmc.org/resources/6245/">PlaceholderAPI</a> before using these placeholders.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%nascraft_price_IDENTIFIER%</code></td>
+<td>Current price of the item</td>
+</tr>
+<tr>
+<td><code>%nascraft_buyprice_AMOUNT_IDENTIFIER%</code></td>
+<td>Price of buying the given amount</td>
+</tr>
+<tr>
+<td><code>%nascraft_sellprice_AMOUNT_IDENTIFIER%</code></td>
+<td>Price of selling the given amount</td>
+</tr>
+<tr>
+<td><code>%nascraft_stock_IDENTIFIER%</code></td>
+<td>Internal stock of the item</td>
+</tr>
+<tr>
+<td><code>%nascraft_change_IDENTIFIER%</code></td>
+<td>Price change (%) over a period</td>
+</tr>
+<tr>
+<td><code>%nascraft_linked%</code></td>
+<td>Whether the player is linked: <code>true</code> / <code>false</code></td>
+</tr>
+<tr>
+<td><code>%nascraft_discordid%</code></td>
+<td>The linked Discord ID</td>
+</tr>
+<tr>
+<td><code>%nascraft_cpi%</code></td>
+<td>Current inflation rate (%)</td>
+</tr>
+</tbody>
+</table>
+<p>Where:</p>
+<ul>
+<li><strong>IDENTIFIER</strong> is the identifier used in <code>items.yml</code>; <code>mainhand</code> also works and means the item in the player's main hand.</li>
+<li><strong>AMOUNT</strong> is an integer amount.</li>
+</ul>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

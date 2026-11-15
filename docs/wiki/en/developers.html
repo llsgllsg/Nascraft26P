@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Developers · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../developers.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html" class="on">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="developers">Developers</h1>
+<h2 id="depending-on-nascraft-in-your-project">Depending on Nascraft in your project</h2>
+<blockquote>
+<p><strong>Note</strong>: upstream marks this feature as "WIP: NOT WORKING CURRENTLY".</p>
+</blockquote>
+<p>Maven repository:</p>
+<pre><code class="language-xml">&lt;repository&gt;
+    &lt;id&gt;jitpack.io&lt;/id&gt;
+    &lt;url&gt;https://jitpack.io&lt;/url&gt;
+&lt;/repository&gt;
+</code></pre>
+<p>Dependency:</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.github.Bounser&lt;/groupId&gt;
+    &lt;artifactId&gt;Nascraft&lt;/artifactId&gt;
+    &lt;version&gt;version&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Gradle (at the end of the root <code>build.gradle</code>):</p>
+<pre><code class="language-groovy">dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+</code></pre>
+<pre><code class="language-groovy">dependencies {
+    implementation 'com.github.Bounser:Nascraft:version'
+}
+</code></pre>
+<p>Replace <code>version</code> with the latest version number.</p>
+<h2 id="available-events">Available events</h2>
+<ul>
+<li><code>BuyItemEvent</code></li>
+<li><code>SellItemEvent</code></li>
+<li><code>TransactionCompletedEvent</code></li>
+</ul>
+<h2 id="market-manager">Market manager</h2>
+<p><code>MarketManager</code> exposes the market data (prices, stock, ...) for reading and manipulating. That part of the upstream documentation is still being written.</p>
+<blockquote>
+<p>This fork lives at <a href="https://github.com/llsgllsg/Nascraft26P">https://github.com/llsgllsg/Nascraft26P</a> — issues and pull requests are welcome.</p>
+</blockquote>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

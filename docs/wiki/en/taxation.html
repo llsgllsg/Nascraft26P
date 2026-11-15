@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taxation · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../taxation.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html" class="on">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="taxation">Taxation</h1>
+<blockquote>
+<p><strong>Tip</strong>: keep tax rates low — heavy taxes discourage players from using the market.</p>
+</blockquote>
+<p>Tax is a percentage taken (and destroyed) on every trade. It exists to stop players from profiting off short-term swings, such as buying and immediately selling (the first buy pushes the price up).</p>
+<p>There are three kinds of tax, each configured separately for buying and selling:</p>
+<ul>
+<li><strong>Default tax</strong>: used when an item has no tax of its own.</li>
+<li><strong>Per-item tax</strong>: overrides the default for a single item.</li>
+<li><strong>Discord tax</strong>: the global rate used for trades made through Discord.</li>
+</ul>
+<hr />
+<p><strong>Default tax</strong> (<code>config.yml</code>):</p>
+<pre><code class="language-yaml">market-control:
+  # ...
+  taxation:
+    sell: 0.06 # 6% when players sell
+    buy: 0.04 # 4% when players buy
+</code></pre>
+<p><strong>Per-item tax</strong> (<code>items.yml</code>):</p>
+<pre><code class="language-yaml">items:
+  cobblestone:
+    # ...
+    tax:
+      # 5% when buying cobblestone
+      buy: 0.05
+      # 10% when selling cobblestone
+      sell: 0.1
+</code></pre>
+<p><strong>Discord tax</strong> (<code>config.yml</code>):</p>
+<pre><code class="language-yaml">discord-bot:
+  # ...
+  taxation:
+    override: true
+    buy: 0.04
+    sell: 0.05
+</code></pre>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

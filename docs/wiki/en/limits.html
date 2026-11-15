@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Price limits · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../limits.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html" class="on">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="price-limits">Price limits</h1>
+<p>Prices can be limited in two ways:</p>
+<ul>
+<li><strong>Hard limits</strong>: the price can never cross such a line. Configured per <strong>currency</strong> in <code>config.yml</code>.</li>
+<li><strong>Soft limits</strong>: the price may cross, but with noise enabled it is gradually pulled back into the range. The lower bound is called <em>support</em>, the upper bound <em>resistance</em>.</li>
+</ul>
+<hr />
+<p>Hard limits (per currency):</p>
+<pre><code class="language-yaml">currencies:
+  # ...
+  vault:
+    # other options...
+    # In this example every vault-priced item is bounded:
+    # the price will never exceed 9999 and never drop below 0.05.
+    top-limit: 9999
+    low-limit: 0.05
+
+  # other options...
+</code></pre>
+<p>Soft limits (per item):</p>
+<pre><code class="language-yaml">items:
+  cobblestone:
+
+    # other properties...
+
+    support: 0.01
+    resistance: 0.1
+</code></pre>
+<h2 id="tuning-tips">Tuning tips</h2>
+<ul>
+<li>Hard limits are a safety valve; put them at values players can accept so item dupes cannot crash a price to zero.</li>
+<li>Support / resistance shape the market range: keeping diamond support at a respectable level, for example, stops players from dumping it to the bottom.</li>
+<li>Soft limits only act while noise is enabled; with noise off, only trades move the price.</li>
+</ul>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

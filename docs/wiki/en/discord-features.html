@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Features · Nascraft26P</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../index.html">Nascraft26P <span>Docs</span></a>
+  <nav class="topnav">
+    <a class="lang" href="../discord-features.html">中文</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">Download</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">Get started</div>
+    <ul>
+      <li><a href="../index.html">Nascraft26P Documentation</a></li>
+      <li><a href="../intro.html">The Market</a></li>
+      <li><a href="../install.html">Installation</a></li>
+      <li><a href="../configure.html">Configuration</a></li>
+    </ul>
+    <div class="grp">Features</div>
+    <ul>
+      <li><a href="../features.html">Features overview</a></li>
+      <li><a href="../basic-properties.html">Basic properties</a></li>
+      <li><a href="../limits.html">Price limits</a></li>
+      <li><a href="../taxation.html">Taxation</a></li>
+      <li><a href="../sell-wands.html">Sell wands</a></li>
+      <li><a href="../multi-currency.html">Multi-currency</a></li>
+    </ul>
+    <div class="grp">Extensions</div>
+    <ul>
+      <li><a href="../advancedgui.html">AdvancedGUI extension</a></li>
+      <li><a href="../qq.html">QQ bot extension</a></li>
+      <li><a href="../discord.html">Discord extension</a></li>
+      <li><a href="../discord-features.html" class="on">Features</a></li>
+      <li><a href="../discord-setup.html">Setting up the bot</a></li>
+      <li><a href="../discord-main-menu.html">Configuring: main menu</a></li>
+      <li><a href="../discord-trades-log.html">Configuring: trade log</a></li>
+      <li><a href="../discord-config.html">Configuring the extension</a></li>
+      <li><a href="../web.html">Web extension</a></li>
+    </ul>
+    <div class="grp">Reference</div>
+    <ul>
+      <li><a href="../commands.html">Commands</a></li>
+      <li><a href="../placeholders.html">Placeholders</a></li>
+      <li><a href="../developers.html">Developers</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="discord-extension-features">Discord extension: features</h1>
+<h2 id="main-menu">Main menu</h2>
+<p>You can dedicate a <strong>market channel</strong>. Players can watch price changes there, and linked players can trade remotely.</p>
+<p>The bot posts a main menu message with buttons in that channel and <strong>updates it every minute</strong>.</p>
+<blockquote>
+<p><strong>⚠ Important</strong>: nobody should be able to talk in that channel, otherwise player messages will interfere with the menu. The bot also cleans up messages regularly.</p>
+</blockquote>
+<p><img alt="The main menu message the bot posts in the dedicated channel" src="../img/discord-menu.png" /></p>
+<h2 id="picking-items">Picking items</h2>
+<p>Players can pick items from "Top gainers", "Most populars" and "Big dippers":</p>
+<p><img alt="The item selection bar" src="../img/discord-select.png" /></p>
+<p>If the item you want is not listed, press "🔎 Search item" and type an identifier or alias:</p>
+<p><img alt="The item search form" src="../img/discord-search.png" /></p>
+<h2 id="trade-history">Trade history</h2>
+<p>Press "📜 Trade history" to see every trade you made, both in game and on Discord:</p>
+<p><img alt="An example trade history" src="../img/discord-trades.png" /></p>
+<h2 id="linking-your-account">Linking your account</h2>
+<p>Most features need a Discord account linked to a game account. Nascraft supports two ways:</p>
+<ul>
+<li><strong>Built-in system</strong>: the bot gives you a code in Discord (for example <code>39029</code>) and you run <strong><code>/link 39029</code></strong> in game.
+  The "🔗 Link account" button shows the linked game name and lets you unlink at any time.</li>
+</ul>
+<p><img alt="Link status" src="../img/discord-link.png" /></p>
+<ul>
+<li><strong>DiscordSRV</strong>: if DiscordSRV is installed, its links are used directly.</li>
+</ul>
+<h2 id="inventory-and-balance">Inventory and balance</h2>
+<p>Use the matching buttons to see your balance and your "virtual inventory" (items bought on Discord wait there until you take them out in game).</p>
+    <footer class="foot">
+      Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>
