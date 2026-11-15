@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QQ 机器人扩展 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="qq.html" class="on">QQ 机器人扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="qq-onebot-v11">QQ 机器人（OneBot v11）</h1>
+<blockquote>
+<p>这是 <strong>Nascraft26P 新增</strong> 的功能，上游 Nascraft 没有。它让玩家在 QQ 群里查价、设提醒、绑定账号，也能把成交直接播报到群里。</p>
+</blockquote>
+<h2 id="_1">它能做什么</h2>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查价</td>
+<td>在群里或私聊发「行情 煤炭」，返回当前价格、库存和今日涨跌</td>
+</tr>
+<tr>
+<td>价格提醒</td>
+<td>到价后私聊提醒你，每个 QQ 最多 8 条</td>
+</tr>
+<tr>
+<td>交易播报</td>
+<td>大额成交、指定玩家的成交实时推送到指定群</td>
+</tr>
+<tr>
+<td>账号绑定</td>
+<td>QQ ↔ 游戏账号一对一绑定，权限与游戏内一致</td>
+</tr>
+</tbody>
+</table>
+<h2 id="onebot">支持的 OneBot 实现</h2>
+<p>协议是标准的 <strong>OneBot v11</strong>，原则上任何实现都能接：</p>
+<ul>
+<li>个人 QQ：<strong>NapCat</strong>、<strong>LLOneBot</strong>、<strong>Lagrange</strong>、<strong>go-cqhttp</strong></li>
+<li>QQ 官方机器人渠道：<strong>gensokyo</strong>、<strong>@onebots/adapter-qq</strong> 等 OneBot v11 适配器</li>
+</ul>
+<p>机器人本身不随插件分发，需要你自己部署一个，并开启它的 <strong>HTTP API</strong> 与 <strong>HTTP 上报</strong>。</p>
+<hr />
+<h2 id="_2">配置</h2>
+<p>在 <code>config.yml</code> 末尾的 <code>onebot</code> 段：</p>
+<pre><code class="language-yaml">onebot:
+  enabled: false
+  # OneBot v11 HTTP API 地址（不要带 /send_private_msg 后缀）
+  api-url: 'http://127.0.0.1:3000'
+  # 与 OneBot 实现约定的 access token；留空表示不校验
+  access-token: ''
+
+  # 把游戏内成交播报到 QQ 群
+  log-trades:
+    enabled: false
+    # 接收交易日志的群号，可以填多个
+    group-ids: []
+
+  # QQ 价格提醒
+  alerts:
+    enabled: false
+    # 检查提醒的间隔（秒）
+    check-interval: 60
+
+  # 接收 OneBot 事件上报的 Webhook 服务
+  webhook:
+    enabled: false
+    host: '127.0.0.1'
+    port: 8765
+    path: '/onebot'
+    # 校验上报请求的密钥；留空或 SECRET 表示不校验
+    secret: ''
+
+  # 允许在 QQ 里使用的命令
+  commands:
+    enabled: true
+    # 允许使用命令的群号；留空 = 所有群都允许（私聊始终允许）
+    group-whitelist: []
+</code></pre>
+<blockquote>
+<p><code>port</code> 注意别和其他插件（例如网页地图、面板）冲突；这是<strong>插件自己监听</strong>的端口。</p>
+</blockquote>
+<h2 id="_3">连接步骤</h2>
+<ol>
+<li><strong>部署机器人</strong>（以 NapCat / LLOneBot 为例），登录你的 QQ 小号。</li>
+<li>在机器人后台打开 <strong>HTTP 服务</strong>（HTTP API），记下地址和端口，建议设置 access token。</li>
+<li>在机器人后台配置 <strong>HTTP 上报（HTTP POST）</strong>，地址填：</li>
+</ol>
+<p><code>http://&lt;服务器内网或公网 IP&gt;:8765/onebot</code></p>
+<p>如果 <code>webhook.secret</code> 不是空的，还要在机器人侧填上相同的 token / secret。</p>
+<ol start="4">
+<li>回到 <code>config.yml</code>，把 <code>onebot.enabled</code>、<code>webhook.enabled</code> 打开，<code>api-url</code> 填机器人地址，重启服务器。</li>
+<li>控制台出现 <code>[OneBot] Webhook 监听 http://…:8765/onebot</code> 就算通了。</li>
+</ol>
+<h2 id="_4">绑定账号</h2>
+<ol>
+<li>玩家在游戏里执行 <strong><code>/linkqq</code></strong>（别名 <strong><code>/qq</code></strong>，权限 <code>nascraft.qq.linkable</code>）。</li>
+<li>插件返回一串 <strong>6 位绑定码</strong>，10 分钟内有效。</li>
+<li>玩家用 QQ <strong>私聊机器人</strong>发送：<code>绑定 123456</code>。</li>
+<li>绑定成功后，各种查询和提醒都会发到该 QQ。</li>
+</ol>
+<p>解绑：</p>
+<ul>
+<li>游戏内：<code>/linkqq unlink</code></li>
+<li>QQ 里：<code>解绑</code></li>
+</ul>
+<h2 id="qq">QQ 命令</h2>
+<p>私聊直接发；群里需要机器人能被叫到（或在白名单群里直接发）。</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>帮助</code> / <code>help</code> / <code>菜单</code> / <code>?</code></td>
+<td>查看指令帮助</td>
+</tr>
+<tr>
+<td><code>行情 &lt;物品&gt;</code> / <code>价格 &lt;物品&gt;</code> / <code>price &lt;物品&gt;</code></td>
+<td>查询价格、库存、今日涨跌</td>
+</tr>
+<tr>
+<td><code>提醒 &lt;物品&gt; &lt;价格&gt;</code> / <code>alert &lt;物品&gt; &lt;价格&gt;</code></td>
+<td>设置到价提醒（负数表示跌破）</td>
+</tr>
+<tr>
+<td><code>提醒列表</code> / <code>alerts</code></td>
+<td>查看自己的提醒</td>
+</tr>
+<tr>
+<td><code>取消提醒 &lt;物品&gt;</code> / <code>unalert &lt;物品&gt;</code></td>
+<td>取消某条提醒</td>
+</tr>
+<tr>
+<td><code>绑定 &lt;绑定码&gt;</code> / <code>bind &lt;绑定码&gt;</code></td>
+<td>绑定游戏账号</td>
+</tr>
+<tr>
+<td><code>解绑</code> / <code>unlink</code></td>
+<td>解除绑定</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code>行情 煤炭
+提醒 钻石 120
+提醒列表
+</code></pre>
+<h2 id="_5">交易播报</h2>
+<p>打开 <code>onebot.log-trades.enabled</code> 并填好 <code>group-ids</code> 后，每笔成交会按下面的格式发到群里：</p>
+<pre><code>[TIME] [PLAYER] [ACTION] [AMOUNT] x [ITEM] = [WORTH]
+</code></pre>
+<p>可以改 <code>langs/zh_CN.yml</code> 里的 <code>onebot_trade_line</code> 自定义文案，<code>[ACTION]</code> 等占位符会被替换。</p>
+<h2 id="_6">排错</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>排查方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>群里发命令没反应</td>
+<td><code>webhook.enabled</code> 是否打开；机器人上报地址是否指向 <code>http://IP:端口/onebot</code></td>
+</tr>
+<tr>
+<td>返回 403</td>
+<td><code>webhook.secret</code> 与机器人侧填的 token 不一致</td>
+</tr>
+<tr>
+<td>返回 405</td>
+<td>上报方式用了 GET，必须是 POST</td>
+</tr>
+<tr>
+<td>能收消息但发不出去</td>
+<td><code>api-url</code> 填错，或机器人 HTTP API 未开启</td>
+</tr>
+<tr>
+<td>群里能用、私聊不行</td>
+<td>私聊也走同一个 Webhook，检查机器人是否把私聊消息也上报</td>
+</tr>
+<tr>
+<td>提示"该 QQ 已经绑定"</td>
+<td>一个 QQ 只能绑一个游戏账号，先在 QQ 里 <code>解绑</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>服务器到机器人的网络必须是通的：如果机器人和服务器不在同一台机器，<code>api-url</code> 要填可达地址（或走内网穿透）。</p>
+</blockquote>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>
