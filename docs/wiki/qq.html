@@ -225,6 +225,9 @@
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>物品怎么写</strong>：可以用物品 ID（<code>diamond</code>）、市场界面里显示的名称，或 <code>items.yml</code> 里为该物品设置的 <code>alias</code>（例如 <code>alias: '钻石'</code> 后就能用 <code>行情 钻石</code>）。大小写不敏感，颜色代码/MiniMessage 标签会被忽略；完全匹配优先，找不到时再做部分匹配，父物品优先于子物品。所以 <code>行情 煤炭</code>、<code>行情 coal</code>、<code>行情 COAL</code> 都能查到同一件物品。</p>
+</blockquote>
 <p>示例：</p>
 <pre><code>行情 煤炭
 提醒 钻石 120

@@ -622,7 +622,7 @@ onebot_player_linked: "&aYour account is linked to QQ &e[QQ]&a. Use &e/linkqq un
 onebot_not_linked: "&cYou have not linked a QQ yet. Run &e/linkqq&c in game first."
 onebot_unlinked: "&aQQ link removed."
 onebot_unlink_none: "&cYou have not linked a QQ."
-onebot_item_not_found: "&cItem not found. Use the name or identifier shown in the market."
+onebot_item_not_found: "&cItem not found. Use the name, alias or identifier shown in the market."
 onebot_invalid_price: "&cInvalid price. Enter a number greater than 0."
 onebot_price: "&6[ITEM]&r price &e[PRICE]&r | stock &e[STOCK]&r | today &e[CHANGE]"
 onebot_alert_set: "&aAlert set: notify when &e[ITEM] &a price [OP] &e[PRICE]&a."

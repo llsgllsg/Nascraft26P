@@ -225,6 +225,9 @@
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>How to name an item</strong>: use the item identifier (<code>diamond</code>), the name shown in the market GUI, or the <code>alias</code> configured for it in <code>items.yml</code> (e.g. <code>alias: '钻石'</code> lets you send <code>行情 钻石</code>). Matching is case-insensitive, colour codes and MiniMessage tags are ignored, an exact match wins over a partial one, and parent items win over child items - so <code>行情 coal</code>, <code>行情 COAL</code> and <code>行情 煤炭</code> all resolve to the same item.</p>
+</blockquote>
 <p>Examples:</p>
 <pre><code>行情 煤炭
 提醒 钻石 120

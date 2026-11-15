@@ -150,6 +150,74 @@ public class MarketManager {
         return null;
     }
 
+    /**
+     * Resolves an item from free-form user input (commands, Discord/QQ/OneBot messages, ...).
+     * <p>
+     * Accepts, in this order: the item identifier, the alias configured in items.yml (with or
+     * without colour / MiniMessage formatting), the tagged and the formatted display name, and
+     * finally a partial match on any of them. Parent items are always preferred over children,
+     * so "石" resolves to 石头 rather than 石头台阶.
+     */
+    public Item getItemByQuery(String query) {
+
+        if (query == null) return null;
+
+        String raw = query.trim();
+        if (raw.isEmpty()) return null;
+
+        Item direct = getItem(raw);
+        if (direct != null) return direct;
+
+        String needle = normalizeForLookup(raw);
+        if (needle.isEmpty()) return null;
+
+        for (Item item : items) if (item.isParent() && matchesQuery(item, needle, true)) return item;
+        for (Item item : items) if (!item.isParent() && matchesQuery(item, needle, true)) return item;
+        for (Item item : items) if (item.isParent() && matchesQuery(item, needle, false)) return item;
+        for (Item item : items) if (!item.isParent() && matchesQuery(item, needle, false)) return item;
+
+        return null;
+    }
+
+    private static boolean matchesQuery(Item item, String needle, boolean exact) {
+
+        String key = normalizeForLookup(needle);
+        if (key.isEmpty()) return false;
+
+        String identifier = normalizeForLookup(item.getIdentifier());
+        String alias = normalizeForLookup(item.getName());
+        String tagged = normalizeForLookup(item.getTaggedName());
+        String formatted = normalizeForLookup(item.getFormattedName());
+
+        if (exact) {
+            return identifier.equals(key) || alias.equals(key)
+                    || tagged.equals(key) || formatted.equals(key);
+        }
+
+        return identifier.contains(key) || alias.contains(key)
+                || tagged.contains(key) || formatted.contains(key);
+    }
+
+    /**
+     * Lower-cases the input and strips colour codes (§/&), MiniMessage tags and underscores, so
+     * "钻石", "&b钻石" and "&lt;#55FFFF&gt;钻石&lt;/#55FFFF&gt;" all normalise to the same needle.
+     */
+    private static String normalizeForLookup(String value) {
+
+        if (value == null) return "";
+
+        String cleaned = value;
+
+        cleaned = cleaned.replaceAll("(?i)[§&]x(?:[§&][0-9a-f]){6}", "");
+        cleaned = cleaned.replaceAll("(?i)&#[0-9a-f]{6}", "");
+        cleaned = cleaned.replaceAll("(?i)[§&][0-9a-fk-or]", "");
+
+        cleaned = cleaned.replaceAll("<[^<>]+>", " ");
+        cleaned = cleaned.replace('_', ' ');
+
+        return cleaned.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    }
+
     public List<Category> getCategories() { return categories; }
 
     public List<Item> getAllItems() { return items; }

@@ -215,6 +215,7 @@ build/libs/Nascraft-<version>.jar
 
 ## 本仓库相对原版的改动
 
+- **v26.4.5.3**：QQ / OneBot 机器人查价支持用 `items.yml` 里配置的 `alias`（含颜色 / MiniMessage 标签的别名也认），`行情 钻石` 与 `行情 diamond` 等效；Webhook 端口被占用时日志直接给出冲突端口与改法；修复 QQ 官方机器人 Hello 帧早于 socket 赋值导致 `Identify` 被丢弃、120 秒后 `4009 Session timed out` 无限重连的问题；wiki 增加英文版（`/wiki/en/`，页头一键切换）。
 - **v26.4.5.2**：三版本合一为单 jar（运行时自动选择 invui 1.x / 2.x 后端），新增 Paper 26.1.1 / 26.1.2 支持；接入 QQ 官方机器人（官方 API v2，WebSocket 直连，支持群聊 @ 与私聊，复用行情 / 提醒 / 绑定命令）；`config.yml` 增加 `config-version` 并在启动时自动升级合并（备份为 `config-backup-*.yml`）；修复卖棒对着空气点击时的 `NullPointerException`。
 - 适配 1.21.11、26.2 与 26.3（invui 1.x / 2.x）；26.3 使用 invui 2.5.1 修复地图 / 制图台窗口的 `NoSuchMethodError`。
 - 版本号自 26.3 起与 MC 版本对齐，统一由 `gradle.properties` 的 `version` 控制。

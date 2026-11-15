@@ -617,7 +617,7 @@ onebot_player_linked: "&a你的账号已绑定 QQ：&e[QQ]&a。解绑请执行 &
 onebot_not_linked: "&c你还没有绑定 QQ，请先在游戏内执行 &e/linkqq&c。"
 onebot_unlinked: "&a已解除 QQ 绑定。"
 onebot_unlink_none: "&c你还没有绑定 QQ。"
-onebot_item_not_found: "&c找不到该物品，请使用市场界面里的名称或物品 ID。"
+onebot_item_not_found: "&c找不到该物品，请使用市场界面里的名称、别名或物品 ID。"
 onebot_invalid_price: "&c价格格式不正确，请输入大于 0 的数字。"
 onebot_price: "&6[ITEM]&r 价格 &e[PRICE]&r｜库存 &e[STOCK]&r｜今日涨跌 &e[CHANGE]"
 onebot_alert_set: "&a已设置提醒：&e[ITEM] &a价格 [OP] &e[PRICE] &a时通知你。"

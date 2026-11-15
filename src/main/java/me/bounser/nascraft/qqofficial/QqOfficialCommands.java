@@ -8,7 +8,6 @@ import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
 import me.bounser.nascraft.market.unit.Price;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -208,24 +207,7 @@ public final class QqOfficialCommands {
     }
 
     private static Item findItem(String query) {
-        MarketManager market = MarketManager.getInstance();
-
-        Item item = market.getItem(query);
-        if (item != null) return item;
-
-        String lower = query.toLowerCase(Locale.ROOT);
-        List<Item> parents = market.getAllParentItems();
-
-        for (Item candidate : parents)
-            if (candidate.getIdentifier().equalsIgnoreCase(lower)
-                    || candidate.getName().toLowerCase(Locale.ROOT).equals(lower))
-                return candidate;
-
-        for (Item candidate : parents)
-            if (candidate.getName().toLowerCase(Locale.ROOT).contains(lower))
-                return candidate;
-
-        return null;
+        return MarketManager.getInstance().getItemByQuery(query);
     }
 
     private static void reply(String groupOpenId, String openId, String eventId, boolean group, String message) {
