@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Nascraft26P
 
@@ -12,13 +12,15 @@
 [![Java](https://img.shields.io/badge/Java-21%20%7C%2025-f89820?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net)
 [![Paper](https://img.shields.io/badge/Paper-1.21.11%20%7C%2026.2%20%7C%2026.3-30a2ff?style=flat-square)](https://papermc.io)
 
-[安装](#安装) · [功能](#功能) · [命令](#命令与权限) · [构建](#从源码构建) · [常见问题](#常见问题)
+[文档](https://llsgllsg.github.io/Nascraft26P/wiki/) · [安装](#安装) · [功能](#功能) · [命令](#命令与权限) · [构建](#从源码构建) · [常见问题](#常见问题)
 
 </div>
 
 ---
 
 > **Nascraft26P** 是基于 [Nascraft](https://www.spigotmc.org/resources/108216/) 的汉化 + 兼容性维护版本，跟随 Paper 最新稳定版更新，当前支持 **1.21.11 / 26.2 / 26.3**，内置完整中文语言包。
+>
+> **中文文档**：<https://llsgllsg.github.io/Nascraft26P/wiki/>（由原版 [Nascraft Wiki](https://bounser.gitbook.io/nascraft/) 迁移，共 21 页）
 
 ## 功能
 
@@ -273,3 +275,4 @@ CI 已内置镜像回退；本地构建可以配置代理，或手动下载 Grad
 <div align="center">
 <sub>Nascraft26P · 为 Paper 生态持续维护 · 用价格讲故事</sub>
 </div>
+
