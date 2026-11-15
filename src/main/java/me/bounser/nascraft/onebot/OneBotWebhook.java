@@ -38,7 +38,14 @@ public class OneBotWebhook {
         if (path == null || path.isEmpty()) path = "/onebot";
         if (!path.startsWith("/")) path = "/" + path;
 
-        server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        try {
+            server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        } catch (java.net.BindException e) {
+            throw new IOException("端口 " + host + ":" + port + " 已被占用"
+                    + "（常见原因：另一个 QQ 机器人插件/OneBot 适配器的 Webhook 也监听同一端口，"
+                    + "或者上一次的服务器进程还没退出）；请修改 config.yml 的 onebot.webhook.port（例如 8766）"
+                    + "并同步修改机器人上报地址，或者把 onebot.webhook.enabled 设为 false。", e);
+        }
         server.createContext(path, this::handle);
 
         executor = Executors.newFixedThreadPool(2, runnable -> {

@@ -88,7 +88,8 @@ public class QqOfficialBridge {
 
         Nascraft.getInstance().getLogger().info("[QQ Official] 已启用，AppID: "
                 + mask(config.getQqOfficialAppId()) + "，API: " + api.getApiBase()
-                + (config.getQqOfficialSandbox() ? "（沙箱）" : ""));
+                + (config.getQqOfficialSandbox() ? "（沙箱）" : "")
+                + "（主动连接 QQ 网关，不占用本地端口）");
     }
 
     private void shutdown() {

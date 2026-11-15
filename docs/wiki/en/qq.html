@@ -268,6 +268,14 @@
 <td>"This QQ is already linked"</td>
 <td>One QQ per game account — run <code>解绑</code> on QQ first</td>
 </tr>
+<tr>
+<td>Startup log <code>端口 127.0.0.1:8765 已被占用</code></td>
+<td>Another plugin/process on the same machine already uses that port (most often <strong>another QQ bot plugin</strong> with its own webhook/HTTP server). Change <code>onebot.webhook.port</code> (for example to 8766) and update the bot's report URL; or set <code>onebot.webhook.enabled: false</code> when you do not need QQ commands</td>
+</tr>
+<tr>
+<td>Startup log <code>onebot.webhook.enabled=false：QQ 命令与「绑定」都不会生效</code></td>
+<td>QQ commands require <code>onebot.webhook.enabled</code>; trade announcements and alerts do not</td>
+</tr>
 </tbody>
 </table>
 <blockquote>
@@ -316,6 +324,9 @@
 </tbody>
 </table>
 <p>The two ways <strong>can run at the same time</strong>: codes from <code>/linkqq</code> work for both, and links are stored separately in <code>onebot.yml</code> and <code>qqofficial.yml</code>.</p>
+<blockquote>
+<p><strong>This way binds no local port</strong>: the plugin connects out to Tencent's gateway (outbound WebSocket + HTTPS), so it neither listens on HTTP nor needs port forwarding — it cannot clash with another QQ bot plugin over a port, and nothing has to be opened in the firewall. Only the OneBot webhook from way 1 listens on a port.</p>
+</blockquote>
 <h3 id="configuration_1">Configuration</h3>
 <pre><code class="language-yaml">qq-official:
   enabled: false
@@ -450,6 +461,7 @@
 <li><strong>ids are strings</strong>: the official adapter reports <code>user_id</code> / <code>group_id</code> as openids (for example <code>0A1B2C3D4E5F...</code>), not numeric QQ ids. Nascraft's OneBot bridge accepts both, so put openids straight into <code>group-ids</code> and <code>group-whitelist</code>; old numeric group ids keep working.</li>
 <li><strong>Guild messages are ignored</strong>: the plugin only handles group @-messages and private messages; QQ guild channels are skipped.</li>
 <li><strong>Passive replies are windowed</strong>: a passive reply to one message is valid for 5 minutes and up to 5 times; trade announcements and price alerts are proactive messages and subject to the official rate limit (60 per minute for verified bots).</li>
+<li><strong>Only the OneBot webhook uses a port</strong>: way 3 goes through the OneBot bridge from way 1, so the plugin still listens on <code>onebot.webhook.port</code> (8765 by default). If another bot plugin or adapter on the same machine holds that port, the startup log says <code>端口 127.0.0.1:8765 已被占用</code> — change it to a free port such as 8766 and update the adapter's report URL.</li>
 </ul>
     <footer class="foot">
       Translated from the <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>, revised for Nascraft26P · MIT License

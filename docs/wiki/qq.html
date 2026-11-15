@@ -268,6 +268,14 @@
 <td>提示"该 QQ 已经绑定"</td>
 <td>一个 QQ 只能绑一个游戏账号，先在 QQ 里 <code>解绑</code></td>
 </tr>
+<tr>
+<td>启动日志 <code>端口 127.0.0.1:8765 已被占用</code></td>
+<td>同一台机器上有别的插件/进程占了这个端口（最常见的是<strong>另一个 QQ 机器人插件</strong>也开了 Webhook / HTTP 服务）；把 <code>onebot.webhook.port</code> 改成 8766 之类的空闲端口，并把机器人侧的上报地址一起改掉；用不到 QQ 命令时也可以直接把 <code>onebot.webhook.enabled</code> 设为 <code>false</code></td>
+</tr>
+<tr>
+<td>启动日志 <code>onebot.webhook.enabled=false：QQ 命令与「绑定」都不会生效</code></td>
+<td>想在 QQ 里发命令就必须打开 <code>onebot.webhook.enabled</code>；只有交易播报/价格提醒时不需要它</td>
+</tr>
 </tbody>
 </table>
 <blockquote>
@@ -316,6 +324,9 @@
 </tbody>
 </table>
 <p>两种方式<strong>可以同时开启</strong>：<code>/linkqq</code> 生成的绑定码在两边都能用，账号绑定分别保存在 <code>onebot.yml</code> 与 <code>qqofficial.yml</code>。</p>
+<blockquote>
+<p><strong>本方式不占用任何端口</strong>：插件是主动向外连腾讯网关（出站 WebSocket + HTTPS），既不监听 HTTP 也不需要端口转发，所以不会和其他 QQ 机器人插件抢端口，也不用在防火墙/安全组放行。只有「方式一」的 OneBot Webhook 才会监听端口。</p>
+</blockquote>
 <h3 id="_7">配置</h3>
 <pre><code class="language-yaml">qq-official:
   enabled: false
@@ -450,6 +461,7 @@
 <li><strong>id 是字符串</strong>：官方适配器上报的 <code>user_id</code> / <code>group_id</code> 是 openid（例如 <code>0A1B2C3D4E5F...</code>），不是数字 QQ 号。Nascraft 的 OneBot 桥接同时接受数字与字符串 id，所以 <code>group-ids</code>、<code>group-whitelist</code> 里直接填 openid 即可，老的数字群号也照旧可用。</li>
 <li><strong>频道消息不处理</strong>：插件只处理群聊 @ 与私聊，QQ 频道（guild）的消息会被忽略。</li>
 <li><strong>被动回复有窗口</strong>：官方机器人对同一条消息的被动回复有效期 5 分钟、最多 5 次；交易播报和价格提醒属于主动消息，受官方频控（认证 60 条/分钟）。</li>
+<li><strong>端口只涉及 OneBot Webhook</strong>：方式三走的是方式一的 OneBot 桥接，所以插件仍会监听 <code>onebot.webhook.port</code>（默认 8765）。如果同一台机器上还有别的机器人插件/适配器占着这个端口，启动日志会明确提示「端口 127.0.0.1:8765 已被占用」，按提示改成 8766 之类的空闲端口并把适配器上报地址一起改掉即可。</li>
 </ul>
     <footer class="foot">
       本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，并针对 Nascraft26P 修订 · MIT License

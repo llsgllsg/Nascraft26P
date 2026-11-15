@@ -65,8 +65,13 @@ public class OneBotBridge {
                 webhook.start();
             } catch (IOException | RuntimeException e) {
                 Nascraft.getInstance().getLogger().warning("[OneBot] 无法启动 Webhook：" + e.getMessage());
+                Nascraft.getInstance().getLogger().warning("[OneBot] 因为没在监听，插件收不到 QQ 消息上报："
+                        + "QQ 命令、账号绑定都不会生效（交易播报与价格提醒仍可通过 api-url 发出）。");
                 webhook = null;
             }
+        } else if (config.getOneBotCommandsEnabled()) {
+            Nascraft.getInstance().getLogger().warning("[OneBot] onebot.webhook.enabled=false："
+                    + "插件不会监听上报，QQ 命令与「绑定」都不会生效（仅保留交易播报与价格提醒）。");
         }
 
         Nascraft.getInstance().getLogger().info("[OneBot] 已启用，API: " + client.getApiUrl()
