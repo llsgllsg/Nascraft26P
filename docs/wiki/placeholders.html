@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>变量 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html" class="on">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="placeholderapi">变量（PlaceholderAPI）</h1>
+<blockquote>
+<p>使用这些变量前需要安装 <a href="https://www.spigotmc.org/resources/6245/">PlaceholderAPI</a>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>返回</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%nascraft_price_IDENTIFIER%</code></td>
+<td>物品当前价格</td>
+</tr>
+<tr>
+<td><code>%nascraft_buyprice_AMOUNT_IDENTIFIER%</code></td>
+<td>买入指定数量物品的价格</td>
+</tr>
+<tr>
+<td><code>%nascraft_sellprice_AMOUNT_IDENTIFIER%</code></td>
+<td>卖出指定数量物品的价格</td>
+</tr>
+<tr>
+<td><code>%nascraft_stock_IDENTIFIER%</code></td>
+<td>物品的内部库存</td>
+</tr>
+<tr>
+<td><code>%nascraft_change_IDENTIFIER%</code></td>
+<td>物品在某段时间内的涨跌幅（%）</td>
+</tr>
+<tr>
+<td><code>%nascraft_linked%</code></td>
+<td>玩家是否已绑定：<code>true</code> / <code>false</code></td>
+</tr>
+<tr>
+<td><code>%nascraft_discordid%</code></td>
+<td>已绑定时返回其 Discord ID</td>
+</tr>
+<tr>
+<td><code>%nascraft_cpi%</code></td>
+<td>当前通货膨胀率（%）</td>
+</tr>
+</tbody>
+</table>
+<p>其中：</p>
+<ul>
+<li><strong>IDENTIFIER</strong> 是物品在 <code>items.yml</code> 里的标识符；也可以写 <code>mainhand</code>，表示玩家主手物品。</li>
+<li><strong>AMOUNT</strong> 是数量，必须是整数。</li>
+</ul>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

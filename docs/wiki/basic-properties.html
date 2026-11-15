@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>基础属性 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html" class="on">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="_1">基础属性</h1>
+<p>每件物品都有一组可配置的属性：</p>
+<ul>
+<li><strong>initial-price（初始价）</strong>：每件物品都必须有。你需要先估一个合理价；等市场形成自己的估值后，初始价的影响会越来越小。</li>
+<li><strong>alias（别名）</strong>：玩家看到的物品名称。</li>
+<li><strong>elasticity（弹性）</strong>：决定价格变化的难易程度和幅度。</li>
+</ul>
+<blockquote>
+<p><strong>提示</strong>：对于预计交易量不大的物品（高价值、稀有等），建议把弹性调高一些。</p>
+</blockquote>
+<p><img alt="弹性对价格曲线的影响" src="img/elasticity.png" /></p>
+<ul>
+<li><strong>noise-intensity（噪声强度）</strong>：价格受随机波动影响的程度。</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>：弹性会放大噪声。调高弹性，物品的价格波动同时也会更剧烈。</p>
+</blockquote>
+<hr />
+<p>物品属性示例（<code>items.yml</code>）：</p>
+<pre><code class="language-yaml">items:
+  # 物品标识符
+  cobblestone:
+    # 必填：
+    initial-price: 0.05
+    # 可选：
+    alias: 'Cobble'
+    # 可选：
+    elasticity: 0.5
+    # 可选：
+    noise-intensity: 1.4
+    # ...
+</code></pre>
+<h2 id="_2">关于噪声</h2>
+<p>噪声是「每分钟随机抖动一点点」的机制，用来模拟真实市场的杂音。玩家挂机时价格也会小幅变化，所以短时间线也会出现起伏；如果服务器希望价格更稳定，把 <code>noise-intensity</code> 调小甚至设成 0 即可。</p>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

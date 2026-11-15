@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>开发者 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html" class="on">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="_1">开发者</h1>
+<h2 id="nascraft">在你的项目里引用 Nascraft</h2>
+<blockquote>
+<p><strong>注意</strong>：原版文档标注该功能「尚未完成 / 当前不可用」（WIP: NOT WORKING CURRENTLY）。</p>
+</blockquote>
+<p>Maven 仓库：</p>
+<pre><code class="language-xml">&lt;repository&gt;
+    &lt;id&gt;jitpack.io&lt;/id&gt;
+    &lt;url&gt;https://jitpack.io&lt;/url&gt;
+&lt;/repository&gt;
+</code></pre>
+<p>依赖：</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.github.Bounser&lt;/groupId&gt;
+    &lt;artifactId&gt;Nascraft&lt;/artifactId&gt;
+    &lt;version&gt;version&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Gradle（在根 <code>build.gradle</code> 末尾）：</p>
+<pre><code class="language-groovy">dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+</code></pre>
+<pre><code class="language-groovy">dependencies {
+    implementation 'com.github.Bounser:Nascraft:version'
+}
+</code></pre>
+<p>把 <code>version</code> 换成最新版本号即可。</p>
+<h2 id="_2">可用的监听事件</h2>
+<ul>
+<li><code>BuyItemEvent</code></li>
+<li><code>SellItemEvent</code></li>
+<li><code>TransactionCompletedEvent</code></li>
+</ul>
+<h2 id="_3">市场管理器</h2>
+<p><code>MarketManager</code> 提供市场数据（价格、库存等）的读取与操作接口。这部分上游文档仍在建设中。</p>
+<blockquote>
+<p>本项目（Nascraft26P）源码在 <a href="https://github.com/llsgllsg/Nascraft26P">https://github.com/llsgllsg/Nascraft26P</a>，欢迎提交 issue 或 PR。</p>
+</blockquote>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

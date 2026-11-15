@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>出售魔杖 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html" class="on">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="_1">出售魔杖</h1>
+<p>一个把物品直接卖给市场的便捷方式。</p>
+<p>Nascraft 内置了「出售魔杖」系统。先在配置里打开：</p>
+<pre><code class="language-yaml"># ...
+sell-wands:
+  enabled: true
+</code></pre>
+<p>打开之后就可以配置自己的魔杖了。魔杖有以下属性：</p>
+<ul>
+<li><strong>material</strong>：实体物品的材质。</li>
+<li><strong>display-material</strong> 和 <strong>lore</strong>：显示材质与描述文本。可以使用 <code>[USES]</code> 和 <code>[PROFIT]</code> 作为占位符（如果是有次数 / 额度限制的魔杖）。</li>
+<li><strong>enchanted</strong>：<code>true</code> / <code>false</code>，是否带附魔光效。</li>
+<li><strong>multiplier</strong>：出售时的倍率。</li>
+<li><strong>cooldown</strong>：两次使用之间的冷却秒数，未设置时默认 3 秒。</li>
+<li><strong>uses</strong>：限制使用次数。</li>
+<li><strong>max-profit</strong>：限制魔杖能创造的总收入（会乘上 multiplier）。</li>
+<li><strong>permission</strong>：使用该魔杖需要的权限（可选）。</li>
+<li><strong>currencies</strong>：限定该魔杖可用的货币。</li>
+</ul>
+<p>配置好之后，用 <strong><code>/givesellwand [ID]</code></strong> 或 <strong><code>/givesellwand [玩家] [ID]</code></strong> 获取。</p>
+<hr />
+<p>以下是默认预置的三把魔杖（可以直接改、删或新增）：</p>
+<blockquote>
+<p><strong>提示</strong>：这些只是示例，随你增删改。</p>
+</blockquote>
+<ul>
+<li><strong>BASIC WAND</strong>：10 次使用，需要权限 <code>nascraft.wand.basic</code>。</li>
+<li><strong>PERMANENT WAND</strong>：不限次数、不限额度，代价是 0.5 倍率（收益减半），冷却 300 秒（5 分钟），需要权限 <code>nascraft.wand.advanced</code>。</li>
+<li><strong>MILLONAIRE WAND</strong>：总额度 100 万，1.5 倍率（+50%），需要权限 <code>nascraft.wand.millonaire</code>。</li>
+</ul>
+<pre><code class="language-yaml"># ...
+sell-wands:
+  enabled: true
+  wands:
+    # ID：只是标识符
+    basic:
+      material: 'stick'
+      # 推荐的 MiniMessage 编辑站点：https://webui.advntr.dev/
+      display-name: '&lt;b&gt;&lt;gradient:#19e312:#a3e300&gt;BASIC WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#517d58&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#517d58&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#517d58&gt;sell all its content to the market!&lt;/color&gt;'
+        - ' '
+        - '&lt;color:#517d58&gt;Uses left:&lt;/color&gt; &lt;b&gt;&lt;color:#a3e300&gt;[USES]&lt;/color&gt;&lt;/b&gt;'
+      # 最大使用次数。也可以改成额度限制，见 MILLONAIRE WAND。
+      # 两者都不设则无限使用，见 PERMANENT WAND。
+      uses: 10
+      # 使用该魔杖需要的权限，不填则不校验权限。
+      permission: 'nascraft.wand.basic'
+
+    permanent:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '&lt;b&gt;&lt;gradient:#e74cf5:#f51d41&gt;PERMANENT WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#8077ba&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#8077ba&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#8077ba&gt;sell all its content to the market&lt;/color&gt;'
+        - '&lt;color:#8077ba&gt;for &lt;b&gt;&lt;color:#ff2403&gt;50%&lt;/color&gt;&lt;/b&gt; of its value.&lt;/color&gt;'
+        - '&lt;i&gt;&lt;color:#343d66&gt;⌛ 5 minutes of cooldown between uses.&lt;/color&gt;&lt;/i&gt;'
+        - ' '
+        - '&lt;b&gt;&lt;gradient:#f51d41:#e74cf5&gt;UNLIMITED USES&lt;/gradient&gt;&lt;b&gt;'
+      multiplier: 0.5
+      # 限定该魔杖可用的货币
+      currencies:
+        - 'vault'
+      # 两次使用之间的最小冷却（秒）
+      cooldown: 300 # 300/60 = 5 分钟
+      permission: 'nascraft.wand.advanced'
+
+    millionaire:
+      material: 'blaze_rod'
+      enchanted: true
+      display-name: '&lt;b&gt;&lt;gradient:#F57E00:#EFF551&gt;MILLIONARIE WAND&lt;/gradient&gt;&lt;/b&gt;'
+      lore:
+        - '&lt;b&gt;&lt;gradient:#ff383b:#ff2403&gt;⏵ LEFT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#85784D&gt;to estimate value.&lt;/color&gt;'
+        - '&lt;b&gt;&lt;gradient:#00eeff:#2e69ff&gt;⏵ RIGHT CLICK&lt;/gradient&gt;&lt;/b&gt; &lt;color:#85784D&gt;a container to&lt;/color&gt;'
+        - '&lt;color:#85784d&gt;sell all its content to the market&lt;/color&gt;'
+        - '&lt;color:#85784d&gt;for &lt;color:#EFF551&gt;150%&lt;/color&gt; its value.&lt;/color&gt;'
+        - ' '
+        - '&lt;color:#85784d&gt;Left to sell:&lt;/color&gt; &lt;b&gt;[PROFIT-LEFT]&lt;/b&gt;'
+      currencies:
+        - 'vault'
+      # 该魔杖最多能卖出总额 1,000,000$（含倍率）
+      max-profit: 1000000
+      multiplier: 1.5
+      permission: 'nascraft.wand.millonaire'
+      # 调整左右键对应的操作，写 'none' 可禁用。
+      # 默认：sell 左键，estimate 右键
+      sell: 'right'
+      estimate: 'left'
+</code></pre>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

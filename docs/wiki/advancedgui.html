@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdvancedGUI 扩展 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html" class="on">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="advancedgui">AdvancedGUI 扩展</h1>
+<p>在游戏里摆放一块可交互的「行情屏」，显示价格走势。</p>
+<p>Nascraft 内置了 <a href="https://www.spigotmc.org/resources/83636/">AdvancedGUI</a> 的布局扩展。AdvancedGUI 是 Leoko 开发的付费插件，能在服务器里创建触屏界面——即使不配合 Nascraft，也很推荐安装。</p>
+<p>屏幕的大致样子：左侧是物品与「回收」操作，中间是价格走势图，下方是背包界面。</p>
+<h2 id="_1">怎么放置这块屏幕</h2>
+<ol>
+<li>安装 AdvancedGUI（<a href="https://www.spigotmc.org/resources/83636/">购买</a>，下载 jar 后像普通插件一样放进 <code>plugins/</code>）。</li>
+<li>确保依赖齐全（<a href="https://www.spigotmc.org/resources/1997/">ProtocolLib</a>）。</li>
+<li>同时装好 AdvancedGUI 和 Nascraft 后重启服务器，并确认 <code>config.yml</code> 里这一项为：</li>
+</ol>
+<p><code>yaml
+   auto-resources-injection: true</code></p>
+<p>注意：原版文档里这个键名少写了一个字母（<code>auto-resources-injectio</code>），以 <code>config.yml</code> 里实际生成的为准。</p>
+<ol start="4">
+<li>用 <strong><code>/ag place Nascraft</code></strong> 放置界面。</li>
+</ol>
+<blockquote>
+<p>没有安装 AdvancedGUI 时，Nascraft 启动日志会出现 <code>AdvancedGUI is not installed</code> 的提示，属正常现象，不影响其他功能。</p>
+</blockquote>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>配置 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html" class="on">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="_1">配置</h1>
+<h2 id="configyml">基础配置：config.yml</h2>
+<p><code>config.yml</code> 里有几个重要字段：语言、默认值、Discord 扩展、出售魔杖的行为等等。</p>
+<h3 id="_2">怎么往市场里加物品？</h3>
+<p>市场内容分成两个文件：<strong>items.yml</strong> 和 <strong>categories.yml</strong>。</p>
+<p>要新增物品，可以手动改这两个文件（两个都要改：既写进 <code>items.yml</code>，也要挂到 <code>categories.yml</code> 的某个分类下），也可以直接用游戏内菜单：<strong><code>/nascraft edit</code></strong>。</p>
+<h3 id="_3">怎么改物品属性？</h3>
+<p>同样两种方式：手动编辑 <code>items.yml</code>，或者用 <code>/nascraft edit</code>。</p>
+<p>各功能的说明和配置示例：</p>
+<ul>
+<li><a href="basic-properties.html">基础属性</a></li>
+<li><a href="limits.html">价格限制</a></li>
+<li><a href="taxation.html">税收</a></li>
+<li><a href="sell-wands.html">出售魔杖</a></li>
+</ul>
+<h3 id="_4">扩展</h3>
+<p>扩展的配置见：</p>
+<ul>
+<li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+<li><a href="discord.html">Discord 扩展</a></li>
+</ul>
+<h2 id="_5">多语言</h2>
+<p>插件自带 <code>zh_CN</code> 语言文件（本版本已完整汉化），在 <code>config.yml</code> 的 <code>language</code> 字段里切换即可。修改文案直接改 <code>plugins/Nascraft/lang/zh_CN.yml</code>，改完 <code>/nascraft reload</code> 生效。</p>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

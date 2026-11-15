@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>多货币系统 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html" class="on">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="_1">多货币系统</h1>
+<p>Nascraft 内置多货币系统，理论上可以支持任意多种货币——只要该货币能提供 PlaceholderAPI 变量，以及存款 / 取款命令。</p>
+<blockquote>
+<p><strong>注意</strong>：如果打算使用 Discord 扩展，这些命令和变量必须<strong>在玩家离线时也能正常工作</strong>。</p>
+</blockquote>
+<p>默认货币是 Vault，可以在配置里改。示例：</p>
+<pre><code class="language-yaml"># ...
+currencies:
+  # 所有物品默认使用的货币。
+  # 也是 Discord 背包扩容等功能的默认计价货币。
+  default-currency: 'vault'
+
+  suppliers:
+
+    # 必须安装 Vault！这是默认货币。
+    vault:
+      format: &quot;&lt;gradient:#f09947:#feed81&gt;[AMOUNT]$&lt;/gradient&gt;&quot;
+      not-enough: &quot;&lt;gradient:#FB6363:#C4B3FD&gt;✘ You don't have enough money to buy that!&lt;/gradient&gt;&quot;
+      decimal-positions: 3
+      top-limit: 9999999
+      low-limit: 0.005
+
+    #################################################################
+
+    # 另一种货币的例子：
+    player-points:
+      deposit-cmd: 'playerpoints:p give [USER-NAME] [AMOUNT]'
+      withdraw-cmd: 'playerpoints:p take [USER-NAME] [AMOUNT]'
+      balance-placeholder: '%playerpoints_points%'
+      not-enough: &quot;&lt;gradient:#FB6363:#C4B3FD&gt;✘ You don't have enough points to buy that!&lt;/gradient&gt;&quot;
+      format: &quot;&lt;gradient:#ba24ff:#e8d1ff&gt;[AMOUNT]p&lt;/gradient&gt;&quot;
+      decimal-positions: 0
+      top-limit: 9999
+      low-limit: 10
+</code></pre>
+<p>如上例所示，除 Vault 之外的每种货币都需要一个唯一标识（例子中是 <code>player-points</code>）和下面这些属性：</p>
+<ul>
+<li><strong>deposit-cmd</strong>：给玩家账户加钱的命令，支持两个占位符 <code>[USER-NAME]</code> 和 <code>[AMOUNT]</code>。</li>
+<li><strong>withdraw-cmd</strong>：从玩家账户扣钱的命令，同样支持 <code>[USER-NAME]</code> 和 <code>[AMOUNT]</code>。</li>
+<li><strong>balance-placeholder</strong>：返回玩家余额的 PlaceholderAPI 变量，必须是纯数字，不能带格式。</li>
+<li><strong>not-enough</strong>：余额不足时发给玩家的提示。</li>
+<li><strong>format</strong>：金额的显示格式，内置占位符 <code>[AMOUNT]</code>。</li>
+<li><strong>decimal-positions</strong>：该货币下价格保留的小数位。PlayerPoints 只支持整数，所以这里是 0。</li>
+<li><strong>top-limit</strong>：该货币下价格的硬上限。</li>
+<li><strong>low-limit</strong>：该货币下价格的硬下限。</li>
+</ul>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>

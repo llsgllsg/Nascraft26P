@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>功能一览 · Nascraft26P</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">Nascraft26P <span>文档</span></a>
+  <nav class="topnav">
+    <a href="https://github.com/llsgllsg/Nascraft26P" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/llsgllsg/Nascraft26P/releases" target="_blank" rel="noopener">下载</a>
+    <a href="https://www.spigotmc.org/resources/nascraft26p.140579/" target="_blank" rel="noopener">SpigotMC</a>
+  </nav>
+</header>
+<div class="layout">
+  <aside class="side">
+    <div class="grp">开始</div>
+    <ul>
+      <li><a href="index.html">Nascraft26P 文档</a></li>
+      <li><a href="intro.html">市场简介</a></li>
+      <li><a href="install.html">安装</a></li>
+      <li><a href="configure.html">配置</a></li>
+    </ul>
+    <div class="grp">功能</div>
+    <ul>
+      <li><a href="features.html">功能总览</a></li>
+      <li><a href="basic-properties.html">基础属性</a></li>
+      <li><a href="limits.html">价格限制</a></li>
+      <li><a href="taxation.html">税收</a></li>
+      <li><a href="sell-wands.html">出售魔杖</a></li>
+      <li><a href="multi-currency.html">多货币系统</a></li>
+    </ul>
+    <div class="grp">扩展</div>
+    <ul>
+      <li><a href="advancedgui.html">AdvancedGUI 扩展</a></li>
+      <li><a href="discord.html">Discord 扩展</a></li>
+      <li><a href="discord-features.html" class="on">功能一览</a></li>
+      <li><a href="discord-setup.html">搭建机器人</a></li>
+      <li><a href="discord-main-menu.html">配置：主菜单</a></li>
+      <li><a href="discord-trades-log.html">配置：交易日志</a></li>
+      <li><a href="discord-config.html">配置扩展</a></li>
+      <li><a href="web.html">网页扩展</a></li>
+    </ul>
+    <div class="grp">参考</div>
+    <ul>
+      <li><a href="commands.html">命令</a></li>
+      <li><a href="placeholders.html">变量</a></li>
+      <li><a href="developers.html">开发者</a></li>
+    </ul>
+  </aside>
+  <main class="doc">
+<h1 id="discord">Discord 扩展：功能</h1>
+<h2 id="_1">主菜单</h2>
+<p>你可以指定一个<strong>专门给市场用的频道</strong>。玩家可以在里面查看价格变化，已绑定账号的玩家还能远程交易。</p>
+<p>机器人会在该频道发一条带按钮的主菜单消息，并且<strong>每分钟更新一次</strong>。</p>
+<blockquote>
+<p><strong>⚠ 重要</strong>：这个频道应该设置为<strong>谁都不能发言</strong>，否则会被玩家的消息打断。机器人也会定期清理消息。</p>
+</blockquote>
+<p><img alt="机器人发到指定频道的主菜单消息" src="img/discord-menu.png" /></p>
+<h2 id="_2">选择物品</h2>
+<p>玩家可以从「涨幅榜（Top gainers）」「最热门（Most populars）」「跌幅榜（Big dippers）」里挑选物品：</p>
+<p><img alt="物品选择条" src="img/discord-select.png" /></p>
+<p>如果想要的物品不在列表里，可以点「🔎 搜索物品」按钮，输入物品标识符或别名：</p>
+<p><img alt="搜索物品的弹窗表单" src="img/discord-search.png" /></p>
+<h2 id="_3">交易历史</h2>
+<p>点「📜 交易历史」可以看到自己在游戏内和 Discord 上的全部交易记录：</p>
+<p><img alt="交易历史示例" src="img/discord-trades.png" /></p>
+<h2 id="_4">账号绑定</h2>
+<p>大部分功能需要把 Discord 账号和游戏账号绑定。Nascraft 支持两种方式：</p>
+<ul>
+<li><strong>内置系统</strong>：机器人在 Discord 里给出一串验证码（例如 <code>39029</code>），玩家在游戏内执行 <strong><code>/link 39029</code></strong> 完成绑定。
+  点「🔗 绑定账号」按钮可以查看当前绑定的游戏 ID，也可以随时解绑。</li>
+</ul>
+<p><img alt="绑定状态" src="img/discord-link.png" /></p>
+<ul>
+<li><strong>DiscordSRV</strong>：如果服务器装了 DiscordSRV，可以直接沿用它的绑定关系。</li>
+</ul>
+<h2 id="_5">背包与余额</h2>
+<p>点对应按钮即可查看自己的余额和「虚拟背包」（在 Discord 上买入的物品会先放在这里，进游戏后可以取出）。</p>
+    <footer class="foot">
+      本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
+      并针对 Nascraft26P 修订 · MIT License
+    </footer>
+  </main>
+</div>
+</body>
+</html>
