@@ -15,13 +15,13 @@ import java.util.Map;
 /**
  * Chat commands handled from QQ through the OneBot v11 bridge.
  *
- * <p>{@link #handle(long, Long, String)} is always called on the server's global thread.</p>
+ * <p>{@link #handle(String, String, String)} is always called on the server's global thread.</p>
  */
 public final class OneBotCommands {
 
     private OneBotCommands() { }
 
-    public static void handle(long userId, Long groupId, String text) {
+    public static void handle(String userId, String groupId, String text) {
         OneBotBridge bridge = OneBotBridge.getInstance();
         if (bridge == null) return;
 
@@ -41,7 +41,7 @@ public final class OneBotCommands {
         }
     }
 
-    private static void handlePrice(Long groupId, long userId, String[] args) {
+    private static void handlePrice(String groupId, String userId, String[] args) {
         if (args.length < 2) {
             reply(groupId, userId, Lang.get().message(Message.ONEBOT_HELP));
             return;
@@ -63,7 +63,7 @@ public final class OneBotCommands {
         reply(groupId, userId, message);
     }
 
-    private static void handleAlertSet(long userId, Long groupId, String[] args) {
+    private static void handleAlertSet(String userId, String groupId, String[] args) {
         if (args.length < 3) {
             reply(groupId, userId, Lang.get().message(Message.ONEBOT_HELP));
             return;
@@ -108,7 +108,7 @@ public final class OneBotCommands {
         reply(groupId, userId, message);
     }
 
-    private static void handleAlertList(long userId, Long groupId) {
+    private static void handleAlertList(String userId, String groupId) {
         Map<String, Double> alerts = OneBotBridge.getInstance().getStore().getAlerts(userId);
         if (alerts.isEmpty()) {
             reply(groupId, userId, Lang.get().message(Message.ONEBOT_ALERT_LIST_EMPTY));
@@ -138,7 +138,7 @@ public final class OneBotCommands {
         reply(groupId, userId, builder.toString());
     }
 
-    private static void handleAlertRemove(long userId, Long groupId, String[] args) {
+    private static void handleAlertRemove(String userId, String groupId, String[] args) {
         if (args.length < 2) {
             reply(groupId, userId, Lang.get().message(Message.ONEBOT_HELP));
             return;
@@ -157,7 +157,7 @@ public final class OneBotCommands {
                 Lang.get().message(removed ? Message.ONEBOT_ALERT_REMOVED : Message.ONEBOT_ALERT_NOT_FOUND));
     }
 
-    private static void handleBind(long userId, Long groupId, String[] args) {
+    private static void handleBind(String userId, String groupId, String[] args) {
         if (args.length < 2) {
             reply(groupId, userId, Lang.get().message(Message.ONEBOT_HELP));
             return;
@@ -187,10 +187,10 @@ public final class OneBotCommands {
 
         reply(groupId, userId, Lang.get().message(Message.ONEBOT_LINK_OK)
                 .replace("[PLAYER]", OneBotBridge.nameOf(uuid))
-                .replace("[QQ]", String.valueOf(userId)));
+                .replace("[QQ]", userId));
     }
 
-    private static void handleUnlink(long userId, Long groupId) {
+    private static void handleUnlink(String userId, String groupId) {
         OneBotBridge bridge = OneBotBridge.getInstance();
         java.util.UUID uuid = bridge.getStore().getUUID(userId);
 
@@ -224,7 +224,7 @@ public final class OneBotCommands {
         return null;
     }
 
-    private static void reply(Long groupId, long userId, String message) {
+    private static void reply(String groupId, String userId, String message) {
         String plain = OneBotBridge.stripColour(message);
         if (groupId == null) OneBotBridge.getInstance().getClient().sendPrivate(userId, plain);
         else OneBotBridge.getInstance().getClient().sendGroup(groupId, plain);

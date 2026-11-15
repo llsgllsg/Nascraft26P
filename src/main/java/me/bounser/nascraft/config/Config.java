@@ -573,8 +573,25 @@ public class Config {
         return config.getBoolean("onebot.log-trades.enabled");
     }
 
-    public List<Long> getOneBotLogGroups() {
-        return config.getLongList("onebot.log-trades.group-ids");
+    public List<String> getOneBotLogGroups() {
+        return getStringOrNumberList("onebot.log-trades.group-ids");
+    }
+
+    /**
+     * OneBot ids are numbers for personal QQ bots (NapCat / Lagrange / go-cqhttp) but strings
+     * for QQ official bot adapters (openid). Accept both and normalise to {@link String}.
+     */
+    private List<String> getStringOrNumberList(String path) {
+        List<String> values = new ArrayList<>();
+        List<?> raw = config.getList(path);
+        if (raw == null) return values;
+
+        for (Object element : raw) {
+            if (element == null) continue;
+            String value = String.valueOf(element).trim();
+            if (!value.isEmpty()) values.add(value);
+        }
+        return values;
     }
 
     public boolean getOneBotAlertsEnabled() {
@@ -612,8 +629,8 @@ public class Config {
         return config.getBoolean("onebot.commands.enabled", true);
     }
 
-    public List<Long> getOneBotGroupWhitelist() {
-        return config.getLongList("onebot.commands.group-whitelist");
+    public List<String> getOneBotGroupWhitelist() {
+        return getStringOrNumberList("onebot.commands.group-whitelist");
     }
 
     public boolean getQqOfficialEnabled() {

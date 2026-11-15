@@ -90,18 +90,19 @@ public class OneBotWebhook {
             if (!"message".equals(json.getString("post_type"))) return;
             if (!Config.getInstance().getOneBotCommandsEnabled()) return;
 
-            long selfId = json.getLong("self_id", 0L);
-            long userId = json.getLong("user_id", 0L);
-            if (userId <= 0 || userId == selfId) return;
+            // Ids may be numeric (personal QQ bots) or openid strings (QQ official bot adapters).
+            String selfId = json.getString("self_id", "");
+            String userId = json.getString("user_id", "");
+            if (userId == null || userId.isBlank() || userId.equals(selfId)) return;
 
             String messageType = json.getString("message_type", "");
-            Long groupId = null;
+            String groupId = null;
 
             if ("group".equals(messageType)) {
-                long group = json.getLong("group_id", 0L);
-                if (group <= 0) return;
+                String group = json.getString("group_id", "");
+                if (group == null || group.isBlank() || "0".equals(group)) return;
 
-                List<Long> whitelist = Config.getInstance().getOneBotGroupWhitelist();
+                List<String> whitelist = Config.getInstance().getOneBotGroupWhitelist();
                 if (!whitelist.isEmpty() && !whitelist.contains(group)) return;
                 groupId = group;
             } else if (!"private".equals(messageType)) {
@@ -115,7 +116,7 @@ public class OneBotWebhook {
             String text = raw.replaceAll("\\[CQ:[^\\]]*\\]", "").trim();
             if (text.isEmpty()) return;
 
-            Long finalGroup = groupId;
+            String finalGroup = groupId;
             FoliaScheduler.runGlobal(Nascraft.getInstance(), () ->
                     OneBotCommands.handle(userId, finalGroup, text));
         } catch (Exception e) {

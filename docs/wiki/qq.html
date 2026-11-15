@@ -77,6 +77,11 @@
 <td>官方渠道、需要长期稳定运行</td>
 <td><a href="https://q.qq.com/">QQ 开放平台</a> 的 AppID 与 AppSecret</td>
 </tr>
+<tr>
+<td>QQ 官方机器人 + OneBot 适配器</td>
+<td>已经在用 onebots 等框架，想复用同一个适配器</td>
+<td>Node.js + @onebots/adapter-qq（官方 SDK 的 OneBot v11 封装）</td>
+</tr>
 </tbody>
 </table>
 <p>两种方式共用同一套 QQ 命令和账号绑定，<code>/linkqq</code> 生成的绑定码在两边都有效。</p>
@@ -384,6 +389,67 @@
 </tr>
 </tbody>
 </table>
+<h2 id="qq-onebot-v11">方式三：QQ 官方机器人 + OneBot v11 适配器（官方适配器）</h2>
+<p>如果你已经在用 <strong>onebots / @onebots/adapter-qq</strong> 这类「QQ 官方机器人适配器」，就不必再让插件自己连 QQ 网关：适配器基于腾讯官方 SDK（<code>@tencent-connect/qqbot-nodejs</code>）把官方机器人的消息投影成 OneBot v11，插件仍然走上面「方式一」的 OneBot 桥接即可。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方式二（插件直连）</th>
+<th>方式三（官方适配器）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>需要额外进程</td>
+<td>不需要</td>
+<td>需要一个 Node.js 进程</td>
+</tr>
+<tr>
+<td>适合</td>
+<td>只想装一个插件</td>
+<td>已经有 onebots 等框架，或要同时接多个平台</td>
+</tr>
+<tr>
+<td>配置位置</td>
+<td><code>qq-official</code> 段</td>
+<td><code>onebot</code> 段</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_11">步骤</h3>
+<ol>
+<li>安装 Node.js 18 或更高版本。</li>
+<li>启动官方适配器（以 onebots 为例）：<code>npx onebots -r qq</code>，按提示填入 <a href="https://q.qq.com/">QQ 开放平台</a> 的 AppID / AppSecret。</li>
+<li>打开适配器的 OneBot v11 HTTP API（onebots 配置里 <code>onebot.v11: use_http: true</code>），记下地址，一般是 <code>http://127.0.0.1:6727</code>。</li>
+<li>在 Nascraft 的 <code>config.yml</code> 里启用 OneBot：</li>
+</ol>
+<pre><code class="language-yaml">onebot:
+  enabled: true
+  # 指向官方适配器的 OneBot v11 HTTP API
+  api-url: 'http://127.0.0.1:6727'
+  # 与适配器里配置的 access token 保持一致；留空表示不校验
+  access-token: ''
+  commands:
+    enabled: true
+    group-whitelist: []
+  webhook:
+    # 若要被动回复/收群消息，需要适配器把上报地址指向插件
+    enabled: true
+    host: '0.0.0.0'
+    port: 8765
+    path: '/onebot'
+    secret: ''
+</code></pre>
+<ol start="5">
+<li>重启服务器，控制台出现 <code>[OneBot] 已启用，API: http://127.0.0.1:6727</code> 即接通。</li>
+</ol>
+<h3 id="_12">需要注意</h3>
+<ul>
+<li><strong>id 是字符串</strong>：官方适配器上报的 <code>user_id</code> / <code>group_id</code> 是 openid（例如 <code>0A1B2C3D4E5F...</code>），不是数字 QQ 号。Nascraft 的 OneBot 桥接同时接受数字与字符串 id，所以 <code>group-ids</code>、<code>group-whitelist</code> 里直接填 openid 即可，老的数字群号也照旧可用。</li>
+<li><strong>频道消息不处理</strong>：插件只处理群聊 @ 与私聊，QQ 频道（guild）的消息会被忽略。</li>
+<li><strong>被动回复有窗口</strong>：官方机器人对同一条消息的被动回复有效期 5 分钟、最多 5 次；交易播报和价格提醒属于主动消息，受官方频控（认证 60 条/分钟）。</li>
+</ul>
     <footer class="foot">
       本页译自 <a href="https://bounser.gitbook.io/nascraft/" target="_blank" rel="noopener">Nascraft Wiki</a>，
       并针对 Nascraft26P 修订 · MIT License

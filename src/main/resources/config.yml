@@ -358,6 +358,7 @@ discord-bot:
 # 通过 OneBot v11 协议接入 QQ 机器人。
 # 个人 QQ 可用 NapCat / LLOneBot / Lagrange / go-cqhttp；
 # QQ 官方机器人渠道可用 gensokyo / @onebots/adapter-qq 等 OneBot v11 适配器。
+# 注意：群号/QQ 号既可以是数字，也可以是 QQ 官方机器人适配器上报的 openid 字符串。
 onebot:
   enabled: false
   # OneBot v11 HTTP API 地址（不要带 /send_private_msg 后缀）。
@@ -367,7 +368,7 @@ onebot:
   # 将游戏内交易日志发送到 QQ 群。
   log-trades:
     enabled: false
-    # 接收交易日志的 QQ 群号。
+    # 接收交易日志的 QQ 群号。（QQ 官方机器人适配器也可以填 group_openid，字符串）
     group-ids: []
   # QQ 价格提醒。
   alerts:
@@ -387,6 +388,7 @@ onebot:
   commands:
     enabled: true
     # 允许使用命令的群号；留空表示所有群都允许（私聊始终允许）。
+    # 数字 QQ 群号与 QQ 官方机器人适配器上报的 group_openid 字符串都支持。
     group-whitelist: []
 
 # 通过 QQ 开放平台官方机器人（官方 API v2 + WebSocket 网关）接入 QQ。

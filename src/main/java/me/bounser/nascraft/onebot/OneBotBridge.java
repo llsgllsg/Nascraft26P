@@ -141,7 +141,7 @@ public class OneBotBridge {
         }
 
         String plain = stripColour(payload);
-        for (long groupId : Config.getInstance().getOneBotLogGroups())
+        for (String groupId : Config.getInstance().getOneBotLogGroups())
             client.sendGroup(groupId, plain);
     }
 
@@ -151,8 +151,8 @@ public class OneBotBridge {
     }
 
     private void checkAlertsNow() {
-        for (Map.Entry<Long, Map<String, Double>> entry : store.copyAlerts().entrySet()) {
-            long qq = entry.getKey();
+        for (Map.Entry<String, Map<String, Double>> entry : store.copyAlerts().entrySet()) {
+            String qq = entry.getKey();
 
             for (Map.Entry<String, Double> alert : entry.getValue().entrySet()) {
                 Item item = MarketManager.getInstance().getItem(alert.getKey());

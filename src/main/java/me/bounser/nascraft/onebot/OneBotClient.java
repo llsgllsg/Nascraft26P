@@ -35,12 +35,32 @@ public class OneBotClient {
         this.accessToken = accessToken == null ? "" : accessToken.trim();
     }
 
-    public void sendPrivate(long userId, String message) {
-        send("send_private_msg", "{\"user_id\":" + userId + ",\"message\":" + segment(message) + "}");
+    public void sendPrivate(String userId, String message) {
+        send("send_private_msg", "{\"user_id\":" + id(userId) + ",\"message\":" + segment(message) + "}");
     }
 
-    public void sendGroup(long groupId, String message) {
-        send("send_group_msg", "{\"group_id\":" + groupId + ",\"message\":" + segment(message) + "}");
+    public void sendGroup(String groupId, String message) {
+        send("send_group_msg", "{\"group_id\":" + id(groupId) + ",\"message\":" + segment(message) + "}");
+    }
+
+    /**
+     * Personal QQ bots use numeric ids, while QQ official bot adapters use openid strings.
+     * Numeric ids are written as JSON numbers (what the OneBot v11 spec expects), everything
+     * else is quoted.
+     */
+    private static String id(String value) {
+        if (value == null) return "0";
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) return "0";
+
+        boolean numeric = true;
+        for (int i = 0; i < trimmed.length(); i++) {
+            if (!Character.isDigit(trimmed.charAt(i))) {
+                numeric = false;
+                break;
+            }
+        }
+        return numeric ? trimmed : "\"" + escape(trimmed) + "\"";
     }
 
     public String getApiUrl() { return apiUrl; }

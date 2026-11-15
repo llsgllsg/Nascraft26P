@@ -18,6 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>Data is kept in {@code plugins/Nascraft/onebot.yml} instead of the main database
  * so enabling the bridge does not require a schema migration.</p>
+ *
+ * <p>QQ ids are stored as {@link String}: personal QQ bots (NapCat / Lagrange / go-cqhttp)
+ * report numeric QQ numbers, while QQ official bot adapters report {@code openid} strings
+ * such as {@code 0A1B2C3D4E5F...}. Keeping them as text means both work with the same file.</p>
  */
 public class OneBotStore {
 
@@ -25,11 +29,11 @@ public class OneBotStore {
 
     private final File file;
 
-    /** Minecraft UUID -> QQ number. */
-    private final Map<UUID, Long> links = new ConcurrentHashMap<>();
+    /** Minecraft UUID -> QQ number / openid. */
+    private final Map<UUID, String> links = new ConcurrentHashMap<>();
 
-    /** QQ number -> (item identifier -> signed threshold). */
-    private final Map<Long, Map<String, Double>> alerts = new ConcurrentHashMap<>();
+    /** QQ number / openid -> (item identifier -> signed threshold). */
+    private final Map<String, Map<String, Double>> alerts = new ConcurrentHashMap<>();
 
     public OneBotStore(File dataFolder) {
         this.file = new File(dataFolder, "onebot.yml");
@@ -45,7 +49,9 @@ public class OneBotStore {
         if (linkSection != null) {
             for (String key : linkSection.getKeys(false)) {
                 try {
-                    links.put(UUID.fromString(key), Long.parseLong(String.valueOf(linkSection.get(key))));
+                    String qq = String.valueOf(linkSection.get(key)).trim();
+                    if (qq.isEmpty() || "null".equals(qq)) continue;
+                    links.put(UUID.fromString(key), qq);
                 } catch (Exception ignored) {
                     // Ignore malformed entries instead of failing the whole bridge.
                 }
@@ -55,12 +61,8 @@ public class OneBotStore {
         ConfigurationSection alertSection = data.getConfigurationSection("alerts");
         if (alertSection != null) {
             for (String key : alertSection.getKeys(false)) {
-                long qq;
-                try {
-                    qq = Long.parseLong(key);
-                } catch (NumberFormatException e) {
-                    continue;
-                }
+                String qq = key == null ? "" : key.trim();
+                if (qq.isEmpty()) continue;
 
                 ConfigurationSection items = alertSection.getConfigurationSection(key);
                 if (items == null) continue;
@@ -74,15 +76,18 @@ public class OneBotStore {
         }
     }
 
-    public Long getQQ(UUID uuid) { return links.get(uuid); }
+    public String getQQ(UUID uuid) { return links.get(uuid); }
 
-    public UUID getUUID(long qq) {
-        for (Map.Entry<UUID, Long> entry : links.entrySet())
-            if (entry.getValue() == qq) return entry.getKey();
+    public UUID getUUID(String qq) {
+        if (qq == null) return null;
+        for (Map.Entry<UUID, String> entry : links.entrySet())
+            if (qq.equals(entry.getValue())) return entry.getKey();
         return null;
     }
 
-    public synchronized boolean link(UUID uuid, long qq) {
+    public synchronized boolean link(UUID uuid, String qq) {
+        if (qq == null || qq.isBlank()) return false;
+
         UUID current = getUUID(qq);
         if (current != null && !current.equals(uuid)) return false;
 
@@ -92,19 +97,19 @@ public class OneBotStore {
     }
 
     public synchronized void unlink(UUID uuid) {
-        Long qq = links.remove(uuid);
+        String qq = links.remove(uuid);
         if (qq != null) alerts.remove(qq);
         saveAsync();
     }
 
-    public synchronized void unlink(long qq) {
+    public synchronized void unlink(String qq) {
         UUID uuid = getUUID(qq);
         if (uuid != null) links.remove(uuid);
         alerts.remove(qq);
         saveAsync();
     }
 
-    public int alertCount(long qq) {
+    public int alertCount(String qq) {
         Map<String, Double> thresholds = alerts.get(qq);
         return thresholds == null ? 0 : thresholds.size();
     }
@@ -113,7 +118,9 @@ public class OneBotStore {
      * Stores a signed threshold: a positive value alerts when the price rises to it,
      * a negative value alerts when the price falls to its absolute value.
      */
-    public synchronized boolean setAlert(long qq, String identifier, double threshold) {
+    public synchronized boolean setAlert(String qq, String identifier, double threshold) {
+        if (qq == null || qq.isBlank()) return false;
+
         Map<String, Double> thresholds = alerts.computeIfAbsent(qq, key -> new HashMap<>());
         if (!thresholds.containsKey(identifier) && thresholds.size() >= MAX_ALERTS) return false;
 
@@ -122,7 +129,9 @@ public class OneBotStore {
         return true;
     }
 
-    public synchronized boolean removeAlert(long qq, String identifier) {
+    public synchronized boolean removeAlert(String qq, String identifier) {
+        if (qq == null) return false;
+
         Map<String, Double> thresholds = alerts.get(qq);
         if (thresholds == null || thresholds.remove(identifier) == null) return false;
 
@@ -131,14 +140,14 @@ public class OneBotStore {
         return true;
     }
 
-    public Map<String, Double> getAlerts(long qq) {
+    public Map<String, Double> getAlerts(String qq) {
         Map<String, Double> thresholds = alerts.get(qq);
         return thresholds == null ? Collections.emptyMap() : new HashMap<>(thresholds);
     }
 
-    public Map<Long, Map<String, Double>> copyAlerts() {
-        Map<Long, Map<String, Double>> copy = new HashMap<>();
-        for (Map.Entry<Long, Map<String, Double>> entry : alerts.entrySet())
+    public Map<String, Map<String, Double>> copyAlerts() {
+        Map<String, Map<String, Double>> copy = new HashMap<>();
+        for (Map.Entry<String, Map<String, Double>> entry : alerts.entrySet())
             copy.put(entry.getKey(), new HashMap<>(entry.getValue()));
         return copy;
     }
@@ -157,12 +166,12 @@ public class OneBotStore {
             YamlConfiguration data = new YamlConfiguration();
 
             ConfigurationSection linkSection = data.createSection("links");
-            for (Map.Entry<UUID, Long> entry : links.entrySet())
+            for (Map.Entry<UUID, String> entry : links.entrySet())
                 linkSection.set(entry.getKey().toString(), entry.getValue());
 
             ConfigurationSection alertSection = data.createSection("alerts");
-            for (Map.Entry<Long, Map<String, Double>> entry : alerts.entrySet()) {
-                ConfigurationSection items = alertSection.createSection(String.valueOf(entry.getKey()));
+            for (Map.Entry<String, Map<String, Double>> entry : alerts.entrySet()) {
+                ConfigurationSection items = alertSection.createSection(entry.getKey());
                 for (Map.Entry<String, Double> threshold : entry.getValue().entrySet())
                     items.set(threshold.getKey(), threshold.getValue());
             }

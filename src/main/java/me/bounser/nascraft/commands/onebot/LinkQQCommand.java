@@ -66,9 +66,9 @@ public class LinkQQCommand extends Command {
         }
 
         if (oneBot != null) {
-            Long qq = oneBot.getStore().getQQ(uuid);
+            String qq = oneBot.getStore().getQQ(uuid);
             if (qq != null) {
-                Lang.get().message(player, Message.ONEBOT_PLAYER_LINKED, "[QQ]", String.valueOf(qq));
+                Lang.get().message(player, Message.ONEBOT_PLAYER_LINKED, "[QQ]", qq);
                 return;
             }
         }
