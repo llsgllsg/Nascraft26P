@@ -55,6 +55,13 @@ public class QqOfficialBridge {
         instance = null;
     }
 
+    private static String mask(String value) {
+        if (value == null || value.isBlank()) return "(未配置)";
+        String trimmed = value.trim();
+        if (trimmed.length() <= 4) return "****";
+        return trimmed.substring(0, 4) + "****";
+    }
+
     private QqOfficialBridge() {
         Config config = Config.getInstance();
         String apiBase = config.getQqOfficialSandbox()
@@ -79,7 +86,8 @@ public class QqOfficialBridge {
         client = new QqOfficialClient(api, config.getQqOfficialIntents());
         client.start();
 
-        Nascraft.getInstance().getLogger().info("[QQ Official] 已启用，API: " + api.getApiBase()
+        Nascraft.getInstance().getLogger().info("[QQ Official] 已启用，AppID: "
+                + mask(config.getQqOfficialAppId()) + "，API: " + api.getApiBase()
                 + (config.getQqOfficialSandbox() ? "（沙箱）" : ""));
     }
 

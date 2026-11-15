@@ -128,7 +128,8 @@ public final class QqOfficialClient {
                 .connectTimeout(Duration.ofSeconds(20))
                 .buildAsync(URI.create(url), new GatewayListener());
         WebSocket webSocket = future.get(25L, TimeUnit.SECONDS);
-        socket = webSocket;
+        // onOpen 里通常会先一步把 socket 赋好；这里兜底，避免 Hello 先到、socket 还是 null
+        if (socket == null) socket = webSocket;
         LOGGER.info("[QQ Official] 已连接 QQ 网关: " + url);
 
         latch.await();
@@ -194,6 +195,8 @@ public final class QqOfficialClient {
         long interval = Json.number(payload, 45_000L, "d", "heartbeat_interval");
         heartbeatInterval = Math.max(5_000L, interval);
         startHeartbeat();
+        LOGGER.info("[QQ Official] 收到 Hello（心跳 " + heartbeatInterval + "ms），开始"
+                + (sessionId != null && sequence >= 0 ? "恢复会话" : "鉴权"));
 
         if (sessionId != null && sequence >= 0) sendResume();
         else sendIdentify();
@@ -222,7 +225,10 @@ public final class QqOfficialClient {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("op", OP_IDENTIFY);
         payload.put("d", data);
-        sendRaw(Json.write(payload));
+        if (sendRaw(Json.write(payload)))
+            LOGGER.info("[QQ Official] 已发送 Identify（intents=" + intents + "）");
+        else
+            LOGGER.warning("[QQ Official] 网关尚未就绪，Identify 未能发出");
     }
 
     private void sendResume() {
@@ -245,7 +251,10 @@ public final class QqOfficialClient {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("op", OP_RESUME);
         payload.put("d", data);
-        sendRaw(Json.write(payload));
+        if (sendRaw(Json.write(payload)))
+            LOGGER.info("[QQ Official] 已发送 Resume（seq=" + sequence + "）");
+        else
+            LOGGER.warning("[QQ Official] 网关尚未就绪，Resume 未能发出");
     }
 
     private void startHeartbeat() {
@@ -267,16 +276,18 @@ public final class QqOfficialClient {
         }
     }
 
-    private void sendRaw(String text) {
+    private boolean sendRaw(String text) {
         WebSocket webSocket = socket;
-        if (webSocket == null) return;
+        if (webSocket == null) return false;
         try {
             webSocket.sendText(text, true).exceptionally(error -> {
                 LOGGER.fine("[QQ Official] 发送网关消息失败: " + error.getMessage());
                 return null;
             });
+            return true;
         } catch (RuntimeException e) {
             LOGGER.fine("[QQ Official] 发送网关消息失败: " + e.getMessage());
+            return false;
         }
     }
 
@@ -295,6 +306,17 @@ public final class QqOfficialClient {
         }
     }
 
+    private static String closeHint(int statusCode) {
+        return switch (statusCode) {
+            case 4004 -> " —— access_token 无效 / AppID 与 AppSecret 不匹配";
+            case 4006 -> " —— 会话无效，将重新鉴权";
+            case 4009 -> " —— 未在时限内完成鉴权（通常是 Identify 没发出去，或同一个机器人被别处占用）";
+            case 4013 -> " —— intents 无效";
+            case 4014 -> " —— intents 未被允许（去 q.qq.com 勾选对应事件后重新申请）";
+            default -> "";
+        };
+    }
+
     private static String describe(Throwable error) {
         Throwable cause = error;
         while (cause.getCause() != null && cause.getCause() != cause) cause = cause.getCause();
@@ -308,6 +330,10 @@ public final class QqOfficialClient {
 
         @Override
         public void onOpen(WebSocket webSocket) {
+            // 必须先登记 socket 再 request：Hello 帧可能在 buildAsync 返回之前就到达，
+            // 那时 sendIdentify() 里的 sendRaw() 会因为 socket 还是 null 而把鉴权帧丢掉，
+            // 表现就是「已连接 QQ 网关」之后没有「鉴权成功」，约 120s 后被 4009 Session timed out 踢下线。
+            socket = webSocket;
             webSocket.request(1);
         }
 
@@ -329,7 +355,13 @@ public final class QqOfficialClient {
 
         @Override
         public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-            if (running) LOGGER.info("[QQ Official] 网关连接关闭（" + statusCode + "）" + reason);
+            if (running) LOGGER.info("[QQ Official] 网关连接关闭（" + statusCode + "）" + reason
+                    + closeHint(statusCode));
+            if (statusCode == 4004 || statusCode == 4006 || statusCode == 4009) {
+                // 鉴权失败 / 会话失效 / 未在时限内完成鉴权：丢掉旧会话，下次重连重新 Identify
+                sessionId = null;
+                sequence = -1;
+            }
             cancelHeartbeat();
             disconnected.countDown();
             return null;
