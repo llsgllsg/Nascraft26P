@@ -101,7 +101,7 @@
 </tr>
 <tr>
 <td>价格提醒</td>
-<td>到价后私聊提醒你，每个 QQ 最多 8 条</td>
+<td>到价后提醒你（群内绑定会 @ 回原群），每个 QQ 最多 8 条</td>
 </tr>
 <tr>
 <td>交易播报</td>
@@ -177,8 +177,8 @@
 <ol>
 <li>玩家在游戏里执行 <strong><code>/linkqq</code></strong>（别名 <strong><code>/qq</code></strong>，权限 <code>nascraft.qq.linkable</code>）。</li>
 <li>插件返回一串 <strong>6 位绑定码</strong>，10 分钟内有效。</li>
-<li>玩家用 QQ <strong>私聊机器人</strong>发送：<code>绑定 123456</code>。</li>
-<li>绑定成功后，各种查询和提醒都会发到该 QQ。</li>
+<li>在 QQ <strong>群里 @ 机器人</strong> 发送：<code>绑定 123456</code>（私聊机器人发送也可以）。</li>
+<li>绑定成功后，各种查询和提醒都会发到该 QQ；在群里完成的绑定，价格提醒会 <code>@</code> 回同一个群。</li>
 </ol>
 <p>解绑：</p>
 <ul>
@@ -226,7 +226,7 @@
 </tbody>
 </table>
 <blockquote>
-<p><strong>物品怎么写</strong>：可以用物品 ID（<code>diamond</code>）、市场界面里显示的名称，或 <code>items.yml</code> 里为该物品设置的 <code>alias</code>（例如 <code>alias: '钻石'</code> 后就能用 <code>行情 钻石</code>）。大小写不敏感，颜色代码/MiniMessage 标签会被忽略；完全匹配优先，找不到时再做部分匹配，父物品优先于子物品。所以 <code>行情 煤炭</code>、<code>行情 coal</code>、<code>行情 COAL</code> 都能查到同一件物品。</p>
+<p><strong>物品怎么写</strong>：可以用物品 ID（<code>diamond</code>）、市场界面里显示的名称，或 <code>items.yml</code> 里为该物品设置的 <code>alias</code>。<strong>默认别名就是 Minecraft 官方译名</strong>（中文客户端下 <code>diamond</code> 显示为「钻石」、<code>oak_log</code> 显示为「橡木原木」），所以 <code>行情 钻石</code> 与 <code>行情 diamond</code> 等效，不需要手写 <code>alias</code>；自己写了 <code>alias</code> 则以配置为准。大小写不敏感，颜色代码/MiniMessage 标签会被忽略；完全匹配优先，找不到时再做部分匹配，父物品优先于子物品。</p>
 </blockquote>
 <p>示例：</p>
 <pre><code>行情 煤炭

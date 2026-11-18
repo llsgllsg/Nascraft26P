@@ -614,7 +614,7 @@ marketeditor_category_name_anvil_text: "Display name..."
 marketeditor_category_name_set: "&dCategory display name set correctly!"
 marketeditor_category_material_set: "&dCategory material changed to: &e[MAT]"
 
-onebot_link_code: "&aIn QQ, send this to the bot within 10 minutes: &ebind [CODE]"
+onebot_link_code: "&aWithin 10 minutes, mention the bot in a QQ group and send: &ebind [CODE]&a (DMing the bot works too)"
 onebot_link_ok: "&aLinked &e[PLAYER]&a with QQ &e[QQ]&a."
 onebot_link_failed: "&cInvalid or expired code. Run &e/linkqq&c again in game."
 onebot_qq_taken: "&cThis QQ is already linked to &e[PLAYER]&c."

@@ -248,7 +248,18 @@ public class QqOfficialBridge {
                         .replace("[PRICE]", Formatter.plainFormat(item.getCurrency(), price, Style.ROUND_BASIC))
                         .replace("[TARGET]", Formatter.plainFormat(item.getCurrency(), Math.abs(threshold), Style.ROUND_BASIC));
 
-                api.sendC2CMessage(openId, stripColour(message), null);
+                // Accounts linked by mentioning the bot in a group only have a group-scoped
+                // member_openid, which cannot receive C2C messages: push the alert back into that
+                // group and at-mention the member instead.
+                String groupOpenId = store.getGroup(openId);
+
+                if (groupOpenId != null) {
+                    String mention = "<qqbot-at-user id=\"" + openId + "\" /> ";
+                    api.sendGroupMessage(groupOpenId, mention + stripColour(message), null);
+                } else {
+                    api.sendC2CMessage(openId, stripColour(message), null);
+                }
+
                 store.removeAlert(openId, alert.getKey());
             }
         }

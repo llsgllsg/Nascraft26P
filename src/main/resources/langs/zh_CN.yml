@@ -609,7 +609,7 @@ marketeditor_category_material_lore: "&7材质："
 marketeditor_category_material_hint: "&7点击携带新材料放置。"
 marketeditor_category_changes_saved: "&d分类更改已保存。"
 
-onebot_link_code: "&a请在 10 分钟内于 QQ 私聊机器人发送：&e绑定 [CODE]"
+onebot_link_code: "&a请在 10 分钟内于 QQ 群里 @机器人 发送：&e绑定 [CODE]&a（私聊机器人发送也可以）"
 onebot_link_ok: "&a绑定成功：&e[PLAYER]&a ↔ QQ &e[QQ]&a。"
 onebot_link_failed: "&c绑定码无效或已过期，请回游戏重新执行 &e/linkqq&c。"
 onebot_qq_taken: "&c该 QQ 已经绑定了 &e[PLAYER]&c。"

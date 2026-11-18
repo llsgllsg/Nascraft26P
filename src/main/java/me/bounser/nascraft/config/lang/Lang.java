@@ -4,6 +4,8 @@ import me.bounser.nascraft.Nascraft;
 import me.bounser.nascraft.config.Config;
 import me.bounser.nascraft.formatter.Formatter;
 import me.bounser.nascraft.formatter.Separator;
+import me.bounser.nascraft.util.LegacyColours;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -59,12 +61,21 @@ public class Lang {
         if (!resourceFile.exists()) Nascraft.getInstance().saveResource(resourcePath, false);
     }
 
+    /**
+     * Language entries come in two flavours: MiniMessage tags ({@code <green>}) and the historic
+     * ampersand codes ({@code &a}). MiniMessage does not understand the latter, so they are
+     * converted first; otherwise players see the raw {@code &a} in chat.
+     */
+    private Component deserialize(String raw) {
+        return miniMessage.deserialize(LegacyColours.toMiniMessage(raw));
+    }
+
     public void message(Player player, Message lang) {
-        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())));
+        player.sendMessage(deserialize(this.lang.getString(lang.name().toLowerCase())));
     }
 
     public void message(Player player, String msg) {
-        player.sendMessage(miniMessage.deserialize(msg));
+        player.sendMessage(deserialize(msg));
     }
 
     public String message(Message lang) {
@@ -78,7 +89,7 @@ public class Lang {
         if (!this.lang.contains(lang.name().toLowerCase())) {
             Nascraft.getInstance().getLogger().warning("Lang section not found: " + lang.name().toLowerCase());
         }
-        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace("[WORTH]", worth)
                 .replace("[AMOUNT]", amount)
                 .replace("[NAME]", name)));
@@ -86,13 +97,13 @@ public class Lang {
 
     public void message(Player player, Message lang, String placeholder, String replacement) {
 
-        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace(placeholder, replacement)));
     }
 
     public void message(Player player, Message lang, String placeholder1, String replacement1, String placeholder2, String replacement2, String placeholder3, String replacement3) {
 
-        player.sendMessage(miniMessage.deserialize(this.lang.getString(lang.name().toLowerCase())
+        player.sendMessage(deserialize(this.lang.getString(lang.name().toLowerCase())
                 .replace(placeholder1, replacement1)
                 .replace(placeholder2, replacement2)
                 .replace(placeholder3, replacement3)));

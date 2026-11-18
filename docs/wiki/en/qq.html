@@ -101,7 +101,7 @@
 </tr>
 <tr>
 <td>Price alerts</td>
-<td>Get a private message when a price is reached, up to 8 per QQ account</td>
+<td>Get pinged when a price is reached (group-linked accounts are @-mentioned in that group), up to 8 per QQ account</td>
 </tr>
 <tr>
 <td>Trade announcements</td>
@@ -177,8 +177,8 @@
 <ol>
 <li>In game the player runs <strong><code>/linkqq</code></strong> (alias <strong><code>/qq</code></strong>, permission <code>nascraft.qq.linkable</code>).</li>
 <li>The plugin answers with a <strong>6 digit code</strong>, valid for 10 minutes.</li>
-<li>The player <strong>private messages the bot</strong> on QQ with <code>绑定 123456</code> (or <code>bind 123456</code>).</li>
-<li>Once linked, quotes and alerts go to that QQ account.</li>
+<li><strong>@-mention the bot in a QQ group</strong> and send <code>绑定 123456</code> (or <code>bind 123456</code>); a private message works too.</li>
+<li>Once linked, quotes and alerts go to that QQ account. If the link was made in a group, price alerts are posted back to that group with an @-mention.</li>
 </ol>
 <p>Unlink:</p>
 <ul>
@@ -226,7 +226,7 @@
 </tbody>
 </table>
 <blockquote>
-<p><strong>How to name an item</strong>: use the item identifier (<code>diamond</code>), the name shown in the market GUI, or the <code>alias</code> configured for it in <code>items.yml</code> (e.g. <code>alias: '钻石'</code> lets you send <code>行情 钻石</code>). Matching is case-insensitive, colour codes and MiniMessage tags are ignored, an exact match wins over a partial one, and parent items win over child items - so <code>行情 coal</code>, <code>行情 COAL</code> and <code>行情 煤炭</code> all resolve to the same item.</p>
+<p><strong>How to name an item</strong>: use the item identifier (<code>diamond</code>), the name shown in the market GUI, or the <code>alias</code> configured for it in <code>items.yml</code>. <strong>The default alias is the official Minecraft translation</strong> (with the Chinese language file <code>diamond</code> becomes 钻石 and <code>oak_log</code> becomes 橡木原木), so <code>行情 钻石</code> and <code>行情 diamond</code> are equivalent out of the box; a configured <code>alias</code> always wins. Matching is case-insensitive, colour codes and MiniMessage tags are ignored, an exact match wins over a partial one, and parent items win over child items.</p>
 </blockquote>
 <p>Examples:</p>
 <pre><code>行情 煤炭

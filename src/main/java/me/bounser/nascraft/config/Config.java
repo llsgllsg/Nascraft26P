@@ -14,6 +14,7 @@ import me.bounser.nascraft.discord.linking.LinkingMethod;
 import me.bounser.nascraft.market.resources.Category;
 import me.bounser.nascraft.market.MarketManager;
 import me.bounser.nascraft.market.unit.Item;
+import me.bounser.nascraft.util.ItemNames;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -816,7 +817,12 @@ public class Config {
             if (items.contains("items." + identifier + ".child." + childIdentifier + ".alias")) {
                 alias = items.getString("items." + identifier + ".child." + childIdentifier + ".alias");
             } else {
-                alias = (Character.toUpperCase(alias.charAt(0)) + alias.substring(1)).replace("_", " ");
+                String translated = ItemNames.nameOf(childIdentifier);
+                if (translated != null) {
+                    alias = translated;
+                } else {
+                    alias = (Character.toUpperCase(alias.charAt(0)) + alias.substring(1)).replace("_", " ");
+                }
             }
 
             childs.add(new Item(parent, multiplier, itemStack, childIdentifier, alias, parent.getCurrency()));
@@ -891,11 +897,16 @@ public class Config {
     }
 
     public String getAlias(String identifier) {
-        if (!items.contains("items." + identifier + ".alias")) {
-            return (Character.toUpperCase(identifier.charAt(0)) + identifier.substring(1)).replace("_", " ");
-        } else {
+
+        if (items.contains("items." + identifier + ".alias"))
             return items.getString("items." + identifier + ".alias");
-        }
+
+        // No alias configured: use the official Minecraft translation of the material, so
+        // "diamond" shows up (and can be searched) as "钻石" out of the box.
+        String translated = ItemNames.nameOf(identifier);
+        if (translated != null) return translated;
+
+        return (Character.toUpperCase(identifier.charAt(0)) + identifier.substring(1)).replace("_", " ");
     }
 
     public float getSupport(String identifier) {

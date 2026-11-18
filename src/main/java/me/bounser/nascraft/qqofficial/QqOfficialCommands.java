@@ -182,7 +182,7 @@ public final class QqOfficialCommands {
             return;
         }
 
-        if (!store.link(uuid, openId)) {
+        if (!store.link(uuid, openId, group ? groupOpenId : null)) {
             reply(groupOpenId, openId, eventId, group, Lang.get().message(Message.ONEBOT_QQ_TAKEN)
                     .replace("[PLAYER]", QqOfficialBridge.nameOf(store.getUUID(openId))));
             return;

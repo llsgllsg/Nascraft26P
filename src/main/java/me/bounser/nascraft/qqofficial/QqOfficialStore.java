@@ -29,6 +29,13 @@ public class QqOfficialStore {
     /** Minecraft UUID -> QQ openid. */
     private final Map<UUID, String> links = new ConcurrentHashMap<>();
 
+    /**
+     * QQ openid -> group openid, for accounts linked by mentioning the bot inside a group.
+     * A {@code member_openid} is scoped to its group and cannot receive C2C messages, so price
+     * alerts for those accounts are delivered back into the same group with an at-mention.
+     */
+    private final Map<String, String> groups = new ConcurrentHashMap<>();
+
     /** QQ openid -> (item identifier -> signed threshold). */
     private final Map<String, Map<String, Double>> alerts = new ConcurrentHashMap<>();
 
@@ -52,6 +59,15 @@ public class QqOfficialStore {
                 } catch (IllegalArgumentException ignored) {
                     // Ignore malformed entries instead of failing the whole bridge.
                 }
+            }
+        }
+
+        ConfigurationSection groupSection = data.getConfigurationSection("groups");
+        if (groupSection != null) {
+            for (String openId : groupSection.getKeys(false)) {
+                String groupOpenId = String.valueOf(groupSection.get(openId));
+                if (groupOpenId.isBlank() || "null".equals(groupOpenId)) continue;
+                groups.put(openId, groupOpenId);
             }
         }
 
@@ -80,17 +96,35 @@ public class QqOfficialStore {
     }
 
     public synchronized boolean link(UUID uuid, String openId) {
+        return link(uuid, openId, null);
+    }
+
+    /**
+     * Links an account. {@code groupOpenId} is only given when the code was redeemed by mentioning
+     * the bot inside a group, so alerts can be pushed back to that group.
+     */
+    public synchronized boolean link(UUID uuid, String openId, String groupOpenId) {
         UUID current = getUUID(openId);
         if (current != null && !current.equals(uuid)) return false;
 
         links.put(uuid, openId);
+        if (groupOpenId != null && !groupOpenId.isBlank()) groups.put(openId, groupOpenId);
+        else groups.remove(openId);
+
         saveAsync();
         return true;
     }
 
+    public String getGroup(String openId) {
+        return openId == null ? null : groups.get(openId);
+    }
+
     public synchronized void unlink(UUID uuid) {
         String openId = links.remove(uuid);
-        if (openId != null) alerts.remove(openId);
+        if (openId != null) {
+            alerts.remove(openId);
+            groups.remove(openId);
+        }
         saveAsync();
     }
 
@@ -98,6 +132,7 @@ public class QqOfficialStore {
         UUID uuid = getUUID(openId);
         if (uuid != null) links.remove(uuid);
         alerts.remove(openId);
+        groups.remove(openId);
         saveAsync();
     }
 
@@ -156,6 +191,10 @@ public class QqOfficialStore {
             ConfigurationSection linkSection = data.createSection("links");
             for (Map.Entry<UUID, String> entry : links.entrySet())
                 linkSection.set(entry.getKey().toString(), entry.getValue());
+
+            ConfigurationSection groupSection = data.createSection("groups");
+            for (Map.Entry<String, String> entry : groups.entrySet())
+                groupSection.set(entry.getKey(), entry.getValue());
 
             ConfigurationSection alertSection = data.createSection("alerts");
             for (Map.Entry<String, Map<String, Double>> entry : alerts.entrySet()) {
