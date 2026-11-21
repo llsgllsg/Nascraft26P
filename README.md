@@ -18,7 +18,7 @@
 
 ---
 
-> **Nascraft26P** 是基于 [Nascraft](https://www.spigotmc.org/resources/108216/) 的汉化 + 兼容性维护版本，跟随 Paper 最新稳定版更新，当前支持 **1.21.11 / 26.1.x / 26.2 / 26.3**，一个 jar 通吃所有版本（启动时自动选择 GUI 后端），内置完整中文语言包。
+> **Nascraft26P** 是基于 [Nascraft](https://www.spigotmc.org/resources/108216/) 的汉化 + 兼容性维护版本，跟随 Paper 最新稳定版更新。
 >
 > **文档**：[中文](https://llsgllsg.github.io/Nascraft26P/wiki/) · [English](https://llsgllsg.github.io/Nascraft26P/wiki/en/)（由原版 [Nascraft Wiki](https://bounser.gitbook.io/nascraft/) 迁移，各 22 页，页头可一键切换语言）
 
